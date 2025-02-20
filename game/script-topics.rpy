@@ -9224,7 +9224,7 @@ label talk_players_birthday_input:
         # Generate month options
         month_options = [
             ("January", 1),
-            ("Feburary", 2),
+            ("February", 2),
             ("March", 3),
             ("April", 4),
             ("May", 5),
