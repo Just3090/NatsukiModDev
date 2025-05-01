@@ -1234,7 +1234,7 @@ label greeting_affectionate_enamored_have_so_much_fun:
     $ time_descriptor = "today" if jn_is_day() else "tonight"
     n 7fcssml "We're gonna have {w=0.2}{i}so{/i}{w=0.2} much fun [time_descriptor]!{w=0.5}{nw}" 
     extend 3fsqsml " Ehehe."
-    n 3fchbgl "So!{w=0.2} what did you wanna talk about?"
+    n 3fchbgl "So!{w=0.2} What did you wanna talk about?"
 
     return
 
