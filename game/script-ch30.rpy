@@ -8,6 +8,9 @@ label ch30_autoload:
         in_sayori_kill = None
         config.skipping = False
         config.allow_skipping = False
+        config.keymap['skip'] = []
+        config.keymap['toggle_skip'] = []
+        config.keymap['fast_skip'] = []
         config.predict_statements = 5
         config.image_cache_size = 128
         n.display_args["callback"] = jnNoDismissDialogue
