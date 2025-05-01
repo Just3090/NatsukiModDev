@@ -1724,9 +1724,9 @@ init -1 python in jn_outfits:
         unlocked=False,
         is_jn_wearable=True
     ))
-    __registerWearable(JNClothes(
+    __registerWearable(JNHeadgear(
         reference_name="jn_headgear_raincoat_hood",
-        display_name="Raincoat hood",
+        display_name="Raincoat hat",
         unlocked=False,
         is_jn_wearable=True
     ))

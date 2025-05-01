@@ -3080,6 +3080,7 @@ label event_change_of_atmosphere:
         show overlay puddles night zorder JN_OVERLAY_ZORDER
 
     $ jn_outfits.getWearable("jn_clothes_raincoat").unlock()
+    $ jn_outfits.getWearable("jn_headgear_raincoat_hood").unlock()
     $ jn_outfits.saveTemporaryOutfit(jn_outfits.getOutfit("jn_raincoat_unlock"))
 
     n "..."
