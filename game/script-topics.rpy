@@ -11874,8 +11874,8 @@ label talk_can_you_draw:
             n 2fcssftsa "..."
             n 2fcsfltsa "...Actually.{w=0.75}{nw}"
             extend 2fsqfutsb " You know what?"
-            n 2fcsemtsa "Yeah.{w=0.2} I am.{w=0.75}{nw}"
-            extend 2fsqantsb " At drawing conclusions."
+            n 2fcsemtsa "Yeah.{w=0.2} I'm good at drawing{w=0.75}{nw}"
+            extend 2fsqantsb " conclusions."
             n 4fnmfultsf "...And I've got plenty drawn about the likes of {b}you{/b}."
 
     return
