@@ -2826,7 +2826,7 @@ label talk_player_appearance:
                 n 4unmgs "Seriously?{w=0.2} We're the same height?"
                 n 1uchbg "That's amazing,{w=0.1} [player]!"
 
-                if persistent.jn_player_appearance_hair_length = "Medium" and persistent.jn_player_appearance_hair_colour = "Other":
+                if persistent.jn_player_appearance_hair_length == "Medium" and persistent.jn_player_appearance_hair_colour == "Other":
                     n 2fllbg "With the hair and everything too..."
                     n 1uchgn "It's like we're practically twins!"
 
