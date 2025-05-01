@@ -2714,7 +2714,7 @@ label event_blackjack_unlock:
     extend 7nlrss " huh."
     n 7ulraj "So...{w=1}{nw}"
     
-    if persistent._jn_snap_player_wins > 0 or persistent._jn_snap_player_wins > 0:
+    if persistent._jn_snap_player_wins > 0 or persistent._jn_snap_natsuki_wins > 0:
         extend 7nllaj " I know we've played a bunch of Snap before,{w=0.2} obviously.{w=0.75}{nw}"
         extend 3unmfl " And don't get me wrong -{w=0.5}{nw}"
         extend 3clrflsbl " I'm not saying I was getting {i}bored{/i} of it,{w=0.2} exactly."
