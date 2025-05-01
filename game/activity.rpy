@@ -10,7 +10,7 @@ init python in jn_activity:
     import store.jn_globals as jn_globals
     import store.jn_utils as jn_utils
     
-    ACTIVITY_SYSTEM_ENABLED = True
+    ACTIVITY_SYSTEM_ENABLED = True # Determines if the system supports activity detection
     LAST_ACTIVITY = None
 
     if renpy.windows:
@@ -112,7 +112,7 @@ init python in jn_activity:
                 return renpy.substitute(random.choice(self.notify_text))
 
             return None
-    
+
     class JNActivityManager:
         """
         Management class for handling activities.
@@ -122,6 +122,22 @@ init python in jn_activity:
             self.last_activity = JNPlayerActivity(
                 activity_type=JNActivities.unknown
             )
+            self.__enabled = False
+
+        def setIsEnabled(self, state):
+            """
+            Sets the enabled state, determining if activity detection is active.
+
+            IN:
+                - state - bool enabled state to set
+            """
+            self.__enabled = state
+
+        def getIsEnabled():
+            """
+            Gets the enabled state.
+            """
+            return self.__enabled
 
         def registerActivity(self, activity):
             self.registered_activities[activity.activity_type] = activity
@@ -147,6 +163,9 @@ init python in jn_activity:
             """
             if delay is not 0:
                 store.jnPause(delay, hard=True)
+
+            if not self.__enabled:
+                return self.getActivityFromType(JNActivities.unknown)
 
             window_name = getCurrentWindowName()
             if window_name is not None:
@@ -206,7 +225,7 @@ init python in jn_activity:
     ))
     ACTIVITY_MANAGER.registerActivity(JNPlayerActivity(
         activity_type=JNActivities.music_applications,
-        window_name_regex="(^spotify$|^spotify premium$|^groove$|^zune$|^itunes$)",
+        window_name_regex="(^spotify$|^spotify premium$|^groove$|^zune$|^itunes$|^musicbee$|^aimp$|^winamp$)",
         notify_text=[
             "You better play something good!",
             "New playlist, [player]?",
@@ -449,13 +468,13 @@ init python in jn_activity:
         """
         Gets the title of the currently active window.
 
-        IN: 
+        IN:
             - delay - int amount of seconds to wait before checking window
 
         OUT:
             - str representing the title of the currently active window
         """
-        global ACTIVITY_SYSTEM_ENABLED 
+        global ACTIVITY_SYSTEM_ENABLED
         if ACTIVITY_SYSTEM_ENABLED:
             if delay is not 0:
                 store.jnPause(delay, hard=True)

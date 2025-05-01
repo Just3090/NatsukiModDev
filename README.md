@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://justnatsuki.club/img/logos/jn_1-3-4_logo.png" height="300"/>
+    <img src="https://just-natsuki-team.github.io/Expression-Previewer/img/branding/jn_1-3-5_logo.png" height="300"/>
 </p>
 <br>
 
@@ -50,9 +50,9 @@ An After-Story style mod for Natsuki from DDLC, focusing on building a post-game
     </td>
     <td align="center">
         <a href="https://github.com/Edgarmods">
-            <img src="https://avatars.githubusercontent.com/u/68255592?v=4" width="100;" alt="Edgarmods"/>
+            <img src="https://avatars.githubusercontent.com/u/68255592?v=4" width="100;" alt="Primrose"/>
             <br />
-            <sub><b>Edgarmods</b></sub>
+            <sub><b>Primrose</b></sub>
         </a>
     </td></tr>
 <tr>
@@ -87,7 +87,7 @@ An After-Story style mod for Natsuki from DDLC, focusing on building a post-game
     </tr>
 </table>
 
-### With thanks to our amazing guest artists:
+### With thanks to our amazing guest artists and musicians:
 <table>
     <tr>
         <td align="center">
@@ -99,9 +99,16 @@ An After-Story style mod for Natsuki from DDLC, focusing on building a post-game
         </td>
         <td align="center">
             <a href="https://twitter.com/TheShunBun">
-                <img src="https://justnatsuki.club/img/portraits/shunbun.png" width="100;" alt="Almay_art"/>
+                <img src="https://justnatsuki.club/img/portraits/shunbun.png" width="100;" alt="TheShunBun"/>
                 <br />
                 <sub><b>TheShunBun</b></sub>
+            </a>
+        </td>
+        <td align="center">
+            <a href="https://youtube.com/@ivaadenfebbs">
+                <img src="https://justnatsuki.club/img/portraits/febbs.png" width="100;" alt="Febbs!"/>
+                <br />
+                <sub><b>Febbs!</b></sub>
             </a>
         </td>
     </tr>
@@ -111,6 +118,40 @@ An After-Story style mod for Natsuki from DDLC, focusing on building a post-game
 
 - Snow, rain graphics thanks to Monika After Story team @ https://github.com/Monika-After-Story/MonikaModDev
 - License template thanks to Monika After Story team @ https://github.com/Monika-After-Story/MonikaModDev
+- _Strawberry Daydream_ (clubroom daytime theme), _Stars that Shimmer_ (clubroom nighttime theme) thanks to Febbs! @ https://youtube.com/@ivaadenfebbs
+- Sound effects thanks to various contributors at Freesound @ https://freesound.org
+    <details>
+    <summary>Full list</summary>
+
+    - InspectorJ
+    - launemax
+    - LG
+    - angeliqueperdikes
+    - Bee09
+    - Bertrof
+    - brandondelehoy
+    - ChazzRavenelle
+    - cupido-1
+    - Daleonfire
+    - Euphrosyyn
+    - Garuda1982
+    - HogantheLogan
+    - JasonElrod
+    - Joao_Janz
+    - jrssandoval
+    - Mydo1
+    - Robinhood76
+    - ryanharding95
+    - Sai-AnnNadesan
+    - SDLx
+    - Sirkoto51
+    - suntemple
+    - Syna-Max
+    - TinyRay
+    - tmkappelt
+    - valli39
+
+    </details>
 - Our [contributors](https://github.com/Just-Natsuki-Team/NatsukiModDev/graphs/contributors)!
 - Our community, for being so patient despite our delays
 
@@ -151,7 +192,7 @@ It's rude to keep someone waiting, you know...
 
 Download the official launcher and follow the installation steps [here](https://github.com/Just-Natsuki-Team/NatsukiModInstaller/releases/tag/release)!
 
-#### Manual installation
+#### Manual installation (not recommended: see [using the official installer](#using-the-official-jn-installer-recommended))
 
 <details>
 <summary>Details</summary>
@@ -181,7 +222,7 @@ Download the official launcher and follow the installation steps [here](https://
 
 Download the official launcher and follow the update steps [here](https://github.com/Just-Natsuki-Team/NatsukiModInstaller/releases/tag/release)!
 
-#### Manual update
+#### Manual update (not recommended: see [using the official installer](#using-the-official-jn-installer-recommended))
 
 <details>
 <summary>Details</summary>
