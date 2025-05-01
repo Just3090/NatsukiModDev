@@ -3356,6 +3356,16 @@ label event_change_of_atmosphere:
     play audio zipper
     $ jnPause(1)
     play audio clothing_ruffle
+
+    if persistent.jn_natsuki_auto_outfit_change_enabled or persistent.jn_natsuki_outfit_on_quit == "jn_temporary_outfit":
+        $ Natsuki.setOutfit(jn_outfits.getRealtimeOutfit())
+
+    elif jn_outfits.outfitExists(persistent.jn_natsuki_outfit_on_quit):
+        $ Natsuki.setOutfit(jn_outfits.getOutfit(persistent.jn_natsuki_outfit_on_quit))
+
+    else:
+        $ Natsuki.setOutfit(jn_outfits.getOutfit("jn_school_uniform"))
+
     $ jnPause(1.5)
     hide black with Dissolve(0.5)
     $ jnPause(1)
