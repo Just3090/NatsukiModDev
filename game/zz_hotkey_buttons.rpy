@@ -5,7 +5,7 @@ init python:
         """
         if "hkb_overlay" in config.overlay_screens:
             config.overlay_screens.remove("hkb_overlay")
-
+        
         renpy.hide_screen("hkb_overlay")
 
     def HKBShowButtons():
@@ -18,7 +18,7 @@ init python:
 init -1 python in hkb_button:
     enabled = True
 
-# Standard hotkey
+
 define gui.hkb_button_width = 120
 define gui.hkb_button_height = None
 define gui.hkb_button_tile = False
@@ -29,7 +29,7 @@ define gui.hkb_button_text_xalign = 0.5
 define gui.hkb_button_text_idle_color = "#e2d1d1"
 define gui.hkb_button_text_hover_color = "#FF8ED0"
 
-# Black hotkey
+
 define gui.hkb_button_black_width = 120
 define gui.hkb_button_black_height = None
 define gui.hkb_button_black_tile = False
@@ -40,7 +40,7 @@ define gui.hkb_button_black_text_xalign = 0.5
 define gui.hkb_button_black_text_idle_color = "#e2d1d1"
 define gui.hkb_button_black_text_hover_color = "#FF8ED0"
 
-# Label
+
 define gui.hkb_label_width = 400
 define gui.hkb_label_height = None
 define gui.hkb_label_tile = False
@@ -50,7 +50,7 @@ define gui.hkb_label_text_size = 20
 define gui.hkb_label_text_xalign = 0.5
 define gui.hkb_label_text_color = "#e2d1d1"
 
-# Option hotkey
+
 define gui.hkb_option_width = 200
 define gui.hkb_option_height = None
 define gui.hkb_option_tile = False

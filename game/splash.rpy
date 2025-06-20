@@ -1,27 +1,22 @@
-## This splash screen is the first thing that Renpy will show the player
-##
-## Before load, check to be sure that the archive files were found.
-## If not, display an error message and quit.
-init -100 python:
-    #Check for each archive needed
-    for archive in ['audio','images','scripts','fonts']:
-        if archive not in config.archives:
-            #If one is missing, throw an error and close
-            renpy.error("DDLC archive files not found in /game folder. Check installation and try again.")
 
-## First, a disclaimer declaring this is a mod is shown, then there is a
-## check for the original DDLC assets in the install folder. If those are
-## not found, the player is directed to the developer's site to download.
-##
+
+
+
+
+
+
+
+
+
 init python:
     config.rollback_enabled = False
     menu_trans_time = 1
-    #The default splash message, originally shown in Act 1 and Act 4
+
     splash_message = _("This game is an unofficial fan work, unaffiliated with Team Salvato.")
 
 image splash_warning = ParameterizedText(style="splash_text", xalign=0.5, yalign=0.5)
 
-##Here's where you can change the logo file to whatever you want
+
 image menu_logo:
     "mod_assets/jnlogo.png"
     subpixel True
@@ -30,7 +25,7 @@ image menu_logo:
     zoom 0.60
     menu_logo_move
 
-#Removed rendering below of other char imgs in main menu
+
 
 image menu_bg:
     topleft
@@ -134,7 +129,20 @@ image tos_a = "mod_assets/backgrounds/menu/tos_a.png"
 image tos_b = "mod_assets/backgrounds/menu/tos_b.png"
 
 label splashscreen:
-    #If this is the first time the game has been run, show a disclaimer
+    $ set_language_fonts()
+
+
+    if persistent.language == None:
+        call screen choose_language
+    
+    # elif persistent.language == "spanish":
+    #     python:
+    #         renpy.change_language('spanish')
+    
+    # elif persistent.language == "english":
+    #     python:
+    #         renpy.change_language(None)
+
     default persistent.has_launched_before = False
     $ persistent.tried_skip = False
     if not persistent.has_launched_before:
@@ -148,10 +156,10 @@ label splashscreen:
         "It is designed to be played only after the official game has been completed, and contains spoilers for the official game."
         "Game files for Doki Doki Literature Club are required to play this mod and can be downloaded for free at: http://ddlc.moe"
         $ narrator(
-            "By playing [config.name] you agree that you have completed Doki Doki Literature Club and accept any spoilers contained within.",
+            _("By playing [config.name] you agree that you have completed Doki Doki Literature Club and accept any spoilers contained within."),
             interact=False
         )
-        $ renpy.display_menu(items=[ ("I agree.", True)], screen="choice_centred")
+        $ renpy.display_menu(items=[ (_("I agree."), True)], screen="choice_centred")
         scene tos_b
         with Dissolve(1)
         pause 1.0
@@ -159,15 +167,15 @@ label splashscreen:
         scene black
         with Dissolve(1)
 
-        ##Optional, load a copy of DDLC save data
-        #if not persistent.has_merged:
-        #    call import_ddlc_persistent
+
+
+
 
         $ persistent.has_launched_before = True
 
-    #Check for game updates before loading the game or the splash screen
 
-    # Set the first visited date, if not already on record
+
+
     if not persistent.jn_first_visited_date:
         $ persistent.jn_first_visited_date = datetime.datetime.now()
 
@@ -176,13 +184,13 @@ label splashscreen:
 label after_load:
     $ config.allow_skipping = False
     $ _dismiss_pause = config.developer
-    $ persistent.ghost_menu = False #Handling for easter egg from DDLC
+    $ persistent.ghost_menu = False
     $ style.say_dialogue = style.normal
     return
 
 label autoload:
     python:
-        # Stuff that's normally done after splash
+
         if "_old_game_menu_screen" in globals():
             _game_menu_screen = _old_game_menu_screen
             del _old_game_menu_screen
@@ -193,49 +201,77 @@ label autoload:
 
         renpy.block_rollback()
 
-        # Fix the game context (normally done when loading save file)
+
         renpy.context()._menu = False
         renpy.context()._main_menu = False
         main_menu = False
         _in_replay = None
 
-    # Prevent the player's menu hotkey from defaulting to Save/Load
+
     $ store._game_menu_screen  = "preferences"
 
-    # Explicity remove keymaps we dont want
+
     $ config.keymap["debug_voicing"] = list()
     $ config.keymap["choose_renderer"] = list()
 
-    # Pop the _splashscreen label which has _confirm_quit as False and other stuff
+
     $ renpy.pop_call()
 
-    # Load the appropriate introduction sequence stage, or go straight to ch30 if already completed introduction
+
     if not jn_introduction.JNIntroductionStates(persistent.jn_introduction_state) == jn_introduction.JNIntroductionStates.complete:
         jump introduction_progress_check
-
     else:
+
         jump ch30_autoload
 
 label before_main_menu:
     if persistent.playername != "":
         $ renpy.jump_out_of_context("start")
 
-    # Prevent the player's menu hotkey from defaulting to Save/Load
+
     $ store._game_menu_screen  = "preferences"
-    
+
     return
 
 label quit:
+    $ renpy.save_persistent()
     python:
-        # Remove any consequences from not quitting properly
-        if not Natsuki.getForceQuitAttempt():
+
+        if not Natsuki.getForceQuitAttempt(): # Assuming Natsuki and jn_apologies are defined
             Natsuki.removeApology(jn_apologies.ApologyTypes.sudden_leave)
             
             if Natsuki.getQuitApology() == jn_apologies.ApologyTypes.sudden_leave:
                 Natsuki.clearQuitApology()
 
-        # Save game data
-        jn_utils.saveGame()
+        # Initialize the flag if it doesn't exist.
+        if not hasattr(store, '_splash_rpy_handling_quit'):
+            store._splash_rpy_handling_quit = False
 
-        # Finally quit
-        renpy.quit()
+        if not store._splash_rpy_handling_quit:
+            # This is the first time through this logic block for the current quit operation.
+            store._splash_rpy_handling_quit = True # Mark that we are now handling the quit
+            
+            # Perform save operation once
+            jn_utils.saveGame()
+
+
+            renpy.save_persistent()
+
+
+            # Attempt to quit. This is THE quit call from this label's logic
+            # If renpy.quit() internally re-runs this label in a new context
+            # the flag _splash_rpy_handling_quit will be True
+            # and this block will be skipped in the re-entrant call
+            renpy.quit()
+            
+            # renpy.quit() should not return
+            # Script execution should end or be transferred to Ren'Py's quit sequence
+        else:
+            # _splash_rpy_handling_quit is True
+            # This means this label is being re-entered as part of a renpy.quit() process
+            # that was initiated in the block above
+            # We should not re-attempt saving or quitting from this re-entrant call
+            # Let the original renpy.quit() call complete its process
+            pass
+        
+        # The unconditional renpy.quit() that was here is now removed

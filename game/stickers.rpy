@@ -1,6 +1,6 @@
 default persistent._jn_natsuki_chibi_seen = False
 
-# Peeks the sticker up from the left classroom window
+
 transform jn_sticker_peek_up_down_left:
     subpixel True
     topleft
@@ -10,7 +10,7 @@ transform jn_sticker_peek_up_down_left:
     pause 1.0
     easeout 2 ypos 400
 
-# Peeks the sticker up from the right classroom window
+
 transform jn_sticker_peek_up_down_right:
     subpixel True
     topleft
@@ -18,9 +18,9 @@ transform jn_sticker_peek_up_down_right:
     ypos 400
     easein 3 ypos 337
     pause 1.0
-    easeout 2 ypos 400   
+    easeout 2 ypos 400
 
-init 0 python in jn_stickers:
+init python in jn_stickers:
     from Enum import Enum
     import store
 
@@ -31,7 +31,7 @@ init 0 python in jn_stickers:
         blank = 1
         blank_cheer = 2
         normal = 3
-
+        
         def __str__(self):
             return self.name
 
@@ -51,5 +51,5 @@ init 0 python in jn_stickers:
             at_list=at_list,
             what=store.Image("mod_assets/sticker/{0}.png".format(sticker_type.__str__())),
             zorder=-1)
-
+        
         store.persistent._jn_natsuki_chibi_seen = True

@@ -11,7 +11,7 @@ init -5 python in jn_gifts:
     GIFT_DIRECTORY = os.path.join(renpy.config.basedir, "characters").replace("\\", "/")
 
     _GIFT_ZORDER = 4
-    
+
     def getGiftFileExists(gift_name):
         """
         Returns whether the given gift exists in the configured gift directory, with a .nats prefix.
@@ -35,15 +35,15 @@ init -5 python in jn_gifts:
             self.color = color
             self.zorder = zorder
             base_tag = "gift {0}".format(color)
-
+            
             self.closed_tag = "gift_{0} closed".format(self.color)
             self.open_tag = "gift_{0} open".format(self.color)
             self.empty_tag = "gift_{0} empty".format(self.color)
-
+            
             renpy.image(self.closed_tag, store.Image("mod_assets/props/gifts/{0}/closed.png".format(self.color)))
             renpy.image(self.open_tag, store.Image("mod_assets/props/gifts/{0}/open.png".format(self.color)))
             renpy.image(self.empty_tag, store.Image("mod_assets/props/gifts/{0}/empty.png".format(self.color)))
-
+        
         def present(self):
             """
             Presents the gift by sliding it slowly up from the bottom of the screen, onto Natsuki's desk.
@@ -54,7 +54,7 @@ init -5 python in jn_gifts:
                 at_list=[store.jn_gift_slide_up],
                 zorder=self.zorder
             )
-
+        
         def open(self):
             """
             Shows the gift in an open state, with the lid on one side.
@@ -65,7 +65,7 @@ init -5 python in jn_gifts:
                 at_list=[],
                 zorder=self.zorder
             )
-
+        
         def empty(self):
             """
             Shows the gift in an empty state.
@@ -75,7 +75,7 @@ init -5 python in jn_gifts:
                 at_list=[],
                 zorder=self.zorder
             )
-
+        
         def close(self):
             """
             Shows the gift with its lid back on.
@@ -86,7 +86,7 @@ init -5 python in jn_gifts:
                 at_list=[],
                 zorder=self.zorder
             )
-
+        
         def hide(self):
             """
             Hides the gift entirely.

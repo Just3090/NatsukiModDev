@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 
 """
 requests.adapters
@@ -215,7 +215,7 @@ class HTTPAdapter(BaseAdapter):
         if url.lower().startswith('https') and verify:
 
             #cert_loc = None
-            cert_loc = "C:\Users\Dan\Downloads\MAS-Submod-Auto-Atmos-Change-master\game\python-packages\certifi\cacert.pem"
+            cert_loc = r"C:\Users\Dan\Downloads\MAS-Submod-Auto-Atmos-Change-master\game\python-packages\certifi\cacert.pem"
             # Allow self-specified cert location.
             if verify is not True:
                 cert_loc = verify

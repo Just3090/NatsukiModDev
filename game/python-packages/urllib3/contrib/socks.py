@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
 This module contains provisional support for SOCKS proxies from within
 urllib3. This module supports SOCKS4 (specifically the SOCKS4A variant) and

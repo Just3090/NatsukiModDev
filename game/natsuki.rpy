@@ -1,8 +1,8 @@
 default persistent._jn_player_confession_accepted = False
-default persistent._jn_player_confession_day_month = None # Format (day, month)
+default persistent._jn_player_confession_day_month = None
 default persistent._jn_natsuki_birthday_known = False
 
-init 0 python:
+init python:
     import codecs
     import datetime
     import store.jn_desk_items as jn_desk_items
@@ -63,33 +63,33 @@ init 0 python:
         ::::ccccccclk0kddxxddddddddddxkO00Okxollcc::;;;;,,,,,,,,,,,,,,,lOKOxolddo0NWWWWWNNNNNNNWWNXkoloddddo
         ::::cccccccclxkxddddxxdddxxdxkkOOOxoollccc::::;;,;;;,,,,,,,,,,;d0xccldkodKWWWWWWNNNNNNNWN0oclddddddo
         """
-
-        # Tracks whether Natsuki is currently in some topic flow
-        __is_in_conversation = False
-
-        # Tracks whether Natsuki is currently playing a game
-        __is_in_game = False
-
-        # Tracks the last time Natsuki went through a topic, idle and menu to prevent sudden dialogue jumps
-        __last_topic_call = datetime.datetime.now()
-        __last_idle_call = datetime.datetime.now()
-        __last_menu_call = datetime.datetime.now()
-
-        __capped_aff_dates = list()
         
-        # Natsuki's desk slots; items are drawn over Natsuki so be wary of overlaps!
-        # Format is [A, B] where A is the displayable to draw and B is a reference name (if any), or None
+        
+        _m1_natsuki__is_in_conversation = False
+        
+        
+        _m1_natsuki__is_in_game = False
+        
+        
+        _m1_natsuki__last_topic_call = datetime.datetime.now()
+        _m1_natsuki__last_idle_call = datetime.datetime.now()
+        _m1_natsuki__last_menu_call = datetime.datetime.now()
+        
+        _m1_natsuki__capped_aff_dates = list()
+        
+        
+        
         _desk_left = [Null(), None]
         _desk_centre = [Null(), None]
         _desk_right = [Null(), None]
-
-        # Whether Natsuki is reading to the left or right of her book for animations: 
-        # We have to cater for both since Natsuki owns books that read both ways
+        
+        
+        
         _is_reading_to_right = False
-
-        # The force quit state; used for some extra handling of consequences around force quits
+        
+        
         _is_force_quit_attempt = None
-
+        
         @staticmethod
         def setDeskItem(item, desk_slot=None):
             """
@@ -106,27 +106,27 @@ init 0 python:
                 image = Image(item.image_path)
                 desk_slot = item.desk_slot
                 reference_name = item.reference_name
-
+            
             elif isinstance(item, basestring):
                 image = Image(item)
                 reference_name = "unknown"
-
+            
             else:
                 image = item
                 reference_name = "unknown"
-
+            
             if desk_slot == jn_desk_items.JNDeskSlots.left:
                 Natsuki._desk_left = [image, reference_name]
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.centre:
                 Natsuki._desk_centre = [image, reference_name]
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.right:
                 Natsuki._desk_right = [image, reference_name]
-
+            
             else:
                 jn_utils.log("Cannot assign item to desk slot {0} as the slot does not exist.".format(desk_slot))
-
+        
         @staticmethod
         def getDeskItemReferenceName(desk_slot):
             """
@@ -141,16 +141,16 @@ init 0 python:
             """
             if desk_slot == jn_desk_items.JNDeskSlots.left:
                 return Natsuki._desk_left[1]
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.centre:
                 return Natsuki._desk_centre[1]
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.right:
                 return Natsuki._desk_right[1]
-
+            
             else:
                 jn_utils.log("Cannot get reference name for desk slot {0} as the slot does not exist.".format(desk_slot))
-
+        
         @staticmethod
         def getDeskItemDisplayable(st, at, desk_slot):
             """
@@ -162,16 +162,16 @@ init 0 python:
             """
             if desk_slot == jn_desk_items.JNDeskSlots.left:
                 return Natsuki._desk_left[0], None
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.centre:
                 return Natsuki._desk_centre[0], None
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.right:
                 return Natsuki._desk_right[0], None
-
+            
             else:
                 jn_utils.log("Cannot get displayable for desk slot {0} as the slot does not exist.".format(desk_slot))
-
+        
         @staticmethod
         def clearDeskItem(desk_slot):
             """
@@ -182,16 +182,16 @@ init 0 python:
             """
             if desk_slot == jn_desk_items.JNDeskSlots.left:
                 Natsuki._desk_left = [Null(), None]
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.centre:
                 Natsuki._desk_centre = [Null(), None]
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.right:
                 Natsuki._desk_right = [Null(), None]
-
+            
             else:
                 jn_utils.log("Cannot clear desk slot {0} as the slot does not exist.".format(desk_slot))
-
+        
         @staticmethod 
         def clearDesk():
             """
@@ -200,7 +200,7 @@ init 0 python:
             Natsuki._desk_left = [Null(), None]
             Natsuki._desk_centre = [Null(), None]
             Natsuki._desk_right = [Null(), None]
-
+        
         @staticmethod
         def getDeskSlotClear(desk_slot):
             """
@@ -213,34 +213,34 @@ init 0 python:
             """
             if desk_slot == jn_desk_items.JNDeskSlots.left:
                 return isinstance(Natsuki._desk_left[0], Null)
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.centre:
                 return isinstance(Natsuki._desk_centre[0], Null)
-
+            
             elif desk_slot == jn_desk_items.JNDeskSlots.right:
                 return isinstance(Natsuki._desk_right[0], Null)
-
+            
             return False
-
-        # START: Outfit functionality
-
-        # Tracks Natsuki's currently worn outfit
+        
+        
+        
+        
         _outfit = None
-
+        
         @staticmethod
         def getOutfitName():
             """
             Returns the reference name of the outfit Natsuki is currently wearing.
             """
             return Natsuki._outfit.reference_name
-
+        
         @staticmethod
         def getOutfit():
             """
             Gets the JNOutfit Natsuki is currently wearing.
             """
             return Natsuki._outfit
-
+        
         @staticmethod
         def setOutfit(outfit, persist=True):
             """
@@ -256,12 +256,12 @@ init 0 python:
             outfit.necklace = jn_outfits.getWearable("jn_none") if not outfit.necklace else outfit.necklace
             outfit.facewear = jn_outfits.getWearable("jn_none") if not outfit.facewear else outfit.facewear
             outfit.back = jn_outfits.getWearable("jn_none") if not outfit.back else outfit.back
-
+            
             Natsuki._outfit = outfit
-
+            
             if persist:
                 store.persistent.jn_natsuki_outfit_on_quit = Natsuki._outfit.reference_name
-
+        
         @staticmethod
         def isWearingOutfit(reference_name):
             """
@@ -274,7 +274,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified outfit, otherwise False
             """
             return Natsuki._outfit.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingClothes(reference_name):
             """
@@ -287,7 +287,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified clothes, otherwise False
             """
             return Natsuki._outfit.clothes.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingHairstyle(reference_name):
             """
@@ -300,7 +300,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified hairstyle, otherwise False
             """
             return Natsuki._outfit.hairstyle.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingAccessory(reference_name):
             """
@@ -313,7 +313,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified accessory, otherwise False
             """
             return Natsuki._outfit.accessory.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingEyewear(reference_name):
             """
@@ -326,7 +326,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified eyewear, otherwise False
             """
             return Natsuki._outfit.eyewear.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingHeadgear(reference_name):
             """
@@ -339,7 +339,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified headgear, otherwise False
             """
             return Natsuki._outfit.headgear.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingNecklace(reference_name):
             """
@@ -352,7 +352,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified necklace, otherwise False
             """
             return Natsuki._outfit.necklace.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingFacewear(reference_name):
             """
@@ -365,7 +365,7 @@ init 0 python:
                 - True if Natsuki is wearing the specified facewear, otherwise False
             """
             return Natsuki._outfit.facewear.reference_name == reference_name
-
+        
         @staticmethod
         def isWearingBack(reference_name):
             """
@@ -378,9 +378,9 @@ init 0 python:
                 - True if Natsuki is wearing the specified back item, otherwise False
             """
             return Natsuki._outfit.back.reference_name == reference_name
-
-        # START: Relationship functionality
-
+        
+        
+        
         @staticmethod
         def getIdleImageTagsForAffinity():
             """
@@ -391,22 +391,22 @@ init 0 python:
             """
             if Natsuki.isEnamored(higher=True):
                 return "natsuki idle enamored"
-
+            
             elif Natsuki.isAffectionate(higher=True):
                 return "natsuki idle affectionate"
-
+            
             elif Natsuki.isHappy(higher=True):
                 return "natsuki idle happy"
-
+            
             elif Natsuki.isNormal(higher=True):
                 return "natsuki idle normal"
             
             elif Natsuki.isDistressed(higher=True):
                 return "natsuki idle distressed"
-
+            
             else:
                 return "natsuki idle ruined"
-
+        
         @staticmethod
         def calculatedAffinityGain(base=1, bypass=False):
             """
@@ -427,30 +427,30 @@ init 0 python:
                 not persistent._jn_player_confession_accepted 
                 and (persistent.affinity + to_add) > (jn_affinity.AFF_THRESHOLD_LOVE -1)
             ):
-                # Player cannot reach LOVE without having confessed to Natsuki successfully
+                
                 persistent.affinity = jn_affinity.AFF_THRESHOLD_LOVE -1
-                jn_utils.log("416666696e69747920626c6f636b6564202d20434e21".decode("hex"))
+                jn_utils.log(bytes.fromhex("416666696e69747920626c6f636b6564202d20434e21").decode("utf-8"))
                 return
-
+            
             if bypass and persistent._affinity_daily_bypasses > 0:
-                # Ignore the daily gain and just award the full affinity
+                
                 persistent.affinity += to_add
                 persistent._affinity_daily_bypasses -= 1
-                jn_utils.log("416666696e6974792b20284229".decode("hex"))
-
+                jn_utils.log(bytes.fromhex("416666696e6974792b20284229").decode("utf-8"))
+            
             elif persistent.affinity_daily_gain > 0:
-                # Award the full affinity if any cap remains
+                
                 persistent.affinity_daily_gain -= to_add
                 persistent.affinity += to_add
-
+                
                 if persistent.affinity_daily_gain < 0:
                     persistent.affinity_daily_gain = 0
-
-                jn_utils.log("416666696e6974792b".decode("hex"))
-
+                
+                jn_utils.log(bytes.fromhex("416666696e6974792b").decode("utf-8"))
+            
             else:
                 Natsuki.writeCap()
-
+        
         @staticmethod
         def calculatedAffinityLoss(base=1):
             """
@@ -460,8 +460,8 @@ init 0 python:
                 - base - The base amount to use for the calculation
             """
             persistent.affinity -= base * jn_affinity.getRelationshipLengthMultiplier()
-            jn_utils.log("416666696e6974792d".decode("hex"))
-
+            jn_utils.log(bytes.fromhex("416666696e6974792d").decode("utf-8"))
+        
         @staticmethod
         def percentageAffinityGain(percentage_gain):
             """
@@ -479,14 +479,14 @@ init 0 python:
             percentage_gain = 10 if percentage_gain > 10 else percentage_gain
             to_add = persistent.affinity * (float(percentage_gain) / 100)
             if (not persistent._jn_player_confession_accepted and (persistent.affinity + to_add) > (jn_affinity.AFF_THRESHOLD_LOVE -1)):
-                # Player cannot reach LOVE without having confessed to Natsuki successfully
+                
                 persistent.affinity = jn_affinity.AFF_THRESHOLD_LOVE -1
-                jn_utils.log("416666696e69747920626c6f636b6564202d20434e21".decode("hex"))
-
+                jn_utils.log(bytes.fromhex("416666696e69747920626c6f636b6564202d20434e21").decode("utf-8"))
+            
             else:
                 persistent.affinity += to_add
-                jn_utils.log("416666696e6974792b".decode("hex"))
-
+                jn_utils.log(bytes.fromhex("416666696e6974792b").decode("utf-8"))
+        
         @staticmethod
         def percentageAffinityLoss(percentage_loss):
             """
@@ -497,39 +497,39 @@ init 0 python:
             """
             if persistent.affinity == 0:
                 persistent.affinity -= (float(percentage_loss) / 10)
-
+            
             else:
                 persistent.affinity -= abs(persistent.affinity * (float(percentage_loss) / 100))
             
-            jn_utils.log("416666696e6974792d".decode("hex"))
-
+            jn_utils.log(bytes.fromhex("416666696e6974792d").decode("utf-8"))
+        
         @staticmethod
         def checkResetDailies():
             """
             Resets the daily affinity cap, if 24 hours has elapsed.
             """
             current_date = datetime.datetime.now() 
-            if current_date in Natsuki.__capped_aff_dates:
+            if current_date in Natsuki._m1_natsuki__capped_aff_dates:
                 return
-
+            
             if not persistent.affinity_gain_reset_date:
                 persistent.affinity_gain_reset_date = current_date
-
+            
             elif current_date.day is not persistent.affinity_gain_reset_date.day:
                 persistent.affinity_daily_gain = 5 * jn_affinity.getRelationshipLengthMultiplier()
                 persistent.affinity_gain_reset_date = current_date
                 persistent._affinity_daily_bypasses = 5
                 persistent._jn_daily_joke_given = False
-                jn_utils.log("4461696c7920616666696e697479206361702072657365743b206e6577206361702069733a".decode("hex") + str(persistent.affinity_daily_gain))
-
+                jn_utils.log(bytes.fromhex("4461696c7920616666696e697479206361702072657365743b206e6577206361702069733a").decode("utf-8") + str(persistent.affinity_daily_gain))
+        
         @staticmethod
         def writeCap():
-            jn_utils.log("4461696c7920616666696e69747920636170207265616368656421".decode("hex"))
-            if not datetime.datetime.today().isoformat() in Natsuki.__capped_aff_dates:
-                Natsuki.__capped_aff_dates.append(datetime.datetime.today().isoformat())
-
+            jn_utils.log(bytes.fromhex("4461696c7920616666696e69747920636170207265616368656421").decode("utf-8"))
+            if not datetime.datetime.today().isoformat() in Natsuki._m1_natsuki__capped_aff_dates:
+                Natsuki._m1_natsuki__capped_aff_dates.append(datetime.datetime.today().isoformat())
+        
         @staticmethod
-        def __isStateGreaterThan(aff_state):
+        def _m1_natsuki__isStateGreaterThan(aff_state):
             """
             Internal method to check if Natsuki's current affinity state is greater than the given amount
             """
@@ -537,9 +537,9 @@ init 0 python:
                 Natsuki._getAffinityState(),
                 (aff_state, None)
             )
-
+        
         @staticmethod
-        def __isStateLessThan(aff_state):
+        def _m1_natsuki__isStateLessThan(aff_state):
             """
             Internal method to check if Natsuki's current affinity state is less than or equal to the given amount
             """
@@ -547,9 +547,9 @@ init 0 python:
                 Natsuki._getAffinityState(),
                 (None, aff_state)
             )
-
+        
         @staticmethod
-        def __isAff(aff_state, higher=False, lower=False):
+        def _m1_natsuki__isAff(aff_state, higher=False, lower=False):
             """
             Internal comparison to check if Natsuki's current affection matches the given state,
             or is lower/higher as specified by arguments
@@ -561,20 +561,20 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            #For completion, if both higher and lower are true, we should just return True as
-            #The given aff_state must be within the range
+            
+            
             if higher and lower:
                 return True
-
+            
             if higher:
-                return Natsuki.__isStateGreaterThan(aff_state)
-
+                return Natsuki._m1_natsuki__isStateGreaterThan(aff_state)
+            
             elif lower:
-                return Natsuki.__isStateLessThan(aff_state)
-
+                return Natsuki._m1_natsuki__isStateLessThan(aff_state)
+            
             return Natsuki._getAffinityState() == aff_state
-
-        #START: Natsuki's Affection State checks
+        
+        
         @staticmethod
         def isRuined(higher=False, lower=False):
             """
@@ -586,8 +586,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.RUINED, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.RUINED, higher, lower)
+        
         @staticmethod
         def isBroken(higher=False, lower=False):
             """
@@ -599,8 +599,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.BROKEN, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.BROKEN, higher, lower)
+        
         @staticmethod
         def isDistressed(higher=False, lower=False):
             """
@@ -612,8 +612,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.DISTRESSED, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.DISTRESSED, higher, lower)
+        
         @staticmethod
         def isUpset(higher=False, lower=False):
             """
@@ -625,8 +625,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.UPSET, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.UPSET, higher, lower)
+        
         @staticmethod
         def isNormal(higher=False, lower=False):
             """
@@ -638,8 +638,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.NORMAL, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.NORMAL, higher, lower)
+        
         @staticmethod
         def isHappy(higher=False, lower=False):
             """
@@ -651,8 +651,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.HAPPY, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.HAPPY, higher, lower)
+        
         @staticmethod
         def isAffectionate(higher=False, lower=False):
             """
@@ -664,8 +664,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.AFFECTIONATE, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.AFFECTIONATE, higher, lower)
+        
         @staticmethod
         def isEnamored(higher=False, lower=False):
             """
@@ -677,8 +677,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.ENAMORED, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.ENAMORED, higher, lower)
+        
         @staticmethod
         def isLove(higher=False, lower=False):
             """
@@ -690,8 +690,8 @@ init 0 python:
                 lower - bool, if Natsuki's affection can be less than the current state
                     (Default: False)
             """
-            return Natsuki.__isAff(jn_affinity.LOVE, higher, lower)
-
+            return Natsuki._m1_natsuki__isAff(jn_affinity.LOVE, higher, lower)
+        
         @staticmethod
         def _getAffinityState():
             """
@@ -711,7 +711,7 @@ init 0 python:
                 OUT:
                     current affinity state
             """
-            #iterate through all thresholds
+            
             i = 1
             for threshold in [
                 jn_affinity.AFF_THRESHOLD_LOVE,
@@ -724,46 +724,46 @@ init 0 python:
                 jn_affinity.AFF_THRESHOLD_BROKEN,
                 jn_affinity.AFF_THRESHOLD_RUINED
             ]:
-                #if affinity is higher than threshold return it's state
-                #else check lower threshold
+                
+                
                 if jn_affinity._compareAffThresholds(persistent.affinity, threshold) >= 0:
                     return jn_affinity._AFF_STATE_ORDER[-i]
-
-                # We can't go any further beyond ruined; return it
+                
+                
                 if threshold == jn_affinity.AFF_THRESHOLD_RUINED:
                     return jn_affinity._AFF_STATE_ORDER[0]
-
+                
                 i += 1
-
+        
         def _getAffinityTierName():
             affinity_state = Natsuki._getAffinityState()
             if affinity_state == jn_affinity.ENAMORED:
                 return "LOVE"
-
+            
             elif affinity_state == jn_affinity.ENAMORED:
                 return "ENAMORED"
-
+            
             elif affinity_state == jn_affinity.AFFECTIONATE:
                 return "AFFECTIONATE"
-
+            
             elif affinity_state == jn_affinity.HAPPY:
                 return "HAPPY"
-
+            
             elif affinity_state == jn_affinity.NORMAL:
                 return "NORMAL"
-
+            
             elif affinity_state == jn_affinity.UPSET:
                 return "UPSET"
-
+            
             elif affinity_state == jn_affinity.DISTRESSED:
                 return "DISTRESSED"
-
+            
             elif affinity_state == jn_affinity.BROKEN:
                 return "BROKEN"
-
+            
             elif affinity_state == jn_affinity.RUINED:
                 return "RUINED"
-
+            
             else:
                 store.jn_utils.log(
                     message="Unable to get tier name for affinity {0}; affinity_state was {1}".format(
@@ -773,9 +773,9 @@ init 0 python:
                     logseverity=store.jn_utils.SEVERITY_WARN
                 )
                 return "UNKNOWN"
-
-        # START: Dialogue functionality
-
+        
+        
+        
         @staticmethod
         def getForceQuitAttempt():
             """
@@ -793,7 +793,7 @@ init 0 python:
                 - force_quit - The bool force quit attempt state to set
             """
             Natsuki._is_force_quit_attempt = force_quit
-
+        
         @staticmethod
         def addApology(apology_type):
             """
@@ -805,17 +805,17 @@ init 0 python:
             """
             if not isinstance(apology_type, int) and not isinstance(apology_type, jn_apologies.ApologyTypes):
                 raise TypeError("apology_type must be of types int or jn_apologies.ApologyTypes")
-
+            
             if not int(apology_type) in store.persistent._jn_player_pending_apologies:
                 store.persistent._jn_player_pending_apologies.append(int(apology_type))
-
+        
         @staticmethod
         def getQuitApology():
             """
             Gets the jn_apologies.ApologyTypes type to be checked on loading the game after quitting, or None if not set.
             """
             return jn_apologies.ApologyTypes(store.persistent._jn_player_apology_type_on_quit) if store.persistent._jn_player_apology_type_on_quit is not None else None
-
+        
         @staticmethod
         def setQuitApology(apology_type):
             """
@@ -826,16 +826,16 @@ init 0 python:
             """
             if not isinstance(apology_type, int) and not isinstance(apology_type, jn_apologies.ApologyTypes):
                 raise TypeError("apology_type must be of types int or jn_apologies.ApologyTypes")
-
+            
             store.persistent._jn_player_apology_type_on_quit = int(apology_type)
-
+        
         @staticmethod
         def clearQuitApology():
             """
             Clears the quit apology type to be checked on loading the game after quitting.
             """
             store.persistent._jn_player_apology_type_on_quit = None
-
+        
         @staticmethod
         def removeApology(apology_type):
             """
@@ -846,10 +846,10 @@ init 0 python:
             """
             if not isinstance(apology_type, int) and not isinstance(apology_type, jn_apologies.ApologyTypes):
                 raise TypeError("apology_type must be of types int or jn_apologies.ApologyTypes")
-
+            
             if int(apology_type) in store.persistent._jn_player_pending_apologies:
                 store.persistent._jn_player_pending_apologies.remove(int(apology_type))
-
+        
         @staticmethod
         def setInConversation(is_in_conversation):
             """
@@ -862,9 +862,9 @@ init 0 python:
             """
             if not isinstance(is_in_conversation, bool):
                 raise TypeError("is_in_conversation must be of type bool")
-
-            Natsuki.__is_in_conversation = is_in_conversation
-
+            
+            Natsuki._m1_natsuki__is_in_conversation = is_in_conversation
+        
         @staticmethod
         def setInGame(is_in_game):
             """
@@ -877,9 +877,9 @@ init 0 python:
             """
             if not isinstance(is_in_game, bool):
                 raise TypeError("is_in_game must be of type bool")
-
-            Natsuki.__is_in_game = is_in_game
-
+            
+            Natsuki._m1_natsuki__is_in_game = is_in_game
+        
         @staticmethod
         def isInConversation():
             """
@@ -889,8 +889,8 @@ init 0 python:
             OUT:
                 - True if in conversation, otherwise False
             """
-            return Natsuki.__is_in_conversation
-
+            return Natsuki._m1_natsuki__is_in_conversation
+        
         @staticmethod
         def isInGame():
             """
@@ -900,50 +900,50 @@ init 0 python:
             OUT:
                 - True if in game, otherwise False
             """
-            return Natsuki.__is_in_game
-
+            return Natsuki._m1_natsuki__is_in_game
+        
         @staticmethod
         def getLastTopicCall():
             """
             Gets the time of the last topic call.
             """
-            return Natsuki.__last_topic_call
-
+            return Natsuki._m1_natsuki__last_topic_call
+        
         @staticmethod
         def getLastIdleCall():
             """
             Gets the time of the last idle call.
             """
-            return Natsuki.__last_idle_call
-
+            return Natsuki._m1_natsuki__last_idle_call
+        
         @staticmethod
         def getLastMenuCall():
             """
             Gets the time of the last menu call.
             """
-            return Natsuki.__last_menu_call
-
+            return Natsuki._m1_natsuki__last_menu_call
+        
         @staticmethod
         def resetLastTopicCall():
             """
             Sets the time of the last topic call to the current time.
             """
-            Natsuki.__last_topic_call = datetime.datetime.now()
-
+            Natsuki._m1_natsuki__last_topic_call = datetime.datetime.now()
+        
         @staticmethod
         def resetLastIdleCall():
             """
             Sets the time of the last idle call to the current time.
             """
-            Natsuki.__last_idle_call = datetime.datetime.now()
-
+            Natsuki._m1_natsuki__last_idle_call = datetime.datetime.now()
+        
         @staticmethod
         def resetLastMenuCall():
             """
             Sets the time of the last menu call to the current time.
             """
-            Natsuki.__last_menu_call = datetime.datetime.now()
-
+            Natsuki._m1_natsuki__last_menu_call = datetime.datetime.now()
+        
         @staticmethod
         def getMouseIsLeft():
             """
@@ -951,7 +951,7 @@ init 0 python:
             """
             current_mouse_pos = renpy.get_mouse_pos()[0]
             return current_mouse_pos > 0 and current_mouse_pos < 520
-
+        
         @staticmethod
         def getMouseIsRight():
             """
@@ -959,7 +959,7 @@ init 0 python:
             """
             current_mouse_pos = renpy.get_mouse_pos()[0]
             return current_mouse_pos > 760
-
+        
         @staticmethod
         def getMouseIsAbove():
             """
@@ -975,7 +975,7 @@ init 0 python:
             """
             current_mouse_pos = renpy.get_mouse_pos()[1]
             return current_mouse_pos > 370
-
+        
         @staticmethod
         def getIsReadingToRight():
             """
@@ -994,54 +994,3 @@ init 0 python:
                 - is_reading_from_right - bool reading from right value to set
             """
             Natsuki._is_reading_to_right = is_reading_from_right
-
-# KWWWMMMMMMMWNNNNNNXXXKKKKK00KKXXKKK0KK0000KKKKKK000Okkxdoodk0KKKKKXKKKK0000KOxoccdkko;,cOX00XXXXXXXX
-# KNWWWWWMMWWNNNNNXXXXXXXXKKKKKXXXXXXKKKKXXXXXXXKKKXXKKKKKKXKKKXXK00KKKKKKK000OxOOdclxOx:;kXOxKXXXXXKK
-# KNWWWWWWNXKXNNNNNNNNNNXXXXXXXXXXXXXXXXXXXXXXXXXKKKXKKKKKKXXKXXXXXKKKKKKKKKK00Ok0KOo:oxddOXkdOXXXXXKK
-# KNWWWNNNXKXNWWWWWNNXXNNXXXXXXXXXXXXXXXXXXXXXXXXKKKKKXKKKKKXXXNNNXXXXKKKKKKKKK0000KKx:cdkK0olx0XXXXKK
-# 0NWWNNNNWWWWWNXKXNXXNNNXXXXXXXXXXXXXXXXXXXXXXXXXXXKKKXXKKKKKXNNXXXXXXXXKKKKKKK00OO00x:l0KkooxOXXXKK0
-# 0NNNNXXNWWN0kdxOKKKXNXKKXXXXXXXXXXXXXXXXXXXXXXXXXXXKKKKXKKK00XXNXXXXXXXXXXKK000000OOOkOxdxkkk0XXKKK0
-# 0XKXNNNNKkolcd0KKKXXXKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXKKKKXXXKOOXNXXXKKXXXXXXXKK00000OkOx:lkkkOKXXKK0O
-# kdkXNNN0occokKK0KKK0KXXXXKKKXXXXXXXXXXXXXXXXXXXXXXXXKKKKKXXKKOk0KXKKKKKXXXXXXKKK0OOO0OkxkOkkKXXKKKOx
-# loOXNNXOlco0XK000K00KNNK0KKKXXXXXXXXXXXKKKXXXXXXXXKXXKKXXXK0KX0kkKXKK00KXXXXXXXXKK00000OOkk0XKKK0Odl
-# lx0KXXXkcd0XK000000KXXX00KXKXXXKXXXXXXXKKKKXXXXXXXXXKKKXXXN0OKK0xk0KKK0OKXXXKXXXXKKK0000kk0KK000kooo
-# ok00XXKxd0X000000O0KXK00KXXKXXKKKXXXXXXKKKKKKKXXXXXXKKXNXNXkx0XKOxk0KKKOO0KXXXXXXKKXK0000KKK0Okdlooo
-# O000KK0OKX0O000OOOKXK0OKNNXKKXK0KKXXXXKKKXXKXXXXXXXXKKNNNKkxkOKKOkkOKKK0kk0KKXXXXXXKK0000Oxxdolloodx
-# 00OO0KKXNKO00OOOOOKK0O0XNNNXXX00KXXKKXXKXXKXXXXXXNNX0KNX0kxkOO0KOOK00KKKOkkO0KKXXKK0OOOOkdoloddxxkkk
-# 0Okk0KKNXOO00OOkkOK0OO0KXNNNNN00XXXXXXXXXXNNXNNNNNNK0KX0kxk0K000OKNX00000kxkO0KXKXKKKKKK00OxxkOkkkkk
-# 0kkO0KKNKOO0OOkkkOOOkO0KKKXXNX0KNNNNNNNWWWNXNNNNNKOk0K0kxxx0KOkxkKXX00OOOkOOkkOKXXXKKKKKKK0OxkkOOOOO
-# 0Okk0KXX0kO0OkxxxkkkkO00KKXXXKOKNNNNXXNNNNXXXXXKKkxkOkxxdx0XN0xxKNNNXK0kxkKNKOkOKXXKK0KXKK00kxkOkOOO
-# 00OkOKXXOk00OkxxxkxxkO0OOKKKK0O0XKKKKKKKKKKKXKKKOxoxxxkxkKNWW0d0WWWMWNXOdkNWWN0kOKXKK0KXKXK0Oxk00Okk
-# XKOkOKXXOk00OxxxxkxxkOOOOO0KKOO0K0xkKXKK0KKXXK0Oxxxxxxxx0XWWNOONWMMMMNNXk0WWMWWX0KXKK00KXKKOkxxOK0Ok
-# NXOkk0XXOk00OxxxxkxxkkOOkkO00kk00x;:d000KXKKK0OkxxxdddxOXWWWNNNWMMMWWWWWKXWMWWWWX0KKKOOKXKKkddxkKK0O
-# WX0kxONN0k00OkxxxkxxkkkkkkOOkxkOOd;,::lkKKK0OkkxddxddxOKNWWWWMMWWWMMWMWWWWWMWWWWNK0KKOkKXKKkodxx0KKO
-# WN0kOKWN0k00OkxxxkxxxkkkkkkOxdkO0Oc:dd:;cldkxkkdddooxOKNWMMWMMMMMMWWWWMMMWWWWWWWWXKKKkdOXK0xldkkOKK0
-# NXkOKXWNKOO00kxxxxxxxxxkkkkkxdk00Oc,oxo:,..,lxdodxxkO0XWWMMMMMWWWWWWWWWWMWWWWWWWWWKK0xokK0OxloOOk0KK
-# X0dkKXWWXOO00Oxdxxxdxxxxxkkxlcllc:,.';;::::ldodkOOO00XWWMWWWWWWWWWWWWNXK000O000KNWX0Odlk0OkxdxKOkOKK
-# KOxokKWNX0O00Oxddxxddxddxxxo;',:ldl';xOkkxkxdxO00000KNWMMWWWWWWWNKxl:,'..''';:d0NWX0kolxOxkOkOK0kkKK
-# K0Oxd0NNNKkO00kooxddoddodddxo:,;lxx:'okxxkkkO00000KKNWWMMWWWWNN0d:;:ldkOO0000XNWWWXkdllxkk000KKOxk0K
-# K0OOOKNXXXOkO00xodddoolldxxddxdc,,:;.;dxOO000000KKXNWWMWMWWWWWKxkKNWWWWWWWWWWWWWWW0ddllxk0XKKKKkokKX
-# kOOO0XX0KX0xkO0Ododdlloxxxdxkkkkdl;''cxOO00000KKKXNWWWWWWWWWWWNNWWWWMWWWWWWWWWWWWXkxdcdOKKKKKK0doOKK
-# okOO0N0kKXKkxO00OdoooxxxxxkkkkkkxdlldkO0000KKKKKNWWWWWWWWWWWWWWWWWWWWWWWWWWNNNNNN0OOdd0KKKKKKKOoo0XK
-# okOk0XOx0XX0xxk0OkddxddxxxxxkkxdoodkkkkO00KKKKXNWWWWWMMWWWWWWWWWWWWWWWWWNNNNXXXNXXKkx0K00KKKKKkokKXK
-# oxOOKKOk0XXKOxxkkkdoodxxxxxxxdlldxkOOO000KKKKXNWWMMMWWMWWWWWWWWWWWWWWWNNNXXXXXXNNN0k00OOKKKKK0xxKKKK
-# lxkO0OkkOXXK0xdxdodxxxxxxxdolldxkOOOOkkkkO0KXXNWWWWWWWMMWWWWWWWWWWWWWWNNNNXXXXNNNX000kk0KKK000OKK0Ok
-# lxkkkkkkkKK0kdlldxkxxxxdollloxkkkxo:,',clxOKXNWWWWWWWWWWWWWWWWWWWWWWWWNNNNNNNNNNX00K0kOKKK0000K0kxdo
-# cdxxkkkxxO0OOxdxkkxxdolc:codkkkxc...;oxOKKXXNWWWWWWWWWWWWWWWWWWWWWWWWNWNNNNNNWWNXKNXOkOK0OOkkkxddooo
-# :lxxxxxxxOK0OOOkxdolccllododkkd;.'cx0KKKKXXNWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWN0xx0K0kkxdxxxxood
-# :oxxxxxxxkOkkxdlc:;;clloxkkxxxddxk0KKKKKKXNWWWWWWNXXNWWWWWWWWWWWWWWWWWWWWWWWWWWWWN0ddOKK0Okxkkxdooxx
-# :oxdddddxxkkxxl::::;;cclodxkxdodxkO0KKKXXNNWWWWWWXXXNWWWWWWWWWWWWNN0OXWWWWWWWWWWNOddk00Okxxkxdooxkkx
-# 'cddddddddOK00xlcc:;;::ccodxxxdolok0KKXXNNWWWWWWWWWWWMWWWWWWWNXKOkOkxKWWWWWWWWWKkodkO0kxddxxxllxxxkk
-# .:oooddoddx0XKkoccc:;::::clodxxkkxkkO0KXNNWWWWWWWMMMWWMMWWXOddxkkOOOOKWWWWWWWXOdoxkOOkxdxdckNkcokxxk
-# .:oooooooooOXX0dlllc:cccccccllllloodooxKXNNWWWWMWWWMMWWNOl,.:xOOOOOO0NWWWWWN0dooxkkOOkkkOkkKNOdxOxxk
-# .:oollllloldKXKkolllccccclcclllllllc:clxKNNWWWWMMWMMMWWNOl;,lOOOOO00XWWWWN0xoodxxkkOOOOO0KNNN0dkOxox
-# .;::::ccclcckNX0doooollllllllllooddolccclxKNWMMMMMMMMMMMWWNK0KKKKXNWWWWNKdllodxkkkOOO0KXNNNNNOdxkxod
-# ',,,,,;;:l:,l0NXOxdddooooooolllloddxxddxxdk0KXWMMMMMMMMMWWWWWWWWWWWWWNX0l;codxkO0KKXNWMMWWWNXkdxkxol
-# ',,,,,,;;cc;,oKXK0kxxdddddddddxdoooxxxxxOOxdlcodxkOO0KXNNNWNNNXXXXXXXKOOdldO0KXNWWMMMMMMMMMWOodxxdoo
-# '''',,,,;;::::xKXOOOkxxddxxdddxkOOOOOOOxolc::;;,,''',;:cccclccclkKKKOxdoxXWWMMMMMMMMMMMMMMNkloxxdoox
-# ''''''''''',;;;lOOolxxxxxxxxdddxkkO0Oxdollc::;;;,,,,,,,,'',,,,,oKX0xodxdOWMMMMMMMMMMMMMWXkolddddoodd
-# ''...........''',clccodxxxddddddxkkxdooollcc::;;,,,,,,,'',,''';dxc;cxOddXMMMMMMMMMMMMWKkdlodddddoodd
-# '''''''''''''',,,,,;:lxkkkkxxxdxkxxxdoolllcc::;;,;;,,,,....'..''..,:lo:xWMMMMMMMMMWX0xdodddddddooddd
-# '''''''''''',',,,,,,;lxkkOOOOkkkkxxxdoollcc::;;;,,,,,,'..''',,'..,oo:cxXMMMMMMWWX0kdododdddoddoldddd
-# '',,'''''''''',,,;;,:ldkkkkkkkkxxddddoollcc::,,;,,,,,,....':llc,'o0KxcOMMMWNX0Oxdooooooddddddoloddoo
-# '',,,,,,''',,:codkkOO00OkOOkxxxxddddooollccc:;,;,,,,,,....':dkd;:0XXOckWNKOxdooooooooooodddooooddooo

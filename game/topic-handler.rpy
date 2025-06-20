@@ -3,7 +3,7 @@ init python in topic_handler:
 
     normal_topic_map = dict()
 
-    #Add to this as needed for more databases
+
     TOPIC_CODE_MAP = {
         store.TOPIC_TYPE_GREETING: store.jn_greetings.GREETING_MAP,
         store.TOPIC_TYPE_FAREWELL: store.jn_farewells.FAREWELL_MAP,
@@ -17,13 +17,13 @@ init python in topic_handler:
 init 6 python in topic_handler:
     ALL_TOPIC_MAP = dict()
 
-    #Add everything to the all-in-one map
+
     for topic_map in TOPIC_CODE_MAP.values():
         ALL_TOPIC_MAP.update(topic_map)
 
 init 6 python:
     import random
-    #Now let's define some utility functions
+
     def get_topic(topic_label):
         """
         Gets a Topic object by its label

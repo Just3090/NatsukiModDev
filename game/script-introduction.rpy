@@ -1,6 +1,6 @@
 default persistent._jn_player_profanity_during_introduction = False
 
-init 0 python in jn_introduction:
+init python in jn_introduction:
     from Enum import Enum
     import random
     import store
@@ -16,7 +16,7 @@ init 0 python in jn_introduction:
         calmed_down = 4
         acceptance = 5
         complete = 6
-
+        
         def __int__(self):
             return self.value
 
@@ -34,7 +34,7 @@ default persistent.jn_introduction_state = 1
 label introduction_progress_check:
     $ Natsuki.setOutfit(jn_outfits.getOutfit("jn_school_uniform"))
 
-    # Handling for if player decides to quit during the introduction sequence so we don't skip unseen segments
+
     if not jn_introduction.JNIntroductionStates(persistent.jn_introduction_state) == jn_introduction.JNIntroductionStates.new_game:
         $ config.allow_skipping = False
         $ n.display_args["callback"] = jnNoDismissDialogue
@@ -44,7 +44,7 @@ label introduction_progress_check:
 
         $ main_background.show()
         $ jn_atmosphere.showSky(jn_atmosphere.WEATHER_GLITCH, with_transition=False)
-        show natsuki idle introduction at jn_center zorder JN_NATSUKI_ZORDER
+        show natsuki idle introduction zorder JN_NATSUKI_ZORDER at jn_center
         $ jnPause(0.25)
         hide glitch_garbled_a
         play music audio.space_classroom_bgm fadein 1
@@ -59,17 +59,17 @@ label introduction_opening:
     show black zorder JN_BLACK_ZORDER
     $ jnPause(5)
 
-    # Restore attempt #1..
-    # NOTE: We use non-standard menus in this sequence, as the default menu is offset and we need these centred.
-    # Only use this menu code if a non-standard menu is required!
-    $ renpy.display_menu(items=[ ("Restore natsuki.chr", True)], screen="choice_centred_mute")
+
+
+
+    $ renpy.display_menu(items=[ (_("Restore natsuki.chr"), True)], screen="choice_centred_mute")
     play audio static
     show glitch_garbled_a zorder JN_GLITCH_ZORDER with vpunch
     hide glitch_garbled_a
     $ jnPause(5)
 
-    # Restore attempt #2..
-    $ renpy.display_menu(items=[ ("Restore natsuki.chr", True)], screen="choice_centred_mute")
+
+    $ renpy.display_menu(items=[ (_("Restore natsuki.chr"), True)], screen="choice_centred_mute")
     play audio static
     show glitch_garbled_b zorder JN_GLITCH_ZORDER with vpunch
     $ jnPause(0.25)
@@ -81,8 +81,8 @@ label introduction_opening:
     hide glitch_garbled_a
     $ jnPause(7)
 
-    # Restore attempt #3..
-    $ renpy.display_menu(items=[ ("Restore natsuki.chr", True)], screen="choice_centred_mute")
+
+    $ renpy.display_menu(items=[ (_("Restore natsuki.chr"), True)], screen="choice_centred_mute")
     play audio static
     show glitch_garbled_c zorder JN_GLITCH_ZORDER with vpunch
     $ jnPause(0.25)
@@ -114,17 +114,17 @@ label introduction_opening:
     play sound interference loop
     $ jnPause(1.5)
 
-    # Restore finally works
+
     stop sound
     hide sky glitch_fuzzy
     play audio static
     show glitch_garbled_a zorder JN_GLITCH_ZORDER with vpunch
 
-    # Get the visuals ready
+
     $ Natsuki.setOutfit(jn_outfits.getOutfit("jn_school_uniform"))
     $ main_background.show()
     $ jn_atmosphere.showSky(jn_atmosphere.WEATHER_GLITCH, with_transition=False)
-    show natsuki idle introduction at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki idle introduction zorder JN_NATSUKI_ZORDER at jn_center
     pause 0.25
     hide black
     hide glitch_garbled_a
@@ -133,7 +133,7 @@ label introduction_opening:
     jump introduction_first_meeting
 
 label introduction_first_meeting:
-    # Natsuki is yanked back into existence and reacts accordingly, before calming enough to ask if anyone is there
+
     $ persistent.jn_introduction_state = int(jn_introduction.JNIntroductionStates.first_meeting)
     n 4uscsctsc "AAAAAaaaaAAAAHHH!"
     n 4uskwrtsc "S-{w=0.1}somebody!{w=0.5} ANYBODY?!{w=0.5} HELP!{w=0.5}{nw}"
@@ -212,16 +212,16 @@ label introduction_first_meeting:
     n 4kplsf "It's all...{w=0.3} so foggy...{w=1}{nw}"
     extend 4kcsun " I just...{w=0.3} can't...{w=0.3} remember..."
     show natsuki 4kcsem
-    
+
     menu:
         "I'm...":
             pass
 
-    # Name input
+
     $ name_given = False
     while not name_given:
         $ player_name = renpy.input(
-            "What is your name?",
+            _("What is your name?"),
             allow=(jn_globals.DEFAULT_ALPHABETICAL_ALLOW_VALUES+jn_globals.DEFAULT_NUMERICAL_ALLOW_VALUES),
             length=15
         ).strip()
@@ -229,7 +229,7 @@ label introduction_first_meeting:
         if len(player_name) == 0:
             n 4kskem "P-{w=0.3}please!{w=1} Who are you?!"
 
-        elif jn_nicknames.getPlayerNicknameType(player_name) != jn_nicknames.NicknameTypes.neutral:            # We only apply penalty once here so we don't have to rewrite the whole sequence for diff aff/trust levels
+        elif jn_nicknames.getPlayerNicknameType(player_name) != jn_nicknames.NicknameTypes.neutral:
             if persistent._jn_player_profanity_during_introduction:
                 play audio static
                 show glitch_garbled_a zorder JN_GLITCH_ZORDER with hpunch
@@ -237,14 +237,14 @@ label introduction_first_meeting:
                 n 4fscan "ENOUGH!{w=2}{nw}"
                 n 2fcsun "...{w=2}{nw}"
                 n 2fcsfu "Who{w=0.5} {i}are{/i}{w=0.5} you?!"
-
             else:
+
                 n 4fscem "E-{w=0.3}excuse me?!"
                 n 4fcsan "Quit playing around,{w=0.3} you jerk!{w=1}{nw}"
                 extend 2fcsup " I am {i}not{/i} calling you that!"
                 $ persistent._jn_player_profanity_during_introduction = True
-
         else:
+
             python:
                 persistent.playername = player_name
                 player = persistent.playername
@@ -260,7 +260,7 @@ label introduction_first_meeting:
     jump introduction_collecting_thoughts
 
 label introduction_collecting_thoughts:
-    # Natsuki tries to get to grips with her new state
+
     $ persistent.jn_introduction_state = int(jn_introduction.JNIntroductionStates.collecting_thoughts)
     $ jn_activity.taskbarFlash()
 
@@ -339,7 +339,7 @@ label introduction_collecting_thoughts:
     jump introduction_calmed_down
 
 label introduction_calmed_down:
-    # Natsuki is calm enough to begin talking about how she feels
+
     $ persistent.jn_introduction_state = int(jn_introduction.JNIntroductionStates.calmed_down)
     $ jn_activity.taskbarFlash()
 
@@ -363,8 +363,8 @@ label introduction_calmed_down:
             n 4kcseml "...Thanks."
             n 1ncspu "...{w=5}{nw}"
             n 1nplsr "..."
-
         "...":
+
             n 1fcsun "...{w=7}{nw}"
             n 1nplsr "..."
 
@@ -406,7 +406,7 @@ label introduction_calmed_down:
     jump introduction_acceptance
 
 label introduction_acceptance:
-    # Natsuki starting to accept her situation and make the most of it
+
     $ persistent.jn_introduction_state = int(jn_introduction.JNIntroductionStates.acceptance)
     $ jn_activity.taskbarFlash()
 
@@ -449,7 +449,7 @@ label introduction_acceptance:
     jump introduction_exit
 
 label introduction_exit:
-    # Setup before entering JN proper
+
     $ persistent.jn_introduction_state = int(jn_introduction.JNIntroductionStates.complete)
 
     python:

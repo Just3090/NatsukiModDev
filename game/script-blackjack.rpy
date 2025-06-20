@@ -1,33 +1,33 @@
 default persistent._jn_blackjack_unlocked = False
 default persistent._jn_blackjack_explanation_given = False
 
-# Win records
+
 default persistent._jn_blackjack_player_wins = 0
 default persistent._jn_blackjack_natsuki_wins = 0
 default persistent._jn_blackjack_player_streak = 0
 default persistent._jn_blackjack_natsuki_streak = 0
 default persistent._jn_blackjack_player_best_streak = 0
 
-# How JN blackjack works:
-# ---
-# Both Natsuki and the player start with a hand of two random cards; Natsuki's first card is always hidden until the game ends
-# Player can stay or hit each round, with up to 5 cards in hand (3 total hits maximum)
-# Natsuki will stay or hit based on probability and her own risk level
-# If player or Nat goes over 21, they bust and lose
-# If player or Nat gets 21 exactly:
-# - They win automatically on the turn they get 21
-# - If they have only two cards, it's a blackjack - otherwise, it's a 21
-# Otherwise, win goes to whoever gets closest to 21 after drawing all cards, or if both players stay on the same turn
-# Aces are considered as having value of 11, unless they'd cause Natsuki/the player to bust immediately on getting their hand (in which case, they equal 1)
-# ---
 
-init 0 python in jn_blackjack:
+
+
+
+
+
+
+
+
+
+
+
+
+init python in jn_blackjack:
     from Enum import Enum
     import random
     import store
     import time
 
-    # In-game tracking
+
     _controls_enabled = False
     _is_player_turn = None
     _is_player_committed = False
@@ -37,7 +37,7 @@ init 0 python in jn_blackjack:
     _player_staying = False
     _rounds = 0
 
-    # Collections of cards involved in the game
+
     _deck = []
     _natsuki_hand = []
     _player_hand = []
@@ -77,20 +77,20 @@ init 0 python in jn_blackjack:
         del _deck[:]
         del _player_hand[:]
         del _natsuki_hand[:]
-
+        
         global _is_player_committed
         global _controls_enabled
         global _game_state
         global _player_staying
         global _natsuki_staying
-
+        
         _is_player_committed = False
         _controls_enabled = None
         _game_state = None
         _player_staying = False
         _natsuki_staying = False
-
-        # Generate all possible card combinations based on suits and values; unlike Snap this should include K/Q/J
+        
+        
         for card_suit in [
             "clubs",
             "diamonds",
@@ -99,40 +99,40 @@ init 0 python in jn_blackjack:
         ]:
             for card_number in range(1, 14):
                 card_value = card_number
-
+                
                 if card_value == 1:
-                    # Aces are considered eleven unless it would cause an instant loss
+                    
                     card_value = 11
-
+                
                 else:
-                    # All face cards are considered to have a value of ten, so we cap
+                    
                     card_value = 10 if card_value > 10 else card_value
-
+                
                 _deck.append(["mod_assets/games/cards/{0}/{1}.png".format(card_suit, card_number), card_value])
-
+        
         random.shuffle(_deck)
-
-        # Assign each player their starting hand
+        
+        
         _player_hand.append(_deck.pop(0))
         _player_hand.append(_deck.pop(0))
-
+        
         _natsuki_hand.append(_deck.pop(0))
         _natsuki_hand.append(_deck.pop(0))
-
-        # Set aces to one if they would result in an instant bust for Natsuki
+        
+        
         if _getHandSum(is_player=False) > 21:
             for card in _natsuki_hand:
                 card[1] = 1 if card[1] == 11 else card[1]
-
-        # Set aces to one if they would result in an instant bust for the player
+        
+        
         if _getHandSum(is_player=True) > 21:
             for card in _player_hand:
                 card[1] = 1 if card[1] == 11 else card[1]
-
-        # Player always moves first
+        
+        
         global _is_player_turn
         _is_player_turn = True
-
+        
         return
 
     def _stayOrHit(is_player, is_hit):
@@ -146,31 +146,31 @@ init 0 python in jn_blackjack:
             - is_hit - bool flag for whether the move is a hit (drawing a card). If False, it is a stay.
         """
         global _is_player_turn
-
+        
         if is_player:
-            # Player's turn
+            
             if is_hit:
                 _player_hand.append(_deck.pop())
                 renpy.play("mod_assets/sfx/card_flip_{0}.ogg".format(random.choice(["a", "b", "c"])))
-
+            
             _is_player_turn = False
             global _player_staying
             global _is_player_committed
             _player_staying = not is_hit
             _is_player_committed = True
-
+        
         else:
-            # Natsuki's turn
+            
             if is_hit:
                 _natsuki_hand.append(_deck.pop())
                 renpy.play("mod_assets/sfx/card_flip_{0}.ogg".format(random.choice(["a", "b", "c"])))
-
+            
             _is_player_turn = True
             global _natsuki_staying
             _natsuki_staying = not is_hit
-
+        
         _checkWinConditions()
-
+        
         return
 
     def _checkWinConditions():
@@ -179,69 +179,69 @@ init 0 python in jn_blackjack:
         """
         natsuki_hand_sum = _getHandSum(is_player=False)
         player_hand_sum = _getHandSum(is_player=True)
-
+        
         natsuki_wins = False
         player_wins = False
-
+        
         global _game_state
-
-        # Win via blackjack or bust
+        
+        
         if natsuki_hand_sum == 21 and player_hand_sum != 21:
             natsuki_wins = True
             _game_state = JNBlackjackStates.natsuki_blackjack if len(_natsuki_hand) == 2 else JNBlackjackStates.natsuki_exact
-
+        
         elif player_hand_sum == 21 and natsuki_hand_sum != 21:
             player_wins = True
             _game_state = JNBlackjackStates.player_blackjack if len(_player_hand) == 2 else JNBlackjackStates.player_exact
-
+        
         elif player_hand_sum == 21 and natsuki_hand_sum == 21:
             _game_state = JNBlackjackStates.draw
-
+        
         elif natsuki_hand_sum > 21 and player_hand_sum < 21:
             player_wins = True
             _game_state = JNBlackjackStates.natsuki_bust
-
+        
         elif player_hand_sum > 21 and natsuki_hand_sum < 21:
             natsuki_wins = True
             _game_state = JNBlackjackStates.player_bust
-
+        
         elif player_hand_sum > 21 and natsuki_hand_sum > 21:
             _game_state = JNBlackjackStates.draw
             store.persistent._jn_blackjack_natsuki_streak = 0
             store.persistent._jn_blackjack_player_streak = 0
-
-        # Win via proximity
+        
+        
         elif (len(_natsuki_hand) == 5 and len(_natsuki_hand) == 5) or (_player_staying and _natsuki_staying):
             if natsuki_hand_sum > player_hand_sum:
                 natsuki_wins = True
                 _game_state = JNBlackjackStates.natsuki_closest
-
+            
             elif player_hand_sum > natsuki_hand_sum:
                 player_wins = True
                 _game_state = JNBlackjackStates.player_closest
-
+            
             else:
-                # Draw somehow
+                
                 _game_state = JNBlackjackStates.draw
-
+        
         if _game_state is not None:
             _controls_enabled = False
-
+        
         if natsuki_wins:
             renpy.play("mod_assets/sfx/pencil_scribble.ogg")
             store.persistent._jn_blackjack_natsuki_wins += 1
             store.persistent._jn_blackjack_natsuki_streak += 1
             store.persistent._jn_blackjack_player_streak = 0
-
+        
         if player_wins:
             renpy.play("mod_assets/sfx/pencil_scribble.ogg")
             store.persistent._jn_blackjack_player_wins += 1
             store.persistent._jn_blackjack_player_streak += 1
             store.persistent._jn_blackjack_natsuki_streak = 0
-
+            
             if store.persistent._jn_blackjack_player_streak > store.persistent._jn_blackjack_player_best_streak:
                 store.persistent._jn_blackjack_player_best_streak = store.persistent._jn_blackjack_player_streak
-
+        
         return
 
     def _showSplashImage():
@@ -266,7 +266,7 @@ init 0 python in jn_blackjack:
                 layer="overlay",
                 what=store.Image("mod_assets/games/blackjack/{0}.png".format(image_state_map[_game_state])),
                 zorder=10)
-
+        
         return
 
     def _getCurrentTurnLabel():
@@ -277,37 +277,37 @@ init 0 python in jn_blackjack:
             - Nobody if it is nobody's turn; otherwise the player or Natsuki's current nickname
         """
         if _game_state == JNBlackjackStates.draw:
-            return "It's a draw!"
-
+            return _("It's a draw!")
+        
         if (
             _game_state == JNBlackjackStates.natsuki_bust
             or _game_state == JNBlackjackStates.player_blackjack
             or _game_state == JNBlackjackStates.player_closest
             or _game_state == JNBlackjackStates.player_exact
         ):
-            return "You win!"
-
+            return _("You win!")
+        
         if (
             _game_state == JNBlackjackStates.player_bust
             or _game_state == JNBlackjackStates.natsuki_blackjack
             or _game_state == JNBlackjackStates.natsuki_closest
             or _game_state == JNBlackjackStates.natsuki_exact
         ):
-            return "You lose!"
-
+            return _("You lose!")
+        
         if _is_player_turn is None:
-            return "Nobody!"
+            return _("Nobody!")
+        
+        return _("Yours!") if _is_player_turn else "[n_name]"
 
-        return "Yours!" if _is_player_turn else "[n_name]"
-
-    def __getQuitOrForfeitLabel():
+    def _m1_script0x2dblackjack__getQuitOrForfeitLabel():
         """
         Returns text for the quit/forfeit button, based on if the player has committed to the game by making a move.
 
         OUT:
             - str "Forfeit" if the player has made any move, otherwise "Quit"
         """
-        return "Forfeit" if _is_player_committed else "Quit"
+        return _("Forfeit") if _is_player_committed else _("Quit")
 
     def _getNatsukiHandSumLabel():
         """
@@ -319,7 +319,7 @@ init 0 python in jn_blackjack:
         """
         if _game_state is None:
             return "[n_name]: ? + {0}".format(_getHandSum(is_player=False) - _natsuki_hand[0][1]) if len(_natsuki_hand) > 1 else "[n_name]: 0"
-
+        
         return "[n_name]: {0}".format(_getHandSum(is_player=False))
 
     def _getCardDisplayable(is_player, index):
@@ -337,29 +337,29 @@ init 0 python in jn_blackjack:
         """
         top_sprite = ""
         bottom_sprite = ""
-
+        
         if is_player:
             top_sprite = _player_hand[index][0] if 0 <= index < len(_player_hand) else "mod_assets/natsuki/etc/empty.png"
             bottom_sprite = "mod_assets/games/cards/card_shadow.png" if 0 <= index < len(_player_hand) else "mod_assets/natsuki/etc/empty.png"
-
+        
         else:
             if _game_state is None and index == 0:
-                # Natsuki's first card is always obfuscated unless the game is concluded
+                
                 top_sprite =  "mod_assets/games/cards/hide.png"
                 bottom_sprite =  "mod_assets/natsuki/etc/empty.png"
             
             else:
                 top_sprite = _natsuki_hand[index][0] if 0 <= index < len(_natsuki_hand) else "mod_assets/natsuki/etc/empty.png"
                 bottom_sprite = "mod_assets/games/cards/card_shadow.png" if 0 <= index < len(_natsuki_hand) else "mod_assets/natsuki/etc/empty.png"
-
+        
         return renpy.display.layout.LiveComposite(
-            (223, 312), # Displayable size; this needs to match the pixel size of the card asset
-            (5, 5), bottom_sprite, # Shadow is offset to the right bottom
+            (223, 312), 
+            (5, 5), bottom_sprite, 
             (0, 0), top_sprite
         )
 
 label blackjack_intro:
-    n 2fnmbg "Alright!{w=0.75}{nw}" 
+    n 2fnmbg "Alright!{w=0.75}{nw}"
     extend 4fchgn " Let's play some blackjack!"
 
     if not persistent._jn_blackjack_explanation_given:
@@ -370,29 +370,29 @@ label blackjack_intro:
         show natsuki option_wait_curious
         menu:
             n "Did you need an explanation on how it all works,{w=0.2} or...?"
-
             "Yes please!":
-                jump blackjack_explanation
 
+                jump blackjack_explanation
             "No, I'm ready.":
+
                 $ dialogue_choice = random.randint(1, 3)
                 if dialogue_choice == 1:
                     n 2fcssm "Heh."
                     n 2fnmss "You're ready,{w=0.5}{nw}"
-                    extend  4fsqbg " are you?"
+                    extend 4fsqbg " are you?"
                     n 6fchgn "Ready to get a grade A butt kicking!{w=0.75}{nw}"
                     extend 4fnmbgedz " Let's go,{w=0.2} [player]!"
 
                 elif dialogue_choice == 2:
                     n 7ttrbo "Hmm..."
                     n 7ulraj "Yeah,{w=0.5}{nw}"
-                    extend  3unmbo " I'd say you're about ready too."
+                    extend 3unmbo " I'd say you're about ready too."
                     n 4fcsbg "...Ready for the bitter taste of defeat!{w=0.75}{nw}"
-                    extend  4fchbgedz " Now let's go already!"
-
+                    extend 4fchbgedz " Now let's go already!"
                 else:
+
                     n 1fcssm "Ehehe.{w=0.75}{nw}"
-                    extend 2tsqss  " Oh?{w=0.75}{nw}"
+                    extend 2tsqss " Oh?{w=0.75}{nw}"
                     extend 2fsqbg " You're ready,{w=0.2} huh?"
                     n 4fnmbg "...Ready for a total thrashing!{w=0.75}{nw}"
                     extend 4nchgnedz " Bring it,{w=0.2} [player]!"
@@ -405,14 +405,14 @@ label blackjack_explanation:
     if persistent._jn_blackjack_explanation_given:
         n 7ulraj "So like I was saying before,{w=0.5}{nw}"
         extend 7unmbo " Blackjack is pretty simple once you've got your head around the rules."
-
     else:
+
         n 4fcsbg "So!{w=0.75}{nw}"
-        extend 7ullss " Blackjack is actually pretty simple,{w=0.5}{nw}" 
+        extend 7ullss " Blackjack is actually pretty simple,{w=0.5}{nw}"
         extend 3unmaj " once you've got your head around the rules."
 
     n 5nsrsssbl "There's a bunch of different ways people play it,{w=0.5}{nw}"
-    extend 4ulraj " so...{w=1}{nw}" 
+    extend 4ulraj " so...{w=1}{nw}"
     extend 6ccssm " we'll just go with something that works with only the two of us here."
     n 3ullaj "To start off,{w=0.2} we both get a couple random cards each from the deck."
 
@@ -421,31 +421,31 @@ label blackjack_explanation:
         extend 2fsqsm " Don't worry,{w=0.2} [player].{w=0.75}{nw}"
         extend 2fcsbgeme " I {i}always{/i} shuffle."
 
-    n 3unmaj "Next,{w=0.2} we both take it in turns to either {i}hit{/i} -{w=0.5}{nw}" 
-    extend 3clrss " draw another card,{w=0.5}{nw}" 
-    extend 6unmbo " or {i}stay{/i} -{w=0.5}{nw}" 
+    n 3unmaj "Next,{w=0.2} we both take it in turns to either {i}hit{/i} -{w=0.5}{nw}"
+    extend 3clrss " draw another card,{w=0.5}{nw}"
+    extend 6unmbo " or {i}stay{/i} -{w=0.5}{nw}"
     extend 3cllsm " which is just skipping our turn."
     n 4tnmss "What's the goal,{w=0.2} you ask?"
-    n 7tlrss "Well...{w=1}{nw}" 
+    n 7tlrss "Well...{w=1}{nw}"
     extend 3fnmsm " we're basically trying to get the total value of our cards as close to twenty one as we can.{w=0.75}{nw}"
     extend 3fcsbg " If you get it with just two cards,{w=0.2} that's called a {i}blackjack{/i}!"
-    
+
     if not persistent._jn_blackjack_explanation_given:
         n 7cllss "As for how the cards are gonna work..."
 
         if persistent.jn_snap_explanation_given:
             n 7tnmbo "You remember Snap,{w=0.2} right?"
-
         else:
+
             n 3tnmbo "You've at least seen playing cards before,{w=0.2} right?"
 
         n 6ullaj "Well each card has a value -{w=0.5}{nw}"
         extend 3ccssm " obviously -{w=0.5}{nw}"
-        extend 4nnmfl " but don't worry about the actual {i}suit{/i}:{w=0.75}{nw}" 
+        extend 4nnmfl " but don't worry about the actual {i}suit{/i}:{w=0.75}{nw}"
         extend 1tlrbo " diamonds or spades or whatever.{w=0.75}{nw}"
         extend 2fcssmesm " We only care about the {i}numbers{/i}!"
-
     else:
+
         n 3clrss "Like I said last time:{w=0.5}{nw}"
         extend 4tlraj " the suits of the cards don't matter here,{w=0.5}{nw}"
         extend 2fnmsm " so it's just the numbers you gotta keep an eye on."
@@ -479,8 +479,8 @@ label blackjack_explanation:
     show natsuki option_wait_curious
     menu:
         n "Did you catch all that,{w=0.2} or...?"
-
         "Can you go over the rules again?":
+
             n 7tsqpueqm "Huh?{w=0.75}{nw}"
             extend 7tsqfl " You need me to go over that stuff again?"
             n 7cllfl "Well...{w=1}{nw}"
@@ -488,8 +488,8 @@ label blackjack_explanation:
             n 3ccspoesi "But you better be listening this time,{w=0.2} [player]."
 
             jump blackjack_explanation
-
         "Got it. Let's play!":
+
             n 7tnmaj "Oh?{w=0.75}{nw}"
             extend 7tnmfl " You got all that?{w=0.75}{nw}"
             extend 3tsqsm " You sure,{w=0.2} [player]?"
@@ -497,14 +497,14 @@ label blackjack_explanation:
             n 2fcsbg "Well then."
             n 2fnmbg "...Guess it's about time we put that to the test!{w=0.75}{nw}"
             extend 4fchgn " Let's do this,{w=0.2} [player]!"
-            
-            jump blackjack_start
 
+            jump blackjack_start
         "Thanks, [n_name]. I'll play later.":
+
             n 1ccsemesi "..."
             n 2ccsfl "...Really,{w=0.5}{nw}"
             extend 2csqfl " [player]?"
-            n 4fcsgs "I went through all that just for you to say you're gonna play{w=0.5}{nw}" 
+            n 4fcsgs "I went through all that just for you to say you're gonna play{w=0.5}{nw}"
             extend 4ftlem " {i}later{/i}?"
             n 1fsqca "..."
             n 3fchgn "Well,{w=0.75} your loss!{w=0.75}{nw}"
@@ -513,8 +513,8 @@ label blackjack_explanation:
             if Natsuki.isLove(higher=True):
                 n 3fcsbg "Don't think I'm gonna go any easier on you later either!"
                 n 3fchbllsbr "You aren't gonna sweet-talk your way out of losing!"
-            
             else:
+
                 n 3fcsbg "Don't think I'm gonna go any easier on you later either!{w=0.75}{nw}"
                 extend 3nchgnl " Ahaha."
 
@@ -547,7 +547,7 @@ label blackjack_main_loop:
         $ jnPause(0.85)
         jump blackjack_end
 
-    # Natsuki's hit/stay logic
+
     elif not jn_blackjack._is_player_turn:
         $ jn_blackjack._controls_enabled = False
         $ natsuki_hand_sum = jn_blackjack._getHandSum(is_player=False)
@@ -562,8 +562,8 @@ label blackjack_main_loop:
         if natsuki_hand_sum in nat_safe_range or len(jn_blackjack._natsuki_hand) == 5:
             $ jnPause(delay=random.randint(1, 3), hard=True)
             $ jn_blackjack._stayOrHit(is_player=False, is_hit=False)
-
         else:
+
             python:
                 hit_percent = 0.50
                 deck_used_high_cards = 0
@@ -599,7 +599,7 @@ label blackjack_main_loop:
                 will_hit = random.randint(0, 100) / 100 <= hit_percent
                 jnPause(delay=random.randint(2, 4), hard=True)
                 jn_blackjack._stayOrHit(is_player=False, is_hit=will_hit)
-    
+
     if jn_blackjack._game_state is None:
         $ jn_blackjack._controls_enabled = True
 
@@ -663,8 +663,8 @@ label blackjack_end:
             ]
         }
         $ chosen_response = renpy.substitute(random.choice(player_streak_milestone_map[persistent._jn_blackjack_player_streak]))
-
     else:
+
         $ response_map = {
             jn_blackjack.JNBlackjackStates.draw: [
                 "We drew?{w=0.75} Huh.",
@@ -762,7 +762,7 @@ label blackjack_quit_forfeit:
     if jn_blackjack._is_player_committed:
         n 1tnmpueqm "Eh?{w=0.75}{nw}"
         extend 2tnmsleqm " You're done playing,{w=0.2} [player]?"
-        
+
         if jn_blackjack._rounds == 0:
             n 4ccsflsbr "...W-{w=0.2}wait.{w=0.75}{nw}"
             extend 3fcsgssbr " Hang on just a second here,{w=0.2} [player]!{w=0.75}{nw}"
@@ -782,11 +782,11 @@ label blackjack_quit_forfeit:
             n 3flrflsbr "Seriously -{w=0.5}{nw}"
             extend 3tnmfl " it's only been like [jn_blackjack._rounds] rounds!{w=0.75}{nw}"
             extend 4cnmaj " We've barely even started!"
-            
+
             $ natsuki_prompt = "You can {i}easily{/i} play at least a couple more games...{w=0.5} right?"
             show natsuki option_wait_sulky
-
         else:
+
             n 2tdrsl "..."
             n 2tdrfl "Well...{w=1}{nw}"
             extend 2tlrbo " you have been playing a while.{w=0.75}{nw}"
@@ -796,23 +796,23 @@ label blackjack_quit_forfeit:
 
             $ natsuki_prompt = "You're sure you don't wanna keep playing,{w=0.2} [player]?"
             show natsuki option_wait_curious
-
     else:
+
         n 4ccsss "Oh?{w=0.75}{nw}"
         extend 4fllss " What's this,{w=0.2} [player]?{w=0.75}{nw}"
         extend 3fsqbg " Why the cold feet all of a sudden?"
         n 1fsqsm "Ehehe."
         n 2fnmbg "Come on!{w=0.75}{nw}"
         extend 2fcsbs " Don't tell me you're giving up {i}that{/i} easily!"
-        
+
         $ natsuki_prompt = "You can at {i}least{/i} stick it out to the end of this one,{w=0.2} right?"
         show natsuki option_wait_smug
-    
+
     $ natsuki_prompt = renpy.substitute(natsuki_prompt)
     menu:
-        n  "[natsuki_prompt]"
-
+        n "[natsuki_prompt]"
         "No, I'm done playing for now.":
+
             if jn_blackjack._is_player_committed:
                 n 1kcsflesi "...Man.{w=0.75}{nw}"
                 extend 4ksqfl " For real,{w=0.2} [player]?"
@@ -828,19 +828,19 @@ label blackjack_quit_forfeit:
 
                 elif dialogue_choice == 2:
                     n 3fcssmesm "As if I'm turning down an easy win!{w=0.75}{nw}"
-
                 else:
+
                     n 3nchgn "That's still a win for me!{w=0.75}{nw}"
 
                 extend 3fcssmeme " Ehehe."
-
             else:
+
                 n 1nsqpu "...Wow.{w=0.75}{nw}"
                 extend 4tnmfl " And you didn't even end up making a single move that round!{w=0.75}{nw}"
                 extend 4tlrbo " Huh."
                 n 2tlrsl "..."
                 n 2ulrfl "Well.{w=0.75}{nw}"
-                extend 2fcsss " Looks like {i}you{/i} know what they say at least,{w=0.5}{nw}" 
+                extend 2fcsss " Looks like {i}you{/i} know what they say at least,{w=0.5}{nw}"
                 extend 2fsqbg " [player]."
                 n 6fcsbs "Guess the only winning move for you was not to play!{w=0.75}{nw}"
                 extend 7fchsmeme " Ehehe."
@@ -863,15 +863,15 @@ label blackjack_quit_forfeit:
             $ Natsuki.resetLastIdleCall()
             $ HKBShowButtons()
 
-            jump ch30_loop 
-
+            jump ch30_loop
         "You're on!":
+
             if not jn_blackjack._is_player_committed:
                 n 4fcsbgsbr "Y-{w=0.2}yeah!{w=0.75}{nw}"
                 extend 2fcsbssbr " Now that's more like it!{w=0.75}{nw}"
                 extend 2fsqbg " Some fighting spirit!"
                 n 4fnmgsedz "Bring it on already,{w=0.2} [player]!"
-            
+
             elif jn_blackjack._rounds == 0:
                 n 1fspgs "Yeah!{w=0.75}{nw}"
                 extend 3fcsbg " See?{w=0.75}{nw}"
@@ -880,15 +880,15 @@ label blackjack_quit_forfeit:
                 n 2fsqbg "Only a real sore loser would just chicken out before they've even {i}lost{/i}.{w=0.75}{nw}"
                 extend 2fsqsm " Ehehe."
                 n 4fnmbs "Prove me wrong,{w=0.2} [player]!"
-                
             else:
+
                 n 1fsqsm "Ehehe.{w=0.75}{nw}"
                 extend 3fcsbs " Now {i}that's{/i} what I'm talking about!"
                 n 3fnmsm "..."
                 n 3fsqbg "Well?{w=0.75}{nw}"
                 extend 4fcsbg " What're you waiting for?"
                 n 4fchgn "Make your move already,{w=0.2} [player]!"
-            
+
             show screen blackjack_ui
             show natsuki option_wait_smug
             jump blackjack_main_loop
@@ -916,13 +916,13 @@ transform blackjack_popup:
 screen blackjack_ui():
     zorder 5
 
-    add "mod_assets/natsuki/desk/table/topdown/table.png" anchor(0, 0) pos(0, 0)
-    add "mod_assets/natsuki/desk/table/topdown/accessories.png" anchor(0, 0) pos(0, 0)
-    add "mod_assets/natsuki/desk/table/topdown/nameplates.png" anchor(0, 0) pos(0, 0)
+    add "mod_assets/natsuki/desk/table/topdown/table.png" anchor (0, 0) pos (0, 0)
+    add "mod_assets/natsuki/desk/table/topdown/accessories.png" anchor (0, 0) pos (0, 0)
+    add "mod_assets/natsuki/desk/table/topdown/nameplates.png" anchor (0, 0) pos (0, 0)
 
-    # Natsuki's hand
+
     vbox:
-        pos(40, 60)
+        pos (40, 60)
         if persistent._jn_blackjack_show_hand_value:
             text jn_blackjack._getNatsukiHandSumLabel() style "categorized_menu_button" size 24 xysize (300, None) outlines [(3, "#2E1503EF", 0, 0)]
 
@@ -933,15 +933,15 @@ screen blackjack_ui():
 
         grid 5 1:
             spacing 10
-            add jn_blackjack._getCardDisplayable(is_player=False, index=0) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=False, index=1) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=False, index=2) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=False, index=3) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=False, index=4) anchor(0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=False, index=0) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=False, index=1) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=False, index=2) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=False, index=3) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=False, index=4) anchor (0,0) at blackjack_card_scale_down
 
-    # Player's hand
+
     vbox:
-        pos(40, 342)
+        pos (40, 342)
         if persistent._jn_blackjack_show_hand_value:
             text "[player]: {0}".format(jn_blackjack._getHandSum(True)) style "categorized_menu_button" size 24 outlines [(3, "#2E1503EF", 0, 0)]
 
@@ -952,13 +952,13 @@ screen blackjack_ui():
 
         grid 5 1:
             spacing 10
-            add jn_blackjack._getCardDisplayable(is_player=True, index=0) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=True, index=1) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=True, index=2) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=True, index=3) anchor(0,0) at blackjack_card_scale_down
-            add jn_blackjack._getCardDisplayable(is_player=True, index=4) anchor(0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=True, index=0) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=True, index=1) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=True, index=2) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=True, index=3) anchor (0,0) at blackjack_card_scale_down
+            add jn_blackjack._getCardDisplayable(is_player=True, index=4) anchor (0,0) at blackjack_card_scale_down
 
-    # Information and controls
+
     vbox:
         xpos 960 ypos 230
 
@@ -970,10 +970,10 @@ screen blackjack_ui():
 
         null height 120
 
-        # Controls
+
         style_prefix "hkb"
-        
-        # Hit
+
+
         key "1" action [
             If(jn_blackjack._is_player_turn and jn_blackjack._controls_enabled and len(jn_blackjack._player_hand) < 5, Function(jn_blackjack._stayOrHit, True, True)) 
         ]
@@ -983,9 +983,9 @@ screen blackjack_ui():
                 Function(jn_blackjack._stayOrHit, True, True),
                 SensitiveIf(jn_blackjack._is_player_turn and jn_blackjack._controls_enabled and len(jn_blackjack._player_hand) < 5)]
 
-        # Stay
+
         key "2" action [
-            # Stay hotkey
+            
             If(jn_blackjack._is_player_turn and jn_blackjack._controls_enabled, Function(jn_blackjack._stayOrHit, True, False))
         ]
         textbutton _("Stay"):
@@ -996,8 +996,8 @@ screen blackjack_ui():
 
         null height 20
 
-        # Quit/Forfeit
-        textbutton _(jn_blackjack.__getQuitOrForfeitLabel()):
+
+        textbutton _(jn_blackjack._m1_script0x2dblackjack__getQuitOrForfeitLabel()):
             style "hkbd_option"
             action [
                 Function(renpy.jump, "blackjack_quit_forfeit"),

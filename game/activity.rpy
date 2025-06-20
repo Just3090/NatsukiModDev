@@ -9,29 +9,31 @@ init python in jn_activity:
     import store
     import store.jn_globals as jn_globals
     import store.jn_utils as jn_utils
-    
-    ACTIVITY_SYSTEM_ENABLED = True # Determines if the system supports activity detection
+
+    ACTIVITY_SYSTEM_ENABLED = False
     LAST_ACTIVITY = None
 
+    # ========== WE NEED TO FIX THIS ========== #
+
     if renpy.windows:
-        from plyer import notification
-        import pygetwindow
-        sys.path.append(renpy.config.gamedir + '\\python-packages\\')
-        import win32api
-        import win32gui
+        try:
+            from plyer import notification
+            import pygetwindow
+            import win32gui
+            ACTIVITY_SYSTEM_ENABLED = True
+        except ImportError as e:
+            ACTIVITY_SYSTEM_ENABLED = False
+            store.jn_utils.log("Activity system disabled: " + str(e))
 
     elif renpy.linux:
-        import os
-
-        #NOTE: On linux, there are different types of desktop sessions. Xlib will ONLY work with X11 sessions.
-        if (os.environ.get('DISPLAY') is None) or (os.environ.get('DISPLAY') == ''):
-            store.jn_utils.log("DISPLAY is not set. Cannot use Xlib.")
-            #Set a flag indicating this should be disabled.
-            ACTIVITY_SYSTEM_ENABLED = False
-
-        else:
+        try:
+            from plyer import notification
             import Xlib
             import Xlib.display
+            ACTIVITY_SYSTEM_ENABLED = True
+        except ImportError as e:
+            ACTIVITY_SYSTEM_ENABLED = False
+            store.jn_utils.log("Activity system disabled: " + str(e))
 
     elif renpy.macintosh:
         ACTIVITY_SYSTEM_ENABLED = False
@@ -43,7 +45,7 @@ init python in jn_activity:
         """
         def __init__(self, hwnd):
             self.hwnd = hwnd
-
+        
         def __str__(self):
             return self.hwnd
 
@@ -73,7 +75,7 @@ init python in jn_activity:
         video_applications = 22
         e_commerce = 23
         recording_software = 24
-
+        
         def __int__(self):
             return self.value
 
@@ -98,7 +100,7 @@ init python in jn_activity:
             self.activity_type = activity_type
             self.window_name_regex = window_name_regex
             self.notify_text = notify_text
-
+        
         def getRandomNotifyText(self):
             """
             Returns the substituted reaction text for this activity.
@@ -110,7 +112,7 @@ init python in jn_activity:
                 store.tease_emote = jn_utils.getRandomTeaseEmoticon()
                 store.confused_emote = jn_utils.getRandomConfusedEmoticon()
                 return renpy.substitute(random.choice(self.notify_text))
-
+            
             return None
 
     class JNActivityManager:
@@ -122,8 +124,8 @@ init python in jn_activity:
             self.last_activity = JNPlayerActivity(
                 activity_type=JNActivities.unknown
             )
-            self.__enabled = False
-
+            self._m1_activity__enabled = False
+        
         def setIsEnabled(self, state):
             """
             Sets the enabled state, determining if activity detection is active.
@@ -131,26 +133,26 @@ init python in jn_activity:
             IN:
                 - state - bool enabled state to set
             """
-            self.__enabled = state
-
+            self._m1_activity__enabled = state
+        
         def getIsEnabled():
             """
             Gets the enabled state.
             """
-            return self.__enabled
-
+            return self._m1_activity__enabled
+        
         def registerActivity(self, activity):
             self.registered_activities[activity.activity_type] = activity
-
+        
         def getActivityFromType(self, activity_type):
             """
             Returns the activity corresponding to the given JNActivities activity type, or None if it doesn't exist
             """
             if activity_type in self.registered_activities:
                 return self.registered_activities[activity_type]
-
+            
             return None
-
+        
         def getCurrentActivity(self, delay=0):
             """
             Returns the current JNActivities state of the player as determined by the currently active window,
@@ -164,23 +166,23 @@ init python in jn_activity:
             if delay is not 0:
                 store.jnPause(delay, hard=True)
 
-            if not self.__enabled:
+            if not self._m1_activity__enabled:
                 return self.getActivityFromType(JNActivities.unknown)
-
+            
             window_name = getCurrentWindowName()
             if window_name is not None:
                 window_name = getCurrentWindowName().lower()
                 for activity in self.registered_activities.values():
                     if activity.window_name_regex:
                         if re.search(activity.window_name_regex, window_name) is not None:
-
+                            
                             if not self.hasPlayerDoneActivity(int(activity.activity_type)):
                                 store.persistent._jn_activity_used_programs.append(int(activity.activity_type))
-
+                            
                             return activity
-
+            
             return self.getActivityFromType(JNActivities.unknown)
-
+        
         def hasPlayerDoneActivity(self, activity_type):
             """
             Returns True if the player has previously partook in the given activity.
@@ -450,11 +452,11 @@ init python in jn_activity:
             """
             if win32gui.GetWindowText(hwnd) == store.config.window_title:
                 raise JNWindowFoundException(hwnd)
-
+        
         try:
-            # Iterate through all windows, comparing titles to find the JN game window
+            
             win32gui.EnumWindows(checkJNWindow, None)
-
+        
         except JNWindowFoundException as exception:
             return exception.hwnd
 
@@ -468,7 +470,7 @@ init python in jn_activity:
         """
         Gets the title of the currently active window.
 
-        IN:
+        IN: 
             - delay - int amount of seconds to wait before checking window
 
         OUT:
@@ -478,49 +480,49 @@ init python in jn_activity:
         if ACTIVITY_SYSTEM_ENABLED:
             if delay is not 0:
                 store.jnPause(delay, hard=True)
-
+            
             try:
                 if renpy.windows and pygetwindow.getActiveWindow():
                     return pygetwindow.getActiveWindow().title
-
+                
                 elif renpy.linux:
-                    # This is incredibly messy
+                    
                     focus = Xlib.display.Display().get_input_focus().focus
-
+                    
                     if not isinstance(focus, int):
-                        # We have a window
+                        
                         wm_name = focus.get_wm_name()
                         wm_class = focus.get_wm_class()
-
+                        
                         if isinstance(wm_name, basestring) and wm_name != "":
-                            # Window has a name, return it
+                            
                             return wm_name
-
+                        
                         elif wm_class is None and (wm_name is None or wm_name == ""):
-                            # Try and get the parent of the window
+                            
                             focus = focus.query_tree().parent
-
+                            
                             if not isinstance(focus, int):
-                                # Try and get the wm_name of the parent and return that instead
+                                
                                 wm_name = focus.get_wm_name()
                                 return wm_name if isinstance(wm_name, basestring) else ""
-
+                        
                         elif isinstance(wm_class, tuple):
-                            # Just return the parent name
+                            
                             return str(wm_class[0])
-
-                        # Fall through
-
+            
+            
+            
             except AttributeError as exception:
                 ACTIVITY_SYSTEM_ENABLED = False
                 jn_utils.log("Failed to identify activity: {0}; only x11 sessions are supported. Disabling activity system for session.".format(repr(exception)))
                 return ""
-
+            
             except Exception as exception:
                 ACTIVITY_SYSTEM_ENABLED = False
                 jn_utils.log("Failed to identify activity: {0}. Disabling activity system for session.".format(repr(exception)))
                 return ""
-
+        
         return ""
 
     def taskbarFlash(flash_count=2, flash_frequency_milliseconds=750):
@@ -532,8 +534,11 @@ init python in jn_activity:
             - flash_count - The amount of times to flash the icon before the icon remains in a lit state
             - flash_frequency_milliseconds - The amount of time to wait between each flash, in milliseconds
         """
-        if renpy.windows:
-            win32gui.FlashWindowEx(_getJNWindowHwnd(), 6, flash_count, flash_frequency_milliseconds)
+        pass
+        ## --------- FIX THIS -------------
+        
+        # if renpy.windows:
+        #     win32gui.FlashWindowEx(_getJNWindowHwnd(), 6, flash_count, flash_frequency_milliseconds)
 
     def notifyPopup(message):
         """

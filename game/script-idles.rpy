@@ -6,8 +6,8 @@ init python in jn_idles:
     import store.jn_affinity as jn_affinity
     import store.jn_globals as jn_globals
     import store.jn_utils as jn_utils
-    
-    __ALL_IDLES = {}
+
+    _m1_script0x2didles__ALL_IDLES = {}
 
     _last_idle_label = None
 
@@ -18,7 +18,7 @@ init python in jn_idles:
         """
         global _last_idle_label
         not_label = [_last_idle_label] if _last_idle_label is not None else []
-
+        
         idle_list = JNIdle.filterIdles(
             idle_list=getAllIdles(),
             affinity=store.Natsuki._getAffinityState(),
@@ -26,14 +26,14 @@ init python in jn_idles:
         )
         return_idle = random.choice(idle_list).label if len(idle_list) > 0 else None
         _last_idle_label = return_idle
-
+        
         return return_idle
 
     def getAllIdles():
         """
         Returns a list of all idles.
         """
-        return __ALL_IDLES.values()
+        return _m1_script0x2didles__ALL_IDLES.values()
 
     class JNIdleTypes(Enum):
         reading = 1
@@ -66,8 +66,8 @@ init python in jn_idles:
             self.idle_type = idle_type
             self.affinity_range = affinity_range
             self.conditional = conditional
-
-        def __currAffinityInAffinityRange(self, affinity_state=None):
+        
+        def _m1_script0x2didles__currAffinityInAffinityRange(self, affinity_state=None):
             """
             Checks if the current affinity is within this idle's affinity_range.
 
@@ -79,10 +79,10 @@ init python in jn_idles:
             """
             if not affinity_state:
                 affinity_state = jn_affinity._getAffinityState()
-
+            
             return jn_affinity._isAffStateWithinRange(affinity_state, self.affinity_range)
-
-        def __filterIdle(
+        
+        def _m1_script0x2didles__filterIdle(
             self,
             affinity=None,
             not_label=None
@@ -97,17 +97,17 @@ init python in jn_idles:
             OUT:
                 - True if all filter criteria has been passed; otherwise False.
             """
-            if affinity is not None and not self.__currAffinityInAffinityRange(affinity):
+            if affinity is not None and not self._m1_script0x2didles__currAffinityInAffinityRange(affinity):
                 return False
-
+            
             elif self.conditional is not None and not eval(self.conditional, store.__dict__):
                 return False
-
+            
             elif not_label is not None and self.label in not_label:
                 return False
-
+            
             return True
-
+        
         @staticmethod
         def filterIdles(
             idle_list,
@@ -127,24 +127,24 @@ init python in jn_idles:
             return [
                 _idle
                 for _idle in idle_list
-                if _idle.__filterIdle(
+                if _idle._m1_script0x2didles__filterIdle(
                     affinity,
                     not_label
                 )
             ]
 
-    def __registerIdle(idle):
+    def _m1_script0x2didles__registerIdle(idle):
         """
         Registers a new idle in the list of idles, allowing it to be selected randomly between topics.
         
         IN:
             - idle - JNIdle to register.
         """
-        if idle.label in __ALL_IDLES:
+        if idle.label in _m1_script0x2didles__ALL_IDLES:
             jn_utils.log("Cannot register idle name: {0}, as an idle with that name already exists.".format(idle.label))
-
+        
         else:
-            __ALL_IDLES[idle.label] = idle
+            _m1_script0x2didles__ALL_IDLES[idle.label] = idle
 
     def _concludeIdle():
         """
@@ -154,7 +154,7 @@ init python in jn_idles:
         store.LAST_IDLE_CALL = datetime.datetime.now()
         renpy.jump("talk_menu")
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_twitch_playing",
         idle_type=JNIdleTypes.gaming,
         affinity_range=(jn_affinity.HAPPY, None),
@@ -164,80 +164,80 @@ init python in jn_idles:
         )
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_reading_parfait_girls",
         idle_type=JNIdleTypes.reading,
         affinity_range=(jn_affinity.NORMAL, None),
         conditional="get_topic('event_caught_reading_manga').shown_count > 0"
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_reading_renpy_for_dummies",
         idle_type=JNIdleTypes.reading,
         affinity_range=(jn_affinity.NORMAL, None),
         conditional="get_topic('event_renpy_for_dummies').shown_count > 0"
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_reading_a_la_mode",
         idle_type=JNIdleTypes.reading,
         affinity_range=(jn_affinity.HAPPY, None),
         conditional="get_topic('event_reading_a_la_mode').shown_count > 0"
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_reading_step_by_step",
         idle_type=JNIdleTypes.reading,
         affinity_range=(jn_affinity.AFFECTIONATE, None),
         conditional="get_topic('event_step_by_step_manga').shown_count > 0"
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_naptime",
         idle_type=JNIdleTypes.resting,
         affinity_range=(jn_affinity.AFFECTIONATE, None)
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_daydreaming",
         idle_type=JNIdleTypes.resting,
         affinity_range=(jn_affinity.NORMAL, None)
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_poetry_attempts",
         idle_type=JNIdleTypes.working,
         affinity_range=(jn_affinity.NORMAL, None),
         conditional="get_topic('event_caught_writing_poetry').shown_count > 0"
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_vibing_headphones",
         idle_type=JNIdleTypes.vibing,
         affinity_range=(jn_affinity.HAPPY, None),
         conditional="persistent.jn_custom_music_unlocked"
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_whistling",
         idle_type=JNIdleTypes.vibing,
         affinity_range=(jn_affinity.NORMAL, None)
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_laptop",
         idle_type=JNIdleTypes.gaming,
         affinity_range=(jn_affinity.HAPPY, None)
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_math_attempts",
         idle_type=JNIdleTypes.working,
         affinity_range=(jn_affinity.NORMAL, None),
         conditional="get_topic('talk_favorite_subject').shown_count > 0"
     ))
 
-    __registerIdle(JNIdle(
+    _m1_script0x2didles__registerIdle(JNIdle(
         label="idle_plantcare",
         idle_type=JNIdleTypes.reading,
         affinity_range=(jn_affinity.AFFECTIONATE, None),
@@ -259,8 +259,8 @@ label idle_twitch_playing:
 
     if random.choice([True, False]):
         n 1fllsssbr "Just gotta save real quick..."
-    
     else:
+
         n 1fsrsssbr "Just give me a second here..."
 
     show natsuki gaming
@@ -295,8 +295,8 @@ label idle_reading_parfait_girls:
 
     if random.choice([True, False]):
         n 1fslsssbl "Let me just bookmark this real quick..."
-    
     else:
+
         n 1fcssssbl "Just gotta find a good stopping point here..."
 
     show natsuki reading
@@ -309,8 +309,8 @@ label idle_reading_parfait_girls:
     if random.choice([True, False]):
         play audio drawer
         $ jnPause(1.3)
-    
     else:
+
         play audio book_closing
         $ Natsuki.setDeskItem(jn_desk_items.getDeskItem("jn_parfait_manga_closed"))
         $ jnPause(0.3)
@@ -340,10 +340,10 @@ label idle_reading_renpy_for_dummies:
 
     if random.choice([True, False]):
         n 1nsrbosbr "..."
-        n 1nnmaj "...And no.{w=1}{nw}" 
+        n 1nnmaj "...And no.{w=1}{nw}"
         extend 1fslpo " The book still sucks."
-
     else:
+
         n 1fcsflsbr "None of this crap was making any sense,{w=0.2} a-{w=0.2}anyway."
 
     show natsuki 1fcspo
@@ -356,8 +356,8 @@ label idle_reading_renpy_for_dummies:
     if random.choice([True, False]):
         play audio drawer
         $ jnPause(1.3)
-    
     else:
+
         play audio book_closing
         $ Natsuki.setDeskItem(jn_desk_items.getDeskItem("jn_renpy_for_dummies_closed"))
         $ jnPause(0.3)
@@ -382,8 +382,8 @@ label idle_reading_a_la_mode:
         extend 1fcsbg " Perfect timing."
         n 1fsqsm "I {i}juuuust{/i} finished that chapter~.{w=1.25}{nw}"
         extend 1fchsm " Ehehe."
-
     else:
+
         n 1tnmpu "Huh?{w=1}{nw}"
         extend 1unmajl " Oh!{w=0.75}{nw}"
         extend 1nlrsslsbl " Heh."
@@ -424,10 +424,10 @@ label idle_reading_step_by_step:
         n 1nslajl "Just...{w=1}{nw}"
         extend 1nslssl " give me a sec.{w=1}{nw}"
         extend 1nsrcal " I was only just getting into that..."
-
     else:
+
         n 1fcsbglsbr "W-{w=0.2}what's up?{w=1}{nw}"
-        extend 1nsrsslsbr " I'll just...{w=1}{nw}" 
+        extend 1nsrsslsbr " I'll just...{w=1}{nw}"
         extend 1nsrcal " bookmark this real quick."
 
     $ jnPause(0.1)
@@ -447,7 +447,7 @@ label idle_naptime:
     show natsuki sleeping
     $ jnPause(7.1)
     $ jnClickToContinue(silent=False)
-    
+
     n 3kcsslesl "...Mmmnnn...{w=2}{nw}"
     n 3kwlpuesl "...Nnnn?{w=1}{nw}"
     extend 3ksqpul " Wha...?{w=2}{nw}"
@@ -472,8 +472,8 @@ label idle_daydreaming:
         n 2fcsajlsbr "I-{w=0.2}I {i}totally{/i} wasn't spacing out or anything like that.{w=1}{nw}"
         extend 2fsrposbr " In case you were wondering."
         n 1fcsajsbr "A-{w=0.2}anyway."
-
     else:
+
         n 3tlrca "...{w=1.5}{nw}"
         n 3tnmpueqm "Huh?{w=1}{nw}"
         extend 4unmemeex " Oh!{w=1}{nw}"
@@ -497,15 +497,15 @@ label idle_poetry_attempts:
         extend 1fchbgsbl " Hey,{w=0.2} [player]."
         n 1tnmsm "..."
         n 1tnmpu "...What?{w=0.75}{nw}"
-        extend 1klrflsbl " What's that look for,{w=0.5}{nw}" 
+        extend 1klrflsbl " What's that look for,{w=0.5}{nw}"
         extend 1knmbosbl " all of a sudden?"
         n 1udwfll "..."
         n 1udwemleex "A-{w=0.2}ah!{w=0.75}{nw}"
         extend 1flremlsbl " T-{w=0.2}this?{w=0.75}{nw}"
         extend 1fcsemlsbl " It's nothing!{w=1}{nw}"
         extend 1fcscalsbl " N-{w=0.2}nothing at all."
-
     else:
+
         n 1tlrca "...{w=1.25}{nw}"
         n 1tnmcaeqm "...?{w=0.75}{nw}"
         n 1unmeml "A-{w=0.2}ah!{w=0.75}{nw}"
@@ -555,8 +555,8 @@ label idle_vibing_headphones:
         extend 1flrsslsbl " [player]!{w=0.75}{nw}"
         extend 2fsrdvlsbl " Heh."
         n 2fcsfllsbl "J-{w=0.2}just give me a second here."
-
     else:
+
         n 1tsqcaeqm "...?{w=1}{nw}"
         n 1uskemlesh "...!{w=0.75}{nw}"
         hide prop
@@ -587,8 +587,8 @@ label idle_whistling:
         n 4unmfllesh "O-{w=0.2}oh!{w=0.75}{nw}"
         extend 4cllssl " H-{w=0.2}hey [player]."
         n 4tnmbo "What's up?"
-
     else:
+
         n 4tllbo "...{w=0.75}{nw}"
         n 4tnmboeqm "...?{w=0.75}{nw}"
         n 4unmfllesh "A-{w=0.2}ah!{w=0.75}{nw}"
@@ -604,8 +604,8 @@ label idle_laptop:
 
     if random.choice([True, False]):
         show natsuki reading
-
     else:
+
         show natsuki gaming
 
     $ Natsuki.setDeskItem(jn_desk_items.getDeskItem("jn_laptop"))
@@ -619,8 +619,8 @@ label idle_laptop:
         extend 4ulraj " Hey [player].{w=0.75}{nw}"
         extend 4cllsssbl " Let me just finish up here real quick..."
         show natsuki gaming
-
     else:
+
         n 4cdwpu "...{w=0.75}{nw}"
         n 4cnmpueqm "...?{w=0.75}{nw}"
         n 4unmfllesh "Huh?{w=0.75}{nw}"
@@ -661,8 +661,8 @@ label idle_math_attempts:
         n 2fslunsbl "..."
         n 2ccsfl "Ugh.{w=0.5} Nevermind.{w=0.75}{nw}"
         extend 2fcsposbr " Math is such a dumb subject anyway."
-
     else:
+
         n 1tlrca "...{w=1.25}{nw}"
         n 1tnmcaeqm "...?{w=0.75}{nw}"
         n 1uwdwrlesh "A-{w=0.2}ah!{w=0.75}{nw}"
@@ -702,7 +702,7 @@ label idle_plantcare:
         extend 1fchbgsbr " What's happening?"
         n 1unmaj "Let me just finish up here real quick.{w=0.75}{nw}"
         extend 1ccsss " Besides."
-        n 1cdltr "I gotta do right by Sanjo after all,{w=0.5}{nw}" 
+        n 1cdltr "I gotta do right by Sanjo after all,{w=0.5}{nw}"
         extend 1fcscaesi " you know."
         show natsuki 1fcsca
 
@@ -715,8 +715,8 @@ label idle_plantcare:
         n 1clraj "Just give me a minute.{w=0.75}{nw}"
         extend 1nsrpo " I was getting tired of all the plant mumbo-jumbo anyway."
         show natsuki 1ccspo
-
     else:
+
         n 1cdwpu "...{w=0.75}{nw}"
         n 1cnmpueqm "Eh?{w=0.75}{nw}"
         extend 1unmaj " Oh.{w=0.75}{nw}"

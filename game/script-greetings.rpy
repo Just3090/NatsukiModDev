@@ -1,7 +1,7 @@
 default persistent._greeting_database = dict()
 default persistent.jn_player_is_first_greet = True
-
-init python in jn_greetings:
+init offset = 5
+init -5 python in jn_greetings:
     import random
     import store
     import store.jn_apologies as jn_apologies
@@ -14,36 +14,36 @@ init python in jn_greetings:
         """
         Picks a random greeting, accounting for affinity and the situation they previously left under
         """
-        # This is the first time the player has force quit; special dialogue
+        
         if jn_farewells.JNForceQuitStates(store.persistent.jn_player_force_quit_state) == jn_farewells.JNForceQuitStates.first_force_quit:
             return store.get_topic("greeting_first_force_quit")
-
-        # This is the first time the player has returned; special dialogue
+        
+        
         elif store.persistent.jn_player_is_first_greet:
             return store.get_topic("greeting_first_time")
-
-        # The player has given notice that they'll be away
+        
+        
         elif (
             store.persistent._jn_player_extended_leave_response is not None
             and store.persistent._jn_player_extended_leave_departure_date is not None
         ):
             return store.get_topic("greeting_leave_return")
-
+        
         kwargs = dict()
-
-        # The player either left suddenly, or has been gone a long time
+        
+        
         if store.Natsuki.getQuitApology() is not None:
             kwargs.update({"additional_properties": [("apology_type", jn_apologies.ApologyTypes(store.persistent._jn_player_apology_type_on_quit))]})
-
-        # The player left or was forced to leave by way of an admission (E.G tired, sick)
+        
+        
         elif store.persistent.jn_player_admission_type_on_quit is not None:
             kwargs.update({"additional_properties": [("admission_type", store.persistent.jn_player_admission_type_on_quit)]})
-
-        # No special conditions; so just get a standard greeting from the affinity pool
+        
+        
         else:
             kwargs.update({"excludes_categories": ["Admission", "Apology", "Special"]})
-
-        # Finally return an appropriate greeting
+        
+        
         return random.choice(
             store.Topic.filter_topics(
                 GREETING_MAP.values(),
@@ -52,8 +52,8 @@ init python in jn_greetings:
             )
         )
 
-# Only chosen for the first time the player returns after bringing Natsuki back
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -71,8 +71,8 @@ label greeting_first_time:
     if (
         persistent.jn_player_first_farewell_response is None
         or jn_farewells.JNFirstLeaveTypes(persistent.jn_player_first_farewell_response) == jn_farewells.JNFirstLeaveTypes.no_response
-    ): 
-        # Account for both a quit due to crash on first time, or no response
+    ):
+
         n 4uskemlesh "[player]!{w=0.5}{nw}"
         extend 4uskwrl " Y-{w=0.1}you're back!"
         n 2flluness "..."
@@ -110,7 +110,7 @@ label greeting_first_time:
         n 1fcsun "..."
         n 1ncssr "..."
         n 2fcspu "...Look."
-        n 2fllsr "Don't...{w=0.75}{nw}" 
+        n 2fllsr "Don't...{w=0.75}{nw}"
         extend 2kllsrsbl " play with me like that."
         n 2fslun "You wouldn't have brought me back {i}just{/i} to be a jerk...{w=1}{nw}"
         extend 4ksqsfsbl " right?"
@@ -119,8 +119,8 @@ label greeting_first_time:
 
     return
 
-# Only chosen for the first time the player leaves and returns after force quit
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -168,8 +168,8 @@ label greeting_first_force_quit:
         extend 2fslsl " but please."
         n 2fsqaj "Tell me when you're going."
         extend 2fsqsf " Thanks."
-
     else:
+
         n 1fsqunltsbean "..."
         n 4fsqantsb "That.{w=1} Freaking.{w=1} {b}Hurt{/b}."
         n 4fcsan "I don't know {i}what{/i} you did,{w=0.5} but cut{w=0.3} it{w=0.3} out.{w=1.25}{nw}"
@@ -179,8 +179,8 @@ label greeting_first_force_quit:
 
     return
 
-# Only chosen when the player explicitly says they will be gone a while
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -195,9 +195,9 @@ init 5 python:
     )
 
 label greeting_leave_return:
-    $ time_since_departure = (datetime.datetime.now() - persistent._jn_player_extended_leave_departure_date).total_seconds() 
+    $ time_since_departure = (datetime.datetime.now() - persistent._jn_player_extended_leave_departure_date).total_seconds()
 
-    if time_since_departure / 2628000 > 3: # Gone more than three months
+    if time_since_departure / 2628000 > 3:
         if jn_farewells.JNExtendedLeaveResponseTypes(store.persistent._jn_player_extended_leave_response) != jn_farewells.JNExtendedLeaveResponseTypes.unknown:
             n 4ksrpu "..."
             n 4uskemlesh "...!{w=0.75}{nw}"
@@ -238,18 +238,18 @@ label greeting_leave_return:
             n 1ncsbo "..."
             n 2ncssl "...Whatever.{w=1}{nw}"
             extend 2nllpu " It's fine.{w=0.75}{nw}"
-            extend 2kllpu " I..." 
-            n 1ksrsl "..." 
+            extend 2kllpu " I..."
+            n 1ksrsl "..."
             n 2ksrbo "I just wanna forget about it now.{w=1}{nw}"
             extend 1knmbo " But please,{w=0.2} [player]."
             n 4knmaj "If you don't know {i}when{/i} you'll be back..."
             n 4fslun "..."
-            n 4kcssl "...Just tell me.{w=0.75}{nw}" 
+            n 4kcssl "...Just tell me.{w=0.75}{nw}"
             extend 2ksqsl " Upfront."
             n 2ksrpulsbr "You know I won't get mad..."
             n 4knmpulsbr "...Right?"
-
         else:
+
             n 4uskemlesh "...!"
             n 4unmbgl "[player]!{w=0.75}{nw}"
             extend 4uchbgledz " [player]{w=0.2} [player]{w=0.2} [player]{w=0.2} [player]{w=0.2} [player]!"
@@ -268,7 +268,7 @@ label greeting_leave_return:
             $ jnPause(3.5)
 
             if Natsuki.isLove(higher=True):
-                show natsuki 1kcspul at jn_center zorder JN_NATSUKI_ZORDER
+                show natsuki 1kcspul zorder JN_NATSUKI_ZORDER at jn_center
                 play audio kiss
                 $ jnPause(1.5)
                 hide black with Dissolve(1.25)
@@ -276,16 +276,16 @@ label greeting_leave_return:
                 n 1ksqbolsbr "...I really did miss you."
                 n 4nslfsl "Heh."
                 n 4nchsmleaf "Welcome back."
-
             else:
-                show natsuki 1nsldvlsbl at jn_center zorder JN_NATSUKI_ZORDER
+
+                show natsuki 1nsldvlsbl zorder JN_NATSUKI_ZORDER at jn_center
                 $ jnPause(1.5)
                 hide black with Dissolve(1.25)
 
                 n 4nslsslsbl "...W-{w=0.2}welcome back.{w=1}{nw}"
                 extend 4fchdvlsbl " Ehehe."
 
-    elif time_since_departure / 86400 > 30: # Gone more than a month
+    elif time_since_departure / 86400 > 30:
         if (
             jn_farewells.JNExtendedLeaveResponseTypes(store.persistent._jn_player_extended_leave_response) == jn_farewells.JNExtendedLeaveResponseTypes.a_few_days
             or jn_farewells.JNExtendedLeaveResponseTypes(store.persistent._jn_player_extended_leave_response) == jn_farewells.JNExtendedLeaveResponseTypes.a_few_weeks
@@ -312,8 +312,8 @@ label greeting_leave_return:
             n 2kslsllsbr "..."
             n 2kslajlsbr "...And welcome back too,{w=0.75}{nw}"
             extend 4ksrbol " I guess."
-
         else:
+
             n 3fcsbg "Well,{w=0.2} well,{w=0.2} well.{w=1}{nw}"
             extend 3fsqsm " Look who the {i}Nat{/i} dragged in!"
             n 3fchsm "Ehehe."
@@ -326,7 +326,7 @@ label greeting_leave_return:
             extend 4nsrssl " glad you're finally back,{w=0.2} [player]."
             n 4fchbglsbr "W-{w=0.2}welcome!"
 
-    elif time_since_departure / 86400 > 7: # Gone more than a week
+    elif time_since_departure / 86400 > 7:
         if jn_farewells.JNExtendedLeaveResponseTypes(store.persistent._jn_player_extended_leave_response) == jn_farewells.JNExtendedLeaveResponseTypes.a_few_days:
             n 1nsqsll "..."
             n 2fsqsll "[player].{w=1}{nw}"
@@ -342,8 +342,8 @@ label greeting_leave_return:
             extend 2kllsrl " if you can."
             n 1kslbol "It's really not {i}that{/i} much to ask...{w=1}{nw}"
             extend 1knmbolsbr " right?"
-
         else:
+
             n 2fsqct "Oho?{w=0.75}{nw}"
             extend 2fsqbg " Well look who just decided to show up!"
             n 4fsqsm "Ehehe."
@@ -351,11 +351,11 @@ label greeting_leave_return:
             if Natsuki.isLove(higher=True):
                 $ chosen_endearment = jn_utils.getRandomEndearment()
                 n 1uchsml "Welcome back,{w=0.2} [chosen_endearment]!"
-
             else:
-                n 4uchbg "Welcome back,{w=0.2} [player]!"
 
-    else: # Gone less than a week
+                n 4uchbg "Welcome back,{w=0.2} [player]!"
+    else:
+
         n 1fsqss "Well,{w=0.75}{nw}"
         extend 3fsqsm " look who we have here."
         n 3tsqct "...And you said you'd be gone for a while."
@@ -367,8 +367,8 @@ label greeting_leave_return:
         if Natsuki.isLove(higher=True):
             $ chosen_endearment = jn_utils.getRandomEndearment()
             n 4uchsml "Welcome back,{w=0.2} [chosen_endearment]!"
-
         else:
+
             n 4uchbg "Welcome back,{w=0.2} [player]!"
 
     $ persistent._jn_player_extended_leave_response = None
@@ -396,7 +396,7 @@ label greeting_tt_warning:
     play music audio.juuuuu_nnnnn
     $ jnPause(10.6)
     show glitch_spook zorder JN_GLITCH_ZORDER with hpunch
-    show natsuki 1kcsfultsaeaf at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki 1kcsfultsaeaf zorder JN_NATSUKI_ZORDER at jn_center
     hide glitch_spook
     hide black
     hide glitch_rapid
@@ -459,13 +459,13 @@ label greeting_tt_warning:
         n 1ksqunltsb "...[player]..."
         n 1kllunltsc "W-{w=0.2}whatever that was...{w=1}{nw}"
         extend 1klremltdr " whatever just {i}happened{/i}..."
-        n 1fcsunl "T-{w=0.2}that...{w=0.5}{nw}" 
+        n 1fcsunl "T-{w=0.2}that...{w=0.5}{nw}"
         extend 4kplemltdr " {b}really{/b}{w=0.5} didn't feel good...{w=1}{nw}"
         extend 4klremltdr " a-{w=0.2}and I-{w=0.5}{nw}"
-
     else:
+
         n 1fcsanltsc "W-{w=0.2}what..."
-        n 1fskanltsf "What did you{w=0.75}{nw}" 
+        n 1fskanltsf "What did you{w=0.75}{nw}"
         extend 1kskscltsf " {i}DO{/i}?!"
         n 2fcsscltsf "I-!{w=0.75}{nw}"
 
@@ -512,8 +512,8 @@ label greeting_tt_warning:
         elif Natsuki.isHappy(higher=True):
             n 1knmeml "You're better than that.{w=0.75}{nw}"
             extend 4kslsll " ...I like to {i}think{/i} so,{w=0.2} a-{w=0.2}anyway."
-
         else:
+
             n 1knmsrl "You're better than that.{w=0.5}{nw}"
             extend 4kllemlsbr " ...I {i}hope{/i}."
 
@@ -533,34 +533,34 @@ label greeting_tt_warning:
         extend 1ksremltsb " I-{w=0.3}I'm not sure how much of that I can even {i}take{/i}."
         n 1kcspultsa "...You understand...{w=1}{nw}"
         show natsuki 4kwmboltsc
-        
+
         menu:
             extend " right?"
-
             "I understand.":
+
                 if Natsuki.isHappy(higher=True):
                     n 4kcsajltsa "...Good.{w=1}{nw}"
                     extend 4kslsll " good."
-                    n 1kslajl "It's...{w=0.75}{nw}" 
+                    n 1kslajl "It's...{w=0.75}{nw}"
                     extend 1kslpul " appreciated,{w=0.2} [player]."
                     n 4ksqbol "T-{w=0.2}thanks."
-
                 else:
+
                     n 2fcsajltsa "...Good.{w=1}{nw}"
                     extend 2kcsslltsa " Good..."
                     n 2kslsll "..."
 
                 $ Natsuki.calculatedAffinityGain()
-
             "...":
+
                 if Natsuki.isHappy(higher=True):
                     n 1knmemlsbr "...[player].{w=0.75}{nw}"
                     extend 4knmwrlsbr " C-{w=0.2}come on..."
                     n 4kplwrlsbr "I'm really {b}not{/b} messing around with this..."
                     n 4kcsemlsbr "...So can you {i}not{/i} mess around with it either?"
                     n 2kslemlesisbr "Seriously..."
-
                 else:
+
                     n 1knmwrlsbr "H-{w=0.2}hey!{w=0.75}{nw}"
                     extend 1fcsanlsbl " I'm being serious here?{w=0.5}{nw}"
                     extend 4kpluplsbl " Can't you {i}see{/i} that?"
@@ -576,8 +576,8 @@ label greeting_tt_warning:
         if Natsuki.isAffectionate(higher=True):
             extend 4ksqslsbl " {i}Please{/i} remember what I told you.{w=0.75}{nw}"
             extend 4ksqsslsbl " F-{w=0.2}for me?"
-
         else:
+
             extend 4ksqslsbl " {i}Please{/i} remember what I told you."
 
         n 4ncspuesi "..."
@@ -602,7 +602,7 @@ label greeting_tt_warning:
         n 1fcsun "..."
         n 1fsqun "...I'm not stupid.{w=1}{nw}"
         extend 2fsruntsb " No matter what {i}you{/i} happen to think."
-        n 2fcsemtsa "A-{w=0.2}and...{w=0.5}{nw}" 
+        n 2fcsemtsa "A-{w=0.2}and...{w=0.5}{nw}"
         extend 2fcsuntsa " I know...{w=0.3}{nw}"
 
         show natsuki 4kcsanltsa
@@ -613,7 +613,7 @@ label greeting_tt_warning:
         n 4fcsanltsa "Nnnnng-!{w=0.5}{nw}"
         n 4kcsunltsa "..."
         n 1fcsunl "..."
-        n 1fcseml "I-{w=0.2}I know we haven't been on the...{w=1}{nw}" 
+        n 1fcseml "I-{w=0.2}I know we haven't been on the...{w=1}{nw}"
         extend 2fslsl " best terms,{w=0.2} exactly."
         n 1knmem "But please."
         n 4kcsemsbl "I-{w=0.2}if you really {i}don't{/i} give a crap about me,{w=0.75}{nw}"
@@ -637,8 +637,8 @@ label greeting_tt_warning:
         n 1fsqsr "..."
         n 1fsqem "You have {i}no{/i} excuses,{w=0.2} [player]."
         n 2fcsfu "{i}Remember that.{/i}"
-
     else:
+
         n 1fcsupltsa "..."
         n 1fsqupltsb "...You."
         n 4fsqanltsb "{i}You{/i} did this,{w=0.3} didn't you?"
@@ -743,15 +743,15 @@ label greeting_tt_game_over:
 
 label greeting_pic:
     $ import codecs
-    show screen problem("412070726f626c656d20686173206f636375727265642e20506c6561736520636f6e74616374204a4e2073746166662e".decode("hex"))
+    show screen problem(bytes.fromhex("412070726f626c656d20686173206f636375727265642e20506c6561736520636f6e74616374204a4e2073746166662e").decode("utf-8"))
     $ jn_globals.force_quit_enabled = True
     $ jnPause(100000)
     $ renpy.quit()
 
-# Generic greetings
 
-# LOVE+ greetings
-init 5 python:
+
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -766,15 +766,15 @@ init 5 python:
     )
 
 label greeting_love_plus_today_is_gonna_be_great:
-    n 1unmbsledz "[player]!{w=1}{nw}" 
+    n 1unmbsledz "[player]!{w=1}{nw}"
     extend 3fchgnl " You're back,{w=0.3} finally!"
-    n 3fchsml "Ehehe.{w=0.5}{nw}" 
+    n 3fchsml "Ehehe.{w=0.5}{nw}"
     $ time_descriptor = "today" if jn_is_day() else "tonight"
     extend 3uchgnleme " Now I {i}know{/i} [time_descriptor] is gonna be great!"
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -790,18 +790,18 @@ init 5 python:
 
 label greeting_love_plus_world_revolves_around_you:
     n 4fsqgsl "[player]!{w=0.75}{nw}"
-    extend 2fnmwrl " What took you so long?{w=0.75}{nw}" 
+    extend 2fnmwrl " What took you so long?{w=0.75}{nw}"
     extend 2fllemlesi " Jeez!"
-    n 2fupeml "Do you seriously think my entire {i}world{/i} revolves around you{w=0.5}{nw}" 
+    n 2fupeml "Do you seriously think my entire {i}world{/i} revolves around you{w=0.5}{nw}"
     extend 2fsqeml " or something?"
     n 2fsqpol "..."
     n 2fnmdvl "..."
     n 2fchsmlesm "Pffft-!"
-    n 4fchbglelg "Ahaha!{w=1}{nw}" 
-    extend 3fsqsml " Did I getcha,{w=0.2} [player]?{w=0.5}{nw}" 
+    n 4fchbglelg "Ahaha!{w=1}{nw}"
+    extend 3fsqsml " Did I getcha,{w=0.2} [player]?{w=0.5}{nw}"
     extend 3fchgnl " Don't lie!"
     n 3fcssml "Ehehe.{w=0.75}{nw}"
-    extend 3tllbgl " Well,{w=0.2} anyway." 
+    extend 3tllbgl " Well,{w=0.2} anyway."
     $ chosen_endearment = jn_utils.getRandomEndearment()
     n 4fcsbgl "You're here now,{w=0.2} [chosen_endearment].{w=0.75}{nw}"
     $ chosen_tease = jn_utils.getRandomTeaseName()
@@ -809,7 +809,7 @@ label greeting_love_plus_world_revolves_around_you:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -833,7 +833,7 @@ label greeting_love_plus_make_today_amazing:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -849,7 +849,7 @@ init 5 python:
 
 label greeting_love_plus_always_welcome_here:
     $ player_initial = jn_utils.getPlayerInitial()
-    n 4unmgslesu "[player_initial]-{w=0.2}[player]!{w=0.5}{nw}" 
+    n 4unmgslesu "[player_initial]-{w=0.2}[player]!{w=0.5}{nw}"
     extend 4ullemfsbl " You're back!"
     n 2fslunfesssbl "I was really starting to miss you,{w=0.3} you know..."
     n 2ccsfllesisbl "..."
@@ -858,12 +858,12 @@ label greeting_love_plus_always_welcome_here:
     extend 4ccstrlsbl " Don't keep me waiting so long next time,{w=0.3} alright?"
     extend 4ccssslsbl " Anyway."
     $ chosen_tease = jn_utils.getRandomTease()
-    n 4ccssmfsbr "Y-{w=0.2}you should know you're {i}always{/i} welcome here by now,{w=0.5}{nw}" 
+    n 4ccssmfsbr "Y-{w=0.2}you should know you're {i}always{/i} welcome here by now,{w=0.5}{nw}"
     extend 7fchsmfsbr " [chosen_tease]."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -882,9 +882,9 @@ label greeting_love_plus_lovestruck:
     n 2ksqsml "...{w=0.75}{nw}"
     n 2unmgsfeex "...!{w=0.5}{nw}"
     $ player_initial = jn_utils.getPlayerInitial()
-    n 4kbkwrf "[player_initial]-{w=0.3}[player]!{w=1}{nw}" 
+    n 4kbkwrf "[player_initial]-{w=0.3}[player]!{w=1}{nw}"
     extend 4fbkwrfess " When did you {i}get{/i} here?!"
-    n 4klrgsf "I-{w=0.5}I was...!{w=1}{nw}" 
+    n 4klrgsf "I-{w=0.5}I was...!{w=1}{nw}"
     extend 4kllemfsbl " I was just...!"
     n 1kslunl "..."
     n 1cslsml "..."
@@ -897,7 +897,7 @@ label greeting_love_plus_lovestruck:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -916,7 +916,7 @@ label greeting_love_plus_looking_for_me:
     extend 2tsqdvf " Was it {i}me{/i} you're looking for?"
     n 2fchdvfess "..."
     n 2fchcsfesm "Pfffft-!"
-    n 1kllbgl "Man,{w=0.5}{nw}" 
+    n 1kllbgl "Man,{w=0.5}{nw}"
     extend 4fchgnlelg " I {i}cannot{/i} take that seriously!"
     n 4fnmssl "But let's be real here,{w=0.2} [player]..."
     n 2fsqsmf "It {i}{w=0.2}totally{w=0.2}{/i} was me,{w=0.2} right?{w=1}{nw}"
@@ -924,7 +924,7 @@ label greeting_love_plus_looking_for_me:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -939,20 +939,20 @@ init 5 python:
     )
 
 label greeting_love_plus_dull_moment:
-    n 2flleml "Well jeez,{w=0.5}{nw}" 
+    n 2flleml "Well jeez,{w=0.5}{nw}"
     extend 2fsqawl " you sure took your sweet time!"
     n 4fbkwrfean "What were you thinking,{w=0.2} [player]?!"
     n 3fsqpol "..."
     n 3fsqdvl "..."
     n 3fchsmleme "Ehehe.{w=0.75}{nw}"
-    n 3fsqssl "Never a dull moment with me,{w=0.75}{nw}" 
+    n 3fsqssl "Never a dull moment with me,{w=0.75}{nw}"
     extend 3fchbll " is there?"
-    n 1fcsssl "You know the deal already.{w=1}{nw}" 
+    n 1fcsssl "You know the deal already.{w=1}{nw}"
     extend 2uchgnlelg " Make yourself comfy,{w=0.2} silly!"
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -969,17 +969,17 @@ init 5 python:
 label greeting_love_plus_nat_dragged_in:
     n 4ccsbg "Well,{w=0.2} well,{w=0.2} well..."
     n 3fnmbg "And just look who the{w=0.5}{nw}"
-    extend 3fsgbg " {i}Nat{/i}{w=0.75}{nw}" 
+    extend 3fsgbg " {i}Nat{/i}{w=0.75}{nw}"
     extend 3fsqbg " dragged in.{w=0.75}{nw}"
     extend 3fsqsm " Ehehe."
     n 1fcsbgl "Well,{w=0.2} what can I say?{w=0.75}{nw}"
     extend 2fchgnl " I-{w=0.2}I {i}am{/i} pretty irresistible to you,{w=0.2} after all!"
     $ chosen_tease = jn_utils.getRandomTease()
     n 2fchbll "Welcome back,{w=0.2} [chosen_tease]!"
-    
+
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -998,14 +998,14 @@ label greeting_love_plus_show_yourself:
     extend 4fsqbg " And just what do we have here?"
     n 2ccsbgl "Finally decided to show yourself after all,{w=0.2} huh?"
     n 2csqcsl "..."
-    n 1ccsssl "Well,{w=0.5}{nw}" 
+    n 1ccsssl "Well,{w=0.5}{nw}"
     extend 4fchgnl " not like I've got a problem with that!{w=0.75}{nw}"
     $ chosen_endearment = jn_utils.getRandomEndearment()
     extend 3fchsmleaf " Make yourself comfy already,{w=0.2} [chosen_endearment]!"
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1032,7 +1032,7 @@ label greeting_love_plus_amazing_scenery:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1080,7 +1080,7 @@ label greeting_love_plus_manga_chapters:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1106,7 +1106,7 @@ label greeting_love_plus_cant_live_without_me:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1140,9 +1140,9 @@ label greeting_love_plus_spell_it_out:
 
     return
 
-# AFFECTIONATE/ENAMORED greetings
 
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1157,16 +1157,16 @@ init 5 python:
     )
 
 label greeting_affectionate_enamored_just_as_amazing:
-    n 4unmajl "[player]!{w=0.75}{nw}" 
+    n 4unmajl "[player]!{w=0.75}{nw}"
     extend 4cchbgl " You're back!"
     n 3ccsssl "Heh."
     $ time_descriptor = "today" if jn_is_day() else "tonight"
-    n 6ccsbgl "Let's make [time_descriptor] just as {i}amazing{/i} as me,{w=0.2} 'kay?{w=0.75}{nw}" 
+    n 6ccsbgl "Let's make [time_descriptor] just as {i}amazing{/i} as me,{w=0.2} 'kay?{w=0.75}{nw}"
     extend 7fcssmledz " Ehehe."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1181,7 +1181,7 @@ init 5 python:
     )
 
 label greeting_affectionate_enamored_couldnt_resist:
-    n 3fsqsml "Well hey,{w=0.2} [player].{w=0.75}{nw}" 
+    n 3fsqsml "Well hey,{w=0.2} [player].{w=0.75}{nw}"
     extend 3tsqssl " Back so soon?"
     n 3fcsctl "I knew you obviously just couldn't resist.{w=0.75}{nw}"
     extend 3fcssmledz " Ehehe."
@@ -1191,7 +1191,7 @@ label greeting_affectionate_enamored_couldnt_resist:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1206,16 +1206,16 @@ init 5 python:
     )
 
 label greeting_affectionate_enamored_just_cant_stay_away:
-    n 2usqbgl "Well,{w=0.2} well,{w=0.2} well.{w=0.75}{nw}" 
+    n 2usqbgl "Well,{w=0.2} well,{w=0.2} well.{w=0.75}{nw}"
     extend 2fsqbgl " What do we have here?"
-    n 2tsqctl "You just can't stay away from me,{w=0.2} can you?" 
+    n 2tsqctl "You just can't stay away from me,{w=0.2} can you?"
     n 2ksqbgl "Not that I blame you,{w=0.2} obviously.{w=0.75}{nw}"
     extend 2fchtsledz " I guess I just {i}have{/i} that effect on people."
     n 4fchgnlelg "Ehehe."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1232,13 +1232,13 @@ init 5 python:
 label greeting_affectionate_enamored_have_so_much_fun:
     n 4fchbgleme "Hey!{w=0.5} It's [player]!"
     $ time_descriptor = "today" if jn_is_day() else "tonight"
-    n 7fcssml "We're gonna have {w=0.2}{i}so{/i}{w=0.2} much fun [time_descriptor]!{w=0.5}{nw}" 
+    n 7fcssml "We're gonna have {w=0.2}{i}so{/i}{w=0.2} much fun [time_descriptor]!{w=0.5}{nw}"
     extend 3fsqsml " Ehehe."
     n 3fchbgl "So!{w=0.2} What did you wanna talk about?"
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1253,16 +1253,16 @@ init 5 python:
     )
 
 label greeting_affectionate_enamored_everything_is_fine:
-    n 4unmgslesu "[player]!{w=0.5}{nw}" 
+    n 4unmgslesu "[player]!{w=0.5}{nw}"
     extend 4ullajlsbr " You're back!"
-    n 2fsqpol "You kept me waiting {i}again{/i},{w=0.5}{nw}" 
+    n 2fsqpol "You kept me waiting {i}again{/i},{w=0.5}{nw}"
     extend 2fcspol " you know..."
     n 2fcsbgl "But...{w=0.5} at least my patience paid off.{w=0.75}{nw}"
     extend 2fcssmleme " Ehehe."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1286,7 +1286,7 @@ label greeting_affectionate_enamored_not_surprised:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1309,7 +1309,7 @@ label greeting_affectionate_enamored_in_for_some_fun:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1338,7 +1338,7 @@ label greeting_affectionate_enamored_good_taste:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1361,13 +1361,13 @@ label greeting_affectionate_enamored_crawling_back:
 
     if Natsuki.isEnamored(higher=True):
         n 3nchgnl "Now get cozy already,{w=0.2} you dork!"
-    
     else:
+
         n 3fchsmeme "Ehehe."
-    
+
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1402,12 +1402,12 @@ label greeting_affectionate_enamored_barging_in:
 
     if Natsuki.isEnamored(higher=True):
         n 2fchbll "Welcome back,{w=0.2} [player]~!"
-    
+
     return
 
-# NORMAL/HAPPY greetings
 
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1428,7 +1428,7 @@ label greeting_normal_happy_whats_up:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1448,7 +1448,7 @@ label greeting_normal_happy_glad_to_see_you:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1465,15 +1465,15 @@ init 5 python:
 label greeting_normal_happy_spacing_out:
     n 1kllpu "..."
     n 1uwdajlesu "Huh?"
-    n 1uchbglesd "O-{w=0.2}oh!{w=0.5}{nw}" 
+    n 1uchbglesd "O-{w=0.2}oh!{w=0.5}{nw}"
     extend 4fchssl " Hi,{w=0.2} [player]!"
-    n 4nllsssbr "I...{w=1}{nw}" 
+    n 4nllsssbr "I...{w=1}{nw}"
     extend 2fllpolsbr " was just kinda spacing out a little."
     n 3unmbol "So...{w=0.3} what's new?"
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1493,7 +1493,7 @@ label greeting_normal_happy_heya:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1508,15 +1508,15 @@ init 5 python:
     )
 
 label greeting_normal_happy_knew_youd_be_back:
-    n 1unmbg "It's [player]!{w=0.75}" 
+    n 1unmbg "It's [player]!{w=0.75}"
     extend 1nchbg " Hi!"
     n 2fcsbglesssbr "I-{w=0.2}I knew you'd be back,{w=0.2} obviously."
-    n 2fcssml "You'd have to have no taste to not visit again.{w=0.75}{nw}" 
+    n 2fcssml "You'd have to have no taste to not visit again.{w=0.75}{nw}"
     extend 2fcsbgl " Ahaha!"
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1538,7 +1538,7 @@ label greeting_normal_happy_sup_player:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1570,7 +1570,7 @@ label greeting_normal_happy_wake_up_nat:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1593,7 +1593,7 @@ label greeting_normal_happy_oh_whats_up:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1615,15 +1615,15 @@ label greeting_normal_happy_whats_new:
     if Natsuki.isHappy(higher=True):
         n 3tllajsbr "So...{w=1}{nw}"
         extend 3fchbgsbr " what's new,{w=0.2} [player]?"
-
     else:
+
         n 3cllbosbr "..."
         n 3cllajsbr "So...{w=1}{nw}"
         extend 7tnmss " what's new with you,{w=0.2} huh?"
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1654,8 +1654,8 @@ label greeting_normal_happy_nevermind:
         extend 4nsrbosbr " I guess it doesn't matter now anyway."
         n 2tlraj "So...{w=1}{nw}"
         extend 2tnmss " what's going on,{w=0.2} [player]?"
-
     else:
+
         extend 4csrbosbr " It's nothing."
         n 2nsrca "..."
         n 2nlraj "So...{w=1}{nw}"
@@ -1663,7 +1663,7 @@ label greeting_normal_happy_nevermind:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1695,7 +1695,7 @@ label greeting_normal_some_notice:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1724,9 +1724,9 @@ label greeting_normal_back_again:
 
     return
 
-# DISTRESSED/UPSET greetings
 
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1741,14 +1741,14 @@ init 5 python:
     )
 
 label greeting_distressed_upset_oh_its_you:
-    n 1nnmpu "Oh.{w=1}{nw}" 
+    n 1nnmpu "Oh.{w=1}{nw}"
     extend 2fsqsl " It's you."
-    n 2fnmfl "Hello,{w=0.75}{nw}" 
+    n 2fnmfl "Hello,{w=0.75}{nw}"
     extend 2fsqsl " {i}[player]{/i}."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1763,12 +1763,12 @@ init 5 python:
     )
 
 label greeting_distressed_upset_hi:
-    n 2nnmsl "{i}[player]{/i}.{w=0.75}{nw}" 
+    n 2nnmsl "{i}[player]{/i}.{w=0.75}{nw}"
     extend 2fsqsl " Hi."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1783,13 +1783,13 @@ init 5 python:
     )
 
 label greeting_distressed_upset_welcome_back_i_guess:
-    n 2nsqsl "[player].{w=0.75}{nw}" 
-    extend 2flrfl " Welcome back,{w=0.5}{nw}" 
+    n 2nsqsl "[player].{w=0.75}{nw}"
+    extend 2flrfl " Welcome back,{w=0.5}{nw}"
     extend 2fsrsl " I {i}guess{/i}."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1804,13 +1804,13 @@ init 5 python:
     )
 
 label greeting_distressed_upset_better_be_good:
-    n 1nsqaj "Huh.{w=0.75}{nw}" 
+    n 1nsqaj "Huh.{w=0.75}{nw}"
     extend 4fsqsr " {i}[player]{/i}."
     n 3fnmsl "This better be good."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1825,13 +1825,13 @@ init 5 python:
     )
 
 label greeting_distressed_upset_oh_you_came_back:
-    n 1ccsss "Heh.{w=0.75}{nw}" 
+    n 1ccsss "Heh.{w=0.75}{nw}"
     extend 1fsqfl " You came {i}back{/i}?"
     n 3cslem "...Wish I could say I was happy about it."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1850,12 +1850,12 @@ label greeting_distressed_upset_oh_great:
     n 1csqboeqm "...?"
     n 2clrfl "Oh.{w=0.75}{nw}"
     extend 2clrem " Great."
-    n 4csqem "It's{w=0.5}{nw}" 
+    n 4csqem "It's{w=0.5}{nw}"
     extend 4fsqsl " {i}you{/i}."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1880,7 +1880,7 @@ label greeting_distressed_upset_just_perfect:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1905,9 +1905,9 @@ label greeting_distressed_upset_real_great:
 
     return
 
-# BROKEN- greetings
 
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1923,12 +1923,12 @@ init 5 python:
 
 label greeting_broken_minus_oh_its_you:
     n 4knmsrtdr "...?"
-    n 4csqsrltsb "Oh.{w=1}{nw}" 
+    n 4csqsrltsb "Oh.{w=1}{nw}"
     extend 2fcsanltsa " it's {i}you{/i}."
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1948,7 +1948,7 @@ label greeting_broken_minus_nothing_to_say:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1968,7 +1968,7 @@ label greeting_broken_minus_why:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -1989,7 +1989,7 @@ label greeting_broken_minus_enough_on_my_mind:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2009,7 +2009,7 @@ label greeting_broken_minus_leave_me_be:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2030,7 +2030,7 @@ label greeting_broken_minus_just_leave_me_alone:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2053,7 +2053,7 @@ label greeting_broken_minus_trash_already:
 
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2072,12 +2072,12 @@ label greeting_broken_minus_any_worse:
     n 2ccsflltsa "...Heh.{w=1}{nw}"
     extend 2ccsemltsa " Amazing."
     n 2fsranltsb "{i}Just{/i} when I thought things couldn't get any worse."
-    
+
     return
 
-# Admission-locked greetings; used when Natsuki made the player leave due to tiredness, etc.
 
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2096,7 +2096,7 @@ init 5 python:
 label greeting_feeling_better_sick:
     n 1unmajlesu "Oh!{w=0.75}{nw}"
     $ chosen_descriptor = jn_utils.getRandomEndearment().capitalize() if Natsuki.isLove(higher=True) else player
-    extend 2cnmbgl " [chosen_descriptor]!{w=0.75}{nw}" 
+    extend 2cnmbgl " [chosen_descriptor]!{w=0.75}{nw}"
     extend 2cchbgl " H-{w=0.2}hey!"
 
     if (
@@ -2113,8 +2113,8 @@ label greeting_feeling_better_sick:
 
     menu:
         n "You feeling any better yet,{w=0.2} or...?"
-
         "Much better!":
+
             if Natsuki.isEnamored(higher=True):
                 n 1fcssm "Ehehe.{w=0.75}{nw}"
                 extend 2fnmbg " See?{w=0.2} What did I tell you?{w=0.75}{nw}"
@@ -2138,11 +2138,11 @@ label greeting_feeling_better_sick:
 
                 if Natsuki.isLove(higher=True):
                     n 7fchblleaf "Love you too,{w=0.2} [chosen_tease]~!"
-
                 else:
-                    n 3fchbgl "Welcome back,{w=0.2} [chosen_tease]!"
 
+                    n 3fchbgl "Welcome back,{w=0.2} [chosen_tease]!"
             else:
+
                 n 2fcsbgsbr "Ha!{w=0.75}{nw}"
                 extend 2usqbg " See?{w=0.2} Just as I thought.{w=0.75}{nw}"
                 extend 2ccsbgsbl " I-{w=0.2}I totally knew you'd see the back of it soon!"
@@ -2157,8 +2157,8 @@ label greeting_feeling_better_sick:
                     extend 4clrss " After all."
                     n 4fsqbg "As if I'm letting you off making it all up to me now!{w=0.75}{nw}"
                     extend 2nchgn " Ehehe."
-
                 else:
+
                     n 2csrbolsbr "..."
                     n 2ccsfll "Well,{w=0.2} anyway.{w=0.75}{nw}"
                     extend 4ccsaj " I'm just glad you're back again,{w=0.2} [player].{w=0.75}{nw}"
@@ -2167,13 +2167,13 @@ label greeting_feeling_better_sick:
                     extend 2nchgn " Ehehe."
 
             $ persistent.jn_player_admission_type_on_quit = None
-
         "A little better.":
+
             n 2knmbosbr "..."
-            n 2clrsssbr "...I'll admit,{w=0.2} that's...{w=1}{nw}" 
+            n 2clrsssbr "...I'll admit,{w=0.2} that's...{w=1}{nw}"
             extend 2csrajsbr " not exactly what I wanted to hear."
-            n 1clrflsbl "But...{w=1}{nw}" 
-            extend 4tnmslsbl " I'll take 'a little' over not at all.{w=1}{nw}" 
+            n 1clrflsbl "But...{w=1}{nw}"
+            extend 4tnmslsbl " I'll take 'a little' over not at all.{w=1}{nw}"
             extend 3cslbosbl " I guess."
             n 3ccsflsbr "Just..."
             n 3kslcasbr "..."
@@ -2199,8 +2199,8 @@ label greeting_feeling_better_sick:
                 n 4nllbo "So...{w=1}{nw}"
                 $ chosen_descriptor = jn_utils.getRandomEndearment() if Natsuki.isLove(higher=True) else player
                 extend 7tnmpusbr " what did you wanna talk about,{w=0.2} [chosen_descriptor]?"
-
             else:
+
                 n 4unmfllsbl "D-{w=0.2}don't get me wrong!{w=0.75}{nw}"
                 extend 4clremlsbl " It's not that I {i}want{/i} you to go away or anything like that."
                 n 3ccsajlsbl "I-{w=0.2}I just don't wanna be held responsible if you end up giving yourself a face full of keys because you were too stubborn to go rest properly.{w=0.75}{nw}"
@@ -2209,11 +2209,11 @@ label greeting_feeling_better_sick:
                 n 3cslaj "So...{w=1}{nw}"
                 extend 7tnmslsbr " was there anything you wanted to talk about,{w=0.2} [player]?"
 
-            # Add pending apology, reset the admission
+
             $ Natsuki.addApology(jn_apologies.ApologyTypes.unhealthy)
             $ jn_admissions.last_admission_type = jn_admissions.TYPE_SICK
-
         "I don't feel any better.":
+
             if Natsuki.isEnamored(higher=True):
                 n 2ccseml "H-{w=0.2}hang on a second.{w=0.75}{nw}"
                 extend 4cnmeml " What?{w=0.75}{nw}"
@@ -2240,8 +2240,8 @@ label greeting_feeling_better_sick:
                     n 7csrfll "I don't want you feeling like trash even longer just for {i}my{/i} sake,{w=0.5}{nw}"
                     extend 5csrbol " or because nobody else told you that you gotta take better care of yourself."
                     n 4ccssll "..."
-
                 else:
+
                     n 4ccsaj "...Okay,{w=0.2} look."
                     n 4cllajl "It's not that I don't enjoy your company,{w=0.5}{nw}"
                     $ time_descriptor = "today" if jn_is_day() else "tonight"
@@ -2252,22 +2252,22 @@ label greeting_feeling_better_sick:
                     extend 7knmfllsbl " You know?"
                     n 7cllfll "I-{w=0.2}I mean,{w=0.2} really..."
                     extend 3tsqfll " did you think I would be impressed or something,{w=0.2} [player]?"
-
             else:
+
                 n 1fcsan "Oh,{w=0.2} for-!{w=0.75}{nw}"
                 $ player_initial = jn_utils.getPlayerInitial()
                 extend 4fnmwr " [player_initial]-[player]!{w=0.75}{nw}"
                 extend 4fcsgs " Come {i}on{/i}!"
                 n 1fllfl "If you're {i}still{/i} feeling that crappy..."
-                n 2knmwrsbl "Then why would you drag yourself all the way back here,{w=0.5}{nw}" 
+                n 2knmwrsbl "Then why would you drag yourself all the way back here,{w=0.5}{nw}"
                 extend 2klrflsbl " of all places?!{w=0.75}{nw}"
                 extend 2ccsemlsbl " Jeez..."
 
                 if Natsuki.isAffectionate(higher=True):
                     n 5csqpul "This isn't the nurses' office,{w=0.2} [player].{w=0.75}{nw}"
                     extend 5csrpol " You dork."
-
                 else:
+
                     n 2cslcal "This isn't the nurses' office,{w=0.2} you know."
 
             n 4ncsemesi "..."
@@ -2275,7 +2275,7 @@ label greeting_feeling_better_sick:
             extend 2clrca " I'm not gonna start getting all on your case about taking care of yourself or anything like that."
             n 2csrss "I'm pretty sure a headache's the last thing you need anyway."
             n 1clraj "Just..."
-            n 4ccsaj "Don't...{w=1}{nw}" 
+            n 4ccsaj "Don't...{w=1}{nw}"
             extend 4cnmsll " push it,{w=0.2} [player].{w=1}{nw}"
             extend 3csgsll " Got it?"
             n 7cslbol "I won't get mad if you gotta head off or something.{w=0.75}{nw}"
@@ -2298,12 +2298,12 @@ label greeting_feeling_better_sick:
             $ time_descriptor = "today" if jn_is_day() else "tonight"
             extend 1tnmbo " what did you wanna do [time_descriptor],{w=0.2} [player]?"
 
-            # Add pending apology, reset the admission
+
             $ Natsuki.addApology(jn_apologies.ApologyTypes.unhealthy)
             $ jn_admissions.last_admission_type = jn_admissions.TYPE_SICK
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2325,41 +2325,41 @@ label greeting_feeling_better_tired:
 
     menu:
         n "How're you feeling? Any less tired?"
-
         "Much better, thanks!":
-            n 1nchsm "Ehehe.{w=0.5}{nw}" 
+
+            n 1nchsm "Ehehe.{w=0.5}{nw}"
             extend 2usqsm " Nothing like a good night's sleep,{w=0.2} am I right?"
-            n 2fcsbg "Now then!{w=1}{nw}" 
+            n 2fcsbg "Now then!{w=1}{nw}"
             extend 4fsqbg " Seeing as you're finally awake and alert..."
             n 2fchsmledz "It's time for some more fun with yours truly!"
 
             $ persistent.jn_player_admission_type_on_quit = None
-
         "A little tired.":
-            n 1knmsl "Oh...{w=1}{nw}" 
+
+            n 1knmsl "Oh...{w=1}{nw}"
             extend 4kllajsbr " that's not exactly what I was {i}hoping{/i} to hear,{w=0.2} I'll be honest."
             n 2fcsslsbr "Mmm..."
             n 2knmaj "Then...{w=0.3} perhaps you could grab something to wake up a little?"
             n 2fchbgsbl "A nice glass of water or some bitter coffee should perk you up in no time!"
 
-            # Add pending apology, reset the admission
+
             $ Natsuki.addApology(jn_apologies.ApologyTypes.unhealthy)
             $ jn_admissions.last_admission_type = jn_admissions.TYPE_TIRED
-
         "Still tired.":
+
             n 3knmsl "Still struggling with your sleep,{w=0.2} [player]?"
-            n 3kllaj "I don't {i}mind{/i} you being here...{w=1}{nw}" 
+            n 3kllaj "I don't {i}mind{/i} you being here...{w=1}{nw}"
             extend 3knmsl " but don't strain yourself,{w=0.2} alright?"
             n 4kslbosbl "I don't want you face-planting your desk for my sake..."
 
-            # Add pending apology, reset the admission
+
             $ Natsuki.addApology(jn_apologies.ApologyTypes.unhealthy)
             $ jn_admissions.last_admission_type = jn_admissions.TYPE_TIRED
     return
 
-# Absence-related greetings; used when the player leaves suddenly, or has been gone an extended period
 
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2379,9 +2379,9 @@ label greeting_sudden_leave:
     if Natsuki.isEnamored(higher=True):
         n 4kwmsrl "..."
         n 4kwmsrl "[player]."
-        n 4knmsll "Come on.{w=0.75}{nw}" 
+        n 4knmsll "Come on.{w=0.75}{nw}"
         extend 4ksqbol " You know you're better than that."
-        n 4ncseml "I-{w=0.2}I don't know if something happened or what,{w=0.75}{nw}" 
+        n 4ncseml "I-{w=0.2}I don't know if something happened or what,{w=0.75}{nw}"
         extend 4knmajl " but please..."
         n 1knmsll "...Try to remember to say goodbye properly next time.{w=0.5}{nw}"
         extend 2knmbol " Okay?"
@@ -2390,9 +2390,9 @@ label greeting_sudden_leave:
     elif Natsuki.isNormal(higher=True):
         n 1fsqsr "..."
         $ player_initial = jn_utils.getPlayerInitial()
-        n 4fnmem "[player_initial]-[player]!{w=0.75}{nw}" 
+        n 4fnmem "[player_initial]-[player]!{w=0.75}{nw}"
         extend 4knmem " Do you even know how scary it is when you just vanish like that?"
-        n 2kllsf "Seriously...{w=0.75}{nw}" 
+        n 2kllsf "Seriously...{w=0.75}{nw}"
         extend 2knmaj " just remember to say goodbye properly when you gotta leave."
         n 4fnmslsbr "I'm really {i}not{/i} asking for much,{w=0.5}{nw}"
         extend 4kslslsbr " you know..."
@@ -2402,18 +2402,18 @@ label greeting_sudden_leave:
         n 2fsqaj "You know I hate that,{w=0.2} [player]."
         n 2fsqsl "Knock it off,{w=0.2} will you?"
         n 2fsqsf "Thanks."
-
     else:
+
         n 2fcsuntsa "..."
         n 2fsquntsb "Heh.{w=0.2} Yeah."
         $ chosen_insult = jn_utils.getRandomInsult().capitalize()
-        n 2fsruptsb "Welcome back to you,{w=0.2} too.{w=0.75}{nw}" 
+        n 2fsruptsb "Welcome back to you,{w=0.2} too.{w=0.75}{nw}"
         extend 2fsrgttsb " [chosen_insult]."
 
     $ Natsuki.addApology(jn_apologies.ApologyTypes.sudden_leave)
     return
 
-init 5 python:
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2432,7 +2432,7 @@ label greeting_prolonged_leave:
 
     if Natsuki.isEnamored(higher=True):
         n 1uwdwrf "[player_initial]-{w=0.1}[player]!"
-        n 4fbkwrf "W-{w=0.3}where were you?!{w=0.5}{nw}" 
+        n 4fbkwrf "W-{w=0.3}where were you?!{w=0.5}{nw}"
         extend 4kllemlsbl " You had me worried {i}sick{/i}!"
         n 1kcsunl "..."
         n 1fcsunl "I'm...{w=0.5}{nw}"
@@ -2444,7 +2444,7 @@ label greeting_prolonged_leave:
     elif Natsuki.isNormal(higher=True):
         n 1uwdwr "[player_initial]-{w=0.1}[player]!"
         n 4fnman "What the hell?!{w=0.5}{nw}"
-        extend 4fnmfu " Where have you been?!{w=0.5}{nw}" 
+        extend 4fnmfu " Where have you been?!{w=0.5}{nw}"
         extend 1fbkwrless " I was worried sick!"
         n 2fcsupl "J-{w=0.3}just as a friend,{w=0.5} but still!"
         n 2fcsun "...{w=1.5}{nw}"
@@ -2458,20 +2458,20 @@ label greeting_prolonged_leave:
         n 1fsqputsb "[player_initial]-{w=0.1}[player]?"
         n 2fsqsltsb "...You're back."
         n 2fcsfutsb "Just {i}perfect{/i}."
-
     else:
+
         n 2fsquptdr "..."
         n 4fcsfutsd "...."
-        
+
     $ Natsuki.addApology(jn_apologies.ApologyTypes.prolonged_leave)
     return
 
-# Time-of-day based greetings
 
-# Early morning
 
-# Natsuki questions why the player is up so early
-init 5 python:
+
+
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2487,24 +2487,24 @@ init 5 python:
     )
 
 label greeting_early_morning_why_are_you_here:
-    n 1uwdajlesh "H-{w=0.1}huh?{w=0.5}{nw}" 
+    n 1uwdajlesh "H-{w=0.1}huh?{w=0.5}{nw}"
     extend 3tnmeml " [player]?!"
     n 3fnmpuleqm "What the heck are you doing here so early?"
     n 3tnmpu "Did you have a nightmare or something?"
     n 3tsrsl "..."
     n 3tsraj "Or...{w=1}{nw}"
-    extend 3tsqsl " maybe you never slept?{w=0.5}{nw}" 
+    extend 3tsqsl " maybe you never slept?{w=0.5}{nw}"
     extend 3tslsl " Huh."
     n 4ccsbgsbr "Well,{w=0.2} anyway..."
-    n 4cchbgsbr "M-{w=0.2}morning?{w=0.75}{nw}" 
+    n 4cchbgsbr "M-{w=0.2}morning?{w=0.75}{nw}"
     extend 4csrsssbr " I guess?"
 
     return
 
-# Morning
 
-# The Earth says hello!
-init 5 python:
+
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2525,7 +2525,7 @@ label greeting_morning_starshine:
     extend 4cchbglsbr " [player_initial]-{w=0.2}[player]!"
     n 4ccsajlsbr "A-{w=0.2}hem!"
     n 4fcssmlsbr "..."
-    n 7clrbglsbr "G-{w=0.2}good morning,{w=0.5}{nw}" 
+    n 7clrbglsbr "G-{w=0.2}good morning,{w=0.5}{nw}"
     extend 7fsrbglsbr " starshine!"
     n 6cchbglsbr "The Earth says 'H-{w=0.2}hello!'"
     n 6cchsmlsbr "..."
@@ -2537,14 +2537,14 @@ label greeting_morning_starshine:
     n 2cllpul "But..."
     n 2cdlpul "You...{w=1}{nw}"
     $ chosen_endearment = jn_utils.getRandomEndearment()
-    extend 2knmssl " really are my starshine though,{w=0.5}{nw}" 
+    extend 2knmssl " really are my starshine though,{w=0.5}{nw}"
     extend 2ksrssl " [chosen_endearment]."
     n 2cchblleaf "W-{w=0.2}welcome back!"
 
     return
 
-# Natsuki doesn't like to be kept waiting around in the morning
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2560,18 +2560,18 @@ init 5 python:
     )
 
 label greeting_morning_waiting_for_you:
-    n 4fsqajl "Oh!{w=0.75}{nw}" 
+    n 4fsqajl "Oh!{w=0.75}{nw}"
     extend 2fsqcal " Well look who finally decided to show up!"
-    n 2flrsll "You {i}do{/i} know I don't like being kept waiting...{w=0.75}{nw}" 
+    n 2flrsll "You {i}do{/i} know I don't like being kept waiting...{w=0.75}{nw}"
     extend 2fwmsll " right?"
-    n 4fsqsml "Ehehe.{w=0.75}{nw}" 
+    n 4fsqsml "Ehehe.{w=0.75}{nw}"
     extend 3fcsssl " You're just lucky you caught me in a good mood..."
     n 3fchgnlelg "You better make it up to me,{w=0.2} [player]~!"
 
     return
 
-# Natsuki doesn't like a lazy player!
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2589,17 +2589,17 @@ init 5 python:
 label greeting_morning_lazy:
     n 2csqct "Oho?{w=0.5}{nw}"
     extend 2fsqsm " Well look who finally crawled out of bed today!"
-    n 4fsqsg "Jeez,{w=0.2} [player]...{w=0.75}{nw}" 
+    n 4fsqsg "Jeez,{w=0.2} [player]...{w=0.75}{nw}"
     extend 4fchgn " I swear you're lazier than Sayori sometimes!"
     n 7fcsbg "Well,{w=0.2} better late than never."
     n 3fchbg "Let's make the most of today,{w=0.2} [player]!"
-    n 3tsraj "Or...{w=0.75}{nw}" 
+    n 3tsraj "Or...{w=0.75}{nw}"
     extend 3fsqss " what's left of it?"
 
     return
 
-# Natsuki uses a silly greeting
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2615,7 +2615,7 @@ init 5 python:
     )
 
 label greeting_morning_top_of_the_mornin:
-    n 7unmbgesu "Oh!{w=0.5}{nw}" 
+    n 7unmbgesu "Oh!{w=0.5}{nw}"
     extend 1fchbg " It's [player]!"
     n 3fwlsm "Well -{w=0.2} top of the mornin' to you!"
     n 3nchsm "..."
@@ -2626,8 +2626,8 @@ label greeting_morning_top_of_the_mornin:
 
     return
 
-# Guten Morgen, Schlafmütze!
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2648,7 +2648,7 @@ label greeting_morning_german:
     extend 4fllbgl " [player_initial]-{w=0.2}[player]!{w=0.75}{nw}"
     extend 4fcsbgl " Perfect timing!"
     n 7fcsaw "A-{w=0.2}hem."
-    n 6fcsbsl "G-{w=0.1}guten Morgen,{w=0.75}{nw}" 
+    n 6fcsbsl "G-{w=0.1}guten Morgen,{w=0.75}{nw}"
     extend 6fchbgl " Schlafmuetze!"
     n 5fsqsmlsbl "..."
     n 5fsqcalsbl "..."
@@ -2663,10 +2663,10 @@ label greeting_morning_german:
 
     return
 
-# Afternoon
 
-# Natsuki hopes the player is keeping well
-init 5 python:
+
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2687,8 +2687,8 @@ label greeting_afternoon_keeping_well:
 
     return
 
-# Natsuki asks how the player's day is going
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2704,16 +2704,16 @@ init 5 python:
     )
 
 label greeting_afternoon_how_are_you:
-    n 7unmajesu "Oh!{w=0.75}{nw}" 
+    n 7unmajesu "Oh!{w=0.75}{nw}"
     extend 4cchbg " Afternoon,{w=0.2} [player]!"
     n 2cchsm "How're you doing?"
 
     return
 
-# Evening
 
-# Natsuki tells the player they can relax now
-init 5 python:
+
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2729,16 +2729,16 @@ init 5 python:
     )
 
 label greeting_evening_long_day:
-    n 4unmbg "Aha!{w=0.75}{nw}" 
+    n 4unmbg "Aha!{w=0.75}{nw}"
     extend 4fchbg " Evening,{w=0.2} [player]!"
-    n 2ksgsg "Long day,{w=0.2} huh?{w=0.75}{nw}" 
+    n 2ksgsg "Long day,{w=0.2} huh?{w=0.75}{nw}"
     extend 2fcssm " Well,{w=0.2} you've come to the right place!"
     n 2nchbg "Just tell [n_name] all about it!"
 
     return
 
-# Natsuki teases the player for taking so long
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2757,7 +2757,7 @@ label greeting_evening_took_long_enough:
     $ chosen_tease = jn_utils.getRandomTease()
     n 4fsqgs "[player]!{w=0.75}{nw}"
     extend 4fsqsr " There you are,{w=0.2} [chosen_tease]!"
-    n 2fcspo "Jeez...{w=1}{nw}" 
+    n 2fcspo "Jeez...{w=1}{nw}"
     extend 2fsrpo " took you long enough!"
     n 2fsqsm "Ehehe."
     n 4uchbg "I'm just kidding!{w=0.2} Don't worry about it."
@@ -2765,10 +2765,10 @@ label greeting_evening_took_long_enough:
 
     return
 
-# Night
 
-# Natsuki enjoys staying up late too
-init 5 python:
+
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2787,14 +2787,14 @@ label greeting_night_up_late:
     n 5unmajeex "Oh!{w=0.75}{nw}"
     extend 4fchbgsbl " Hey,{w=0.2} [player]."
     n 3tnmss "Late night for you too,{w=0.2} huh?"
-    n 3ullss "Well...{w=0.75}{nw}" 
-    extend 3nchgn " Guess I'm not complaining!" 
+    n 3ullss "Well...{w=0.75}{nw}"
+    extend 3nchgn " Guess I'm not complaining!"
     n 3fchsm "Welcome back!"
 
     return
 
-# Natsuki is also a night owl
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2812,13 +2812,13 @@ init 5 python:
 label greeting_night_night_owl:
     n 7unmajesu "Oh!{w=0.3} [player]!{w=1}{nw}"
     extend 3fllsslsbl " You're a night owl too,{w=0.2} huh?"
-    n 3fcsbg "N-{w=0.2}not that I have a problem with that,{w=0.2} obviously." 
+    n 3fcsbg "N-{w=0.2}not that I have a problem with that,{w=0.2} obviously."
     extend 4nchgnl " Welcome back!"
 
     return
 
-# Natsuki is somewhat concerned about the player being up late again
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2850,7 +2850,7 @@ label greeting_night_what_time_do_you_call_this:
     n 4cllss "But...{w=1}{nw}"
     extend 3cnmfl " for real,{w=0.2} [player]?"
     n 3ccsflesi "..."
-    n 3ccspu "Just..." 
+    n 3ccspu "Just..."
     extend 4clrsl " don't overdo it.{w=0.75}{nw}"
     extend 4cnmbo " Alright?{w=1.25}{nw}"
     extend 5cslbolsbr " Seriously."
@@ -2863,18 +2863,18 @@ label greeting_night_what_time_do_you_call_this:
         n 4nsrajl "So...{w=1}{nw}"
         $ chosen_descriptor = jn_utils.getRandomEndearment() if Natsuki.isLove(higher=True) else player
         extend 7tnmbol " what did you wanna talk about,{w=0.2} [chosen_descriptor]?"
-
     else:
+
         n 7ccspol "Besides.{w=0.75}{nw}"
         extend 3fchgnl " It's {i}totally{/i} on you if you can't get your sleep-deprived butt out of bed later!"
         n 3fsqsml "Ehehe."
 
     return
 
-# Sanjo
 
-# Sanjo getting some morning care from the club's newest (and only) gardener!
-init 5 python:
+
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2902,13 +2902,13 @@ label greeting_sanjo_morning:
         $ chosen_tease = jn_utils.getRandomTease()
         extend 3fnmss " Keep your shirt on,{w=0.2} [chosen_tease].{w=1}{nw}"
         extend 4fsqsm " I know."
-        n 7fcsbgl "You must be {i}pretty{/i} desperate for my attention too if you're up already,{w=0.5}{nw}" 
+        n 7fcsbgl "You must be {i}pretty{/i} desperate for my attention too if you're up already,{w=0.5}{nw}"
         extend 7fchgnl " huh?"
 
     return
 
-# Sanjo getting some morning care
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -2932,7 +2932,7 @@ label greeting_sanjo_generic:
     extend 1ccssslsbl " Heh."
     n 3ccsbgsbl "Don't worry.{w=0.75}{nw}"
     extend 3ccssm " Sanjo and I were juuuust about done here."
-    
+
     if not jn_is_day():
         n 5clrajsbr "N-{w=0.2}not that I completely forgot to water him before or anything like that,\n{w=0.5}{nw}"
         extend 2fcscasbr "{i}obviously{/i}."
@@ -2942,15 +2942,15 @@ label greeting_sanjo_generic:
         extend 3unmbo " what's new with you,{w=0.2} [player]?"
         n 6fcsbgl "...Or are you just looking for some {i}quality care{/i} too?"
         n 7fchsml "Ehehe."
-
     else:
+
         n 1ullaj "So..."
         n 3tnmss "What's new,{w=0.2} [player]?"
 
     return
 
-# Natsuki didn't expect company!
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -3000,7 +3000,7 @@ label greeting_glasses_eyetest:
     extend 3tnmbg " Anything new?"
     n 7fcsbglsbr "...O-{w=0.2}or did you just come here for an eye test featuring yours truly?{w=0.75}{nw}"
     extend 7fsqsmlsbr " Ehehe."
-    
+
     if Natsuki.isLove(higher=True):
         $ chosen_endearment = random.choice(["babe", "hun"])
         n 3fchbgl "Welcome back,{w=0.2} [chosen_endearment]!{w=0.75}{nw}"
@@ -3010,14 +3010,14 @@ label greeting_glasses_eyetest:
         $ chosen_tease = jn_utils.getRandomTeaseName()
         n 3fchbgl "Welcome back,{w=0.2} you big [chosen_tease]!{w=0.75}{nw}"
         extend 3fchsml " Now hurry up and get comfy already!"
-
     else:
+
         $ chosen_tease = jn_utils.getRandomTeaseName()
         n 3fchbgl "Welcome back,{w=0.2} you [chosen_tease]!{w=0.75}{nw}"
         extend 3nchgnl " Now start talking already!"
 
-# Natsuki the night-surfer!
-init 5 python:
+
+init python:
     registerTopic(
         Topic(
             persistent._greeting_database,
@@ -3064,12 +3064,12 @@ label greeting_night_browsing:
     extend 4ccsaj " So..."
     n 3fsqss "What did {w=0.2}{i}you{/i}{w=0.2} wanna talk about so badly then,{w=0.5}{nw}"
     extend 3fsqbg " [player]?{w=0.75}{nw}"
-    
+
     if Natsuki.isEnamored(higher=True):
         n 7fklbgl "O-{w=0.2}or were you just here to {i}browse{/i} too?"
         extend 7fchsmleaf " Ehehe."
-
     else:
+
         n 7fsqsm "Ehehe."
 
     return

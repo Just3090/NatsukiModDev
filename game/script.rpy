@@ -1,4 +1,4 @@
-﻿label start:
+label start:
     jump ch30_autoload
 
 

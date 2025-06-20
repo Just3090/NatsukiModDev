@@ -8,7 +8,7 @@ init python in jn_preferences.weather:
         disabled = 1
         random = 2
         real_time = 3
-
+        
         def __int__(self):
             return self.value
 
@@ -46,32 +46,32 @@ init python in jn_preferences.random_topic_frequency:
             4: 2,
         }.get(store.persistent.jn_natsuki_random_topic_frequency)
 
-# This determines how often Natsuki should start a conversation by herself
+
 default persistent.jn_natsuki_random_topic_frequency = jn_preferences.random_topic_frequency.SOMETIMES
 
-# This determines if Natsuki should talk about topics randomly that she has already spoken about
+
 default persistent.jn_natsuki_repeat_topics = True
 
-# This determines if Natsuki will do her own thing in the downtime between topics
+
 default persistent._jn_natsuki_idles_enabled = True
 
-# This determines if the game should use realtime weather
+
 default persistent._jn_weather_setting = int(jn_preferences.weather.JNWeatherSettings.disabled)
 
-# This determines if Natsuki should attempt to notify the user when starting a conversation
+
 default persistent._jn_notify_conversations = True
 
-# This determines if Natsuki should attempt to notify the user when she spots them doing something she's interested in
+
 default persistent._jn_notify_activity = True
 
-# RPY warning
+
 default persistent._jn_scw = True
 
-# This determines if Natsuki should warn the player whenever she runs out of unlocked things to say
+
 default persistent._jn_natsuki_out_of_topics_remind = True
 
-# This determines if the game should display icons on the scrollable choice menu
+
 default persistent._jn_display_option_icons = True
 
-# This determines if the sum of the player's hand should be shown in blackjack
+
 default persistent._jn_blackjack_show_hand_value = False

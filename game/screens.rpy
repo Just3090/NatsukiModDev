@@ -1,13 +1,13 @@
-﻿## Initialization
-################################################################################
-
 init offset = -1
 
-################################################################################
-## Custom Screens
-################################################################################
 
-# Hotkey display
+
+
+
+
+
+
+
 style hotkeys_text:
     font gui.interface_font
     size gui.interface_text_size
@@ -15,15 +15,15 @@ style hotkeys_text:
     outlines [(3, "#000000aa", 0, 0)]
     xalign 0.0
     yalign 0.5
-    
+
     line_overlap_split 8
     line_spacing 8
     line_leading 8
 
 screen hotkeys():
+    tag menu
     $ config.mouse = None
 
-    tag menu
     use game_menu(("Hotkeys")):
         viewport id "hotkeys":
             yoffset 0
@@ -35,12 +35,12 @@ screen hotkeys():
                     null height 20
                     style_prefix "hotkeys"
                     grid 2 8:
-                        xoffset 20                
+                        xoffset 20
                         spacing 10
 
                         text _("Talk")
                         text _("T")
-                        
+
                         text _("Music")
                         text _("M")
 
@@ -71,7 +71,7 @@ screen hotkeys():
                         null height 20
                         style_prefix "hotkeys"
                         grid 2 3:
-                            xoffset 20                
+                            xoffset 20
                             spacing 10
 
                             text _("Place")
@@ -92,7 +92,7 @@ screen hotkeys():
                         null height 20
                         style_prefix "hotkeys"
                         grid 2 3:
-                            xoffset 20                
+                            xoffset 20
                             spacing 10
 
                             text _("Hit!")
@@ -104,27 +104,27 @@ screen hotkeys():
                             null width 175 height 30
                             null width 175 height 0
 
-# Categorized menu
-## Similar to MAS' twopane_scrollable menu.
-## NOTE: This is meant to be called within a loop so long as the user hasn't clicked `Nevermind`
-### PARAMETERS:
-#   menu_items: dict
-#       { key: category, value: Topic[] }
-#
-#   category_pane_space: tuple
-#       [0] top-left x coord of the category pane
-#       [1] top-left y coord of the category pane
-#       [2] width of the category pane
-#       [3] height of the category pane
-#
-#   option_list_space:
-#       [0] top-left x coord of the options pane
-#       [1] top-left y coord of the options pane
-#       [2] width of the options pane
-#       [3] height of the options pane
-#
-#   category_length:
-#       length of the category, used to calculat
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 define prev_adjustment = ui.adjustment()
 define main_adjustment = ui.adjustment()
 define selected_category = None
@@ -148,11 +148,10 @@ style categorized_menu_button_text_italic is categorized_menu_button_text:
     italic True
 
 screen categorized_menu(menu_items, category_pane_space, option_list_space, category_length):
-    at categorized_menu_slide_in_right
     style_prefix "categorized_menu"
 
-    #Just entered this menu so just need to list categories
-    fixed:
+
+    fixed at categorized_menu_slide_in_right:
         anchor (0, 0)
         pos (category_pane_space[0], category_pane_space[1])
         xsize category_pane_space[2]
@@ -168,57 +167,57 @@ screen categorized_menu(menu_items, category_pane_space, option_list_space, cate
             yanchor 0
 
             viewport:
-                #Apply the old adjustment to keep the style the same
+
                 yadjustment prev_adjustment
                 yfill False
-                #Allow mousewheel and arrow keys for navigation
+
                 mousewheel True
                 arrowkeys True
-                vbox:
-                    if category_length == 0:
-                        textbutton _("Nevermind."):
-                            action [
+                has vbox
+                if category_length == 0:
+                    textbutton _("Nevermind."):
+                        action [
                                 Return(False),
                                 Function(prev_adjustment.change, 0),
                                 SetVariable("selected_category", None)
                             ]
-                            hover_sound gui.hover_sound
-                            activate_sound gui.activate_sound
+                        hover_sound gui.hover_sound
+                        activate_sound gui.activate_sound
 
-                    else:
-                        python:
-                            import random
+                else:
+                    python:
+                        import random
 
-                            go_back_text = "Go back"
-                            if random.randint(0, 999) == 1:
-                                go_back_text = "Go baka"
+                        go_back_text = "Go back"
+                        if random.randint(0, 999) == 1:
+                            go_back_text = "Go baka"
 
-                        textbutton _(go_back_text):
-                            style "categorized_menu_button"
-                            action [ Return(-1), Function(prev_adjustment.change, 0) ]
-                            hover_sound gui.hover_sound
-                            activate_sound gui.activate_sound
+                    textbutton _(go_back_text):
+                        style "categorized_menu_button"
+                        action [ Return(-1), Function(prev_adjustment.change, 0) ]
+                        hover_sound gui.hover_sound
+                        activate_sound gui.activate_sound
 
-                        null height 20
+                    null height 20
 
-                    for button_name in menu_items.keys():
-                        $ has_unseen = len(Topic.filter_topics(topic_list=menu_items.get(button_name), nat_says=False, is_seen=False)) > 0
-                        $ display_text = "{i}[button_name]{/i}" if has_unseen else button_name
+                for button_name in menu_items.keys():
+                    $ has_unseen = len(Topic.filter_topics(topic_list=menu_items.get(button_name), nat_says=False, is_seen=False)) > 0
+                    $ display_text = "{i}[button_name]{/i}" if has_unseen else button_name
 
-                        textbutton display_text:
-                            style "categorized_menu_button"
-                            #Set the selected category
-                            action SetVariable("selected_category", button_name)
-                            hover_sound gui.hover_sound
-                            activate_sound gui.activate_sound
+                    textbutton display_text:
+                        style "categorized_menu_button"
 
-                            if has_unseen:
-                                idle_background Frame("mod_assets/buttons/choice_hover_blank_star.png", gui.frame_hover_borders, tile=gui.frame_tile)
+                        action SetVariable("selected_category", button_name)
+                        hover_sound gui.hover_sound
+                        activate_sound gui.activate_sound
 
-                        null height 5
+                        if has_unseen:
+                            idle_background Frame("mod_assets/buttons/choice_hover_blank_star.png", gui.frame_hover_borders, tile=gui.frame_tile)
 
-    #Safely wrap this check so this screen cannot crash
-    #If we have a selected category and need to display the options within it (if there are any)
+                    null height 5
+
+
+
     if menu_items.get(selected_category):
         fixed:
             area option_list_space
@@ -238,38 +237,38 @@ screen categorized_menu(menu_items, category_pane_space, option_list_space, cate
                     mousewheel True
                     arrowkeys True
 
-                    vbox:
-                        textbutton _("Nevermind."):
-                            action [
+                    has vbox
+                    textbutton _("Nevermind."):
+                        action [
                                 Return(False),
                                 Function(prev_adjustment.change, 0),
                                 SetVariable("selected_category", None)
                             ]
+                        hover_sound gui.hover_sound
+                        activate_sound gui.activate_sound
+
+                    null height 20
+
+                    for _topic in menu_items.get(selected_category):
+                        $ display_text = _topic.prompt if (_topic.shown_count > 0 or _topic.nat_says) else "{i}[_topic.prompt]{/i}"
+
+
+                        textbutton display_text:
+                            style "categorized_menu_button"
+
+                            action [ Return(_topic.label), Function(prev_adjustment.change, 0), SetVariable("selected_category", None) ]
                             hover_sound gui.hover_sound
                             activate_sound gui.activate_sound
 
-                        null height 20
+                            if _topic.shown_count == 0 and not _topic.nat_says:
+                                idle_background Frame("mod_assets/buttons/choice_hover_blank_star.png", gui.frame_hover_borders, tile=gui.frame_tile)
 
-                        for _topic in menu_items.get(selected_category):
-                            $ display_text = _topic.prompt if (_topic.shown_count > 0 or _topic.nat_says) else "{i}[_topic.prompt]{/i}"
-
-                            #NOTE: This should be preprocessed such that Topics without prompts aren't passed into this menu
-                            textbutton display_text:
-                                style "categorized_menu_button"
-                                # Return the label so it can be called
-                                action [ Return(_topic.label), Function(prev_adjustment.change, 0), SetVariable("selected_category", None) ]
-                                hover_sound gui.hover_sound
-                                activate_sound gui.activate_sound
-                                
-                                if _topic.shown_count == 0 and not _topic.nat_says:
-                                    idle_background Frame("mod_assets/buttons/choice_hover_blank_star.png", gui.frame_hover_borders, tile=gui.frame_tile)
-
-                            null height 5
+                        null height 5
 
 screen scrollable_choice_menu(items, last_item=None, option_width=560, icon_path=None, menu_caption=None):
     if icon_path and persistent._jn_display_option_icons:
-        add icon_path anchor(0, 0) pos(1280 - (275 + option_width), 20)
-    
+        add icon_path anchor (0, 0) pos (1280 - (275 + option_width), 20)
+
     elif not persistent._jn_display_option_icons:
         $ option_width += 175
 
@@ -277,7 +276,7 @@ screen scrollable_choice_menu(items, last_item=None, option_width=560, icon_path
         $ option_width = 560
 
     if menu_caption:
-        text "[menu_caption]" style "hkbd_label" pos(1280 - (40 + option_width), 20)
+        text "[menu_caption]" style "hkbd_label" pos (1280 - (40 + option_width), 20)
 
     $ scrollable_start_y = 60 if menu_caption else 40
 
@@ -302,26 +301,26 @@ screen scrollable_choice_menu(items, last_item=None, option_width=560, icon_path
                 yfill False
                 mousewheel True
 
-                vbox:
-                    for prompt, _value in items:
-                        textbutton prompt:
-                            id prompt
-                            style "categorized_menu_button"
-                            xsize option_width
-                            action Return(_value)
-                            hover_sound gui.hover_sound
-                            activate_sound gui.activate_sound
+                has vbox
+                for prompt, _value in items:
+                    textbutton prompt:
+                        id prompt
+                        style "categorized_menu_button"
+                        xsize option_width
+                        action Return(_value)
+                        hover_sound gui.hover_sound
+                        activate_sound gui.activate_sound
 
-                        null height 5
+                    null height 5
 
         bar:
             style "classroom_vscrollbar"
             value YScrollValue("viewport")
             xalign scroll_align
 
-################################################################################
-## Styles
-################################################################################
+
+
+
 
 style default:
     font gui.default_font
@@ -329,7 +328,7 @@ style default:
     color gui.text_color
     outlines [(3, "#000000aa", 0, 0)]
     line_overlap_split 1.25
-    line_spacing 1.25
+    line_spacing 0
 
 style default_monika is normal:
     slow_cps 30
@@ -358,7 +357,7 @@ style normal is default:
     layout ("subtitle" if gui.text_xalign else "tex")
 
     line_overlap_split -8
-    line_spacing 8
+    line_spacing 0
 
 style input:
     color gui.accent_color
@@ -446,23 +445,23 @@ style frame:
     padding gui.frame_borders.padding
     background Frame("mod_assets/panels/frame.png", gui.frame_borders, tile=gui.frame_tile)
 
-################################################################################
-## In-game screens
-################################################################################
 
 
-## Say screen ##################################################################
-##
-## The say screen is used to display dialogue to the player. It takes two
-## parameters, who and what, which are the name of the speaking character and
-## the text to be displayed, respectively. (The who parameter can be None if no
-## name is given.)
-##
-## This screen must create a text displayable with id "what", as Ren'Py uses
-## this to manage text display. It can also create displayables with id "who"
-## and id "window" to apply style properties.
-##
-## https://www.renpy.org/doc/html/screen_special.html#say
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 screen say(who, what):
     zorder 30
@@ -480,8 +479,8 @@ screen say(who, what):
                 style "namebox"
                 text who id "who"
 
-    # If there's a side image, display it above the text. Do not display
-    # on the phone variant - there's no room.
+
+
     if not renpy.variant("small"):
         add SideImage() xalign 0.0 yalign 1.0
 
@@ -540,7 +539,7 @@ style say_dialogue:
     layout ("subtitle" if gui.text_xalign else "tex")
 
     line_overlap_split -8
-    line_spacing 8
+    line_spacing 0
     line_leading 8
 
 image ctc:
@@ -551,15 +550,15 @@ image ctc:
         easein 0.75 alpha 0.5 yoffset -5
         repeat
 
-## Input screen ################################################################
-##
-## This screen is used to display renpy.input. The prompt parameter is used to
-## pass a text prompt in.
-##
-## This screen must create an input displayable with id "input" to accept the
-## various input parameters.
-##
-## http://www.renpy.org/doc/html/screen_special.html#input
+
+
+
+
+
+
+
+
+
 
 image input_caret:
     Solid("#b59")
@@ -572,13 +571,13 @@ image input_caret:
 screen input(prompt):
     style_prefix "input"
     window:
-        vbox:
-            xalign .5
-            yalign .5
-            spacing 30
+        has vbox
+        xalign .5
+        yalign .5
+        spacing 30
 
-            text prompt style "input_prompt"
-            input id "input"
+        text prompt style "input_prompt"
+        input id "input"
 
 style input_prompt:
     xmaximum gui.text_width
@@ -592,15 +591,15 @@ style input:
     text_align 0.5
 
 
-## Choice screen ###############################################################
-##
-## This screen is used to display the in-game choices presented by the menu
-## statement. The one parameter, items, is a list of objects, each with caption
-## and action fields.
-##
-## http://www.renpy.org/doc/html/screen_special.html#choice
 
-# Default choice screen; this is offset so it doesn't get in front of Natsuki's face during dialogue
+
+
+
+
+
+
+
+
 screen choice(items, scroll="viewport"):
     zorder 30
     style_prefix "choice"
@@ -613,7 +612,7 @@ screen choice(items, scroll="viewport"):
                 hover_sound gui.hover_sound
                 activate_sound gui.activate_sound
 
-# Identical to choice, but not offset - use this for menu options when Natsuki isn't present
+
 screen choice_centred(items, scroll="viewport"):
     zorder 30
     style_prefix "choice"
@@ -625,8 +624,8 @@ screen choice_centred(items, scroll="viewport"):
                 hover_sound gui.hover_sound
                 activate_sound gui.activate_sound
 
-# Identical to choice_centred, but without hover/activate sounds - use this for menu options when Natsuki isn't present,
-# and when we need silence for atmospheric reasons (like the intro sequence)
+
+
 screen choice_centred_mute(items, scroll="viewport"):
     zorder 30
     style_prefix "choice"
@@ -638,8 +637,8 @@ screen choice_centred_mute(items, scroll="viewport"):
                 hover_sound None
                 activate_sound None
 
-## When this is true, menu captions will be spoken by the narrator. When false,
-## menu captions will be displayed as empty buttons.
+
+
 define config.narrator_menu = True
 
 style choice_vbar:
@@ -701,7 +700,7 @@ style choice_button_text is default:
     properties gui.button_text_properties("choice_button")
     outlines []
     line_leading 6
-    line_spacing -6
+    line_spacing 0
 
 init python:
     def RigMouse():
@@ -754,8 +753,8 @@ screen rigged_choice2(items):
     timer 1.0/30.0 repeat True action Function(RigMouse3)
 
 
-## When this is true, menu captions will be spoken by the narrator. When false,
-## menu captions will be displayed as empty buttons.
+
+
 define config.narrator_menu = True
 
 
@@ -781,10 +780,10 @@ style choice_button_text is default:
     properties gui.button_text_properties("choice_button")
     outlines []
 
-## Quick Menu screen ###########################################################
-##
-## The quick menu is displayed in-game to provide easy access to the out-of-game
-## menus.
+
+
+
+
 
 style quickmenu_text:
     color "#e2d1d1"
@@ -794,12 +793,12 @@ style quickmenu_text:
 
 screen quick_menu():
 
-    # Ensure this appears on top of other screens.
+
     zorder 100
 
     if quick_menu:
 
-        # Add an in-game quick menu.
+
         hbox:
             style_prefix "quick"
 
@@ -824,10 +823,16 @@ screen quick_menu():
                 hover_sound gui.hover_sound
                 activate_sound gui.activate_sound
 
+            textbutton _("Hide"):
+                text_style "quickmenu_text"
+                action HideInterface()
+                hover_sound gui.hover_sound
+                activate_sound gui.activate_sound
+
 default quick_menu = True
 
-#style quick_button is default
-#style quick_button_text is button_text
+
+
 
 style quick_button:
     properties gui.button_properties("quick_button")
@@ -838,14 +843,14 @@ style quick_button_text:
     outlines []
 
 
-################################################################################
-# Main and Game Menu Screens
-################################################################################
 
-## Navigation screen ###########################################################
-##
-## This screen is included in the main and game menus, and provides navigation
-## to other menus, and to start the game.
+
+
+
+
+
+
+
 
 screen indicator(message):
     key "mouseup_3" action Return()
@@ -857,7 +862,7 @@ screen indicator(message):
 
 screen navigation():
     $ config.mouse = None
-    
+
     vbox:
         style_prefix "navigation"
 
@@ -865,13 +870,6 @@ screen navigation():
         yalign 0.8
 
         spacing gui.navigation_spacing
-
-        if not jn_data_migrations.current_version_latest:
-            textbutton _("Update now!") action OpenURL(jn_globals.LINK_JN_LATEST)
-            null height 16
-
-        else:
-            textbutton _("Check version") action Function(jn_utils.fireAndForgetFunction, jn_data_migrations.checkCurrentVersionIsLatestFromMenu)
 
         if main_menu:
             textbutton _("New Game"):
@@ -888,13 +886,12 @@ screen navigation():
         else:
             textbutton _("History") action [ShowMenu("history"), SensitiveIf(renpy.get_screen("history") == None)]
 
+            textbutton _("Submods") action [ShowMenu("submods_list_screen"), SensitiveIf(renpy.get_screen("submods_list_screen") == None)]
+
         textbutton _("Hotkeys") action [ShowMenu("hotkeys"), SensitiveIf(renpy.get_screen("hotkeys") == None)]
 
         textbutton _("Settings") action [ShowMenu("preferences"), SensitiveIf(renpy.get_screen("preferences") == None)]
 
-        if renpy.variant("pc"):
-            ## Help isn't necessary or relevant to mobile devices.
-            textbutton _("Help") action Help("README.md")
 
         textbutton _("GitHub") action OpenURL(jn_globals.LINK_JN_GITHUB)
 
@@ -916,25 +913,25 @@ style navigation_button_text:
     insensitive_outlines [(4, "#fce", 0, 0), (2, "#fce", 2, 2)]
 
 
-## Main Menu screen ############################################################
-##
-## Used to display the main menu when Ren'Py starts.
-##
-## http://www.renpy.org/doc/html/screen_special.html#main-menu
+
+
+
+
+
 
 screen main_menu():
-    # This ensures that any other menu screen is replaced.
     tag menu
+
 
     style_prefix "main_menu"
     add "menu_bg"
     add "menu_art_n"
 
-    frame:
-        pass
+    frame
 
-## The use statement includes another screen inside this one. The actual
-## contents of the main menu are in the navigation screen.
+
+
+
     use navigation
 
     if gui.show_name:
@@ -991,14 +988,14 @@ style main_menu_title:
     size gui.title_text_size
 
 
-## Game Menu screen ############################################################
-##
-## This lays out the basic common structure of a game menu screen. It's called
-## with the screen title, and displays the background, title, and navigation.
-##
-## The scroll parameter can be None, or one of "viewport" or "vpgrid". When this
-## screen is intended to be used with one or more children, which are
-## transcluded (placed) inside it.
+
+
+
+
+
+
+
+
 
 screen game_menu_m():
     $ persistent.menu_bg_m = True
@@ -1007,7 +1004,7 @@ screen game_menu_m():
 
 screen game_menu(title, scroll=None):
 
-    # Add the backgrounds.
+
     if main_menu:
         add gui.main_menu_background
     else:
@@ -1019,45 +1016,45 @@ screen game_menu(title, scroll=None):
     frame:
         style "game_menu_outer_frame"
 
-        hbox:
+        has hbox
 
-            # Reserve space for the navigation section.
-            frame:
-                style "game_menu_navigation_frame"
 
-            frame:
-                style "game_menu_content_frame"
+        frame:
+            style "game_menu_navigation_frame"
 
-                if scroll == "viewport":
+        frame:
+            style "game_menu_content_frame"
 
-                    viewport:
-                        scrollbars "vertical"
-                        mousewheel True
-                        draggable True
-                        yinitial 1.0
+            if scroll == "viewport":
 
-                        side_yfill True
+                viewport:
+                    scrollbars "vertical"
+                    mousewheel True
+                    draggable True
+                    yinitial 1.0
 
-                        vbox:
-                            transclude
+                    side_yfill True
 
-                elif scroll == "vpgrid":
+                    has vbox
+                    transclude
 
-                    vpgrid:
-                        cols 1
-                        yinitial 1.0
+            elif scroll == "vpgrid":
 
-                        scrollbars "vertical"
-                        mousewheel True
-                        draggable True
+                vpgrid:
+                    cols 1
+                    yinitial 1.0
 
-                        side_yfill True
+                    scrollbars "vertical"
+                    mousewheel True
+                    draggable True
 
-                        transclude
-
-                else:
+                    side_yfill True
 
                     transclude
+
+            else:
+
+                transclude
 
     use navigation
 
@@ -1129,20 +1126,20 @@ style return_button:
     yoffset -30
 
 
-## About screen ################################################################
-##
-## This screen gives credit and copyright information about the game and Ren'Py.
-##
-## There's nothing special about this screen, and hence it also serves as an
-## example of how to make a custom screen.
+
+
+
+
+
+
 
 screen about():
-
     tag menu
 
-    ## This use statement includes the game_menu screen inside this one. The
-    ## vbox child is then included inside the viewport inside the game_menu
-    ## screen.
+
+
+
+
     use game_menu(_("About"), scroll="viewport"):
 
         style_prefix "about"
@@ -1152,14 +1149,14 @@ screen about():
             label "[config.name!t]"
             text _("Version [config.version!t]\n")
 
-            ## gui.about is usually set in options.rpy.
+
             if gui.about:
                 text "[gui.about!t]\n"
 
             text _("Made with {a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only].\n\n[renpy.license!t]")
 
 
-## This is redefined in options.rpy to add text to the about screen.
+
 define gui.about = ""
 
 
@@ -1217,19 +1214,19 @@ style slot_button_text:
     outlines []
 
 
-## Preferences screen ##########################################################
-##
-## The preferences screen allows the player to configure the game to better suit
-## themselves.
-##
-## https://www.renpy.org/doc/html/screen_special.html#preferences
+
+
+
+
+
+
 
 define persistent.room_animation = True
 
 screen preferences():
+    tag menu
     $ config.mouse = None
 
-    tag menu
 
     if renpy.mobile:
         $ cols = 2
@@ -1246,20 +1243,20 @@ screen preferences():
             mousewheel True
             draggable True
 
-            vbox:
-                yoffset 0
-                
-                hbox:
-                    box_wrap True
+            has vbox
+            yoffset 0
 
-                    if renpy.variant("pc"):
+            hbox:
+                box_wrap True
 
-                        vbox:
-                            style_prefix "radio"
-                            label _("Display")
-                            textbutton _("Window") action Preference("display", "window")
-                            textbutton _("Fullscreen") action Preference("display", "fullscreen")
-                            textbutton _("Menu icons") action [
+                if renpy.variant("pc"):
+
+                    vbox:
+                        style_prefix "radio"
+                        label _("Display")
+                        textbutton _("Window") action Preference("display", "window")
+                        textbutton _("Fullscreen") action Preference("display", "fullscreen")
+                        textbutton _("Menu icons") action [
                             ToggleField(
                                 object=persistent,
                                 field="_jn_display_option_icons",
@@ -1267,31 +1264,31 @@ screen preferences():
                                 false_value=False)
                             ]
 
-                    vbox:
-                        style_prefix "check"
-                        label _("Skip")
-                        textbutton _("Unseen text") action Preference("skip", "toggle")
-                        textbutton _("After choices") action Preference("after choices", "toggle")
+                vbox:
+                    style_prefix "check"
+                    label _("Skip")
+                    textbutton _("Unseen text") action Preference("skip", "toggle")
+                    textbutton _("After choices") action Preference("after choices", "toggle")
 
-                    vbox:
-                        # Weather options
-                        style_prefix "radio"
-                        label _("Weather")
+                vbox:
 
-                        textbutton _("Disabled") action SetField(
+                    style_prefix "radio"
+                    label _("Weather")
+
+                    textbutton _("Disabled") action SetField(
                             object=persistent,
                             field="_jn_weather_setting",
                             value=int(jn_preferences.weather.JNWeatherSettings.disabled)
                         )
 
-                        textbutton _("Random") action SetField(
+                    textbutton _("Random") action SetField(
                             object=persistent,
                             field="_jn_weather_setting",
                             value=int(jn_preferences.weather.JNWeatherSettings.random)
                         )
 
-                        if persistent._jn_weather_api_configured:
-                            textbutton _("Real-time") action [
+                    if persistent._jn_weather_api_configured:
+                        textbutton _("Real-time") action [
                                 SetField(
                                     object=persistent,
                                     field="_jn_weather_setting",
@@ -1300,24 +1297,24 @@ screen preferences():
                                 SensitiveIf(persistent._jn_weather_api_configured)
                             ]
 
-                    vbox:
-                        style_prefix "check"
-                        label _("Natsuki")
-                        textbutton _("Auto outfits") action [
+                vbox:
+                    style_prefix "check"
+                    label _("Natsuki")
+                    textbutton _("Auto outfits") action [
                             ToggleField(
                                 object=persistent,
                                 field="jn_natsuki_auto_outfit_change_enabled",
                                 true_value=True,
                                 false_value=False)
                         ]
-                        textbutton _("Repeat topics") action [
+                    textbutton _("Repeat topics") action [
                             ToggleField(
                                 object=persistent,
                                 field="jn_natsuki_repeat_topics",
                                 true_value=True,
                                 false_value=False)
                         ]
-                        textbutton _("Idles") action [
+                    textbutton _("Idles") action [
                             ToggleField(
                                 object=persistent,
                                 field="_jn_natsuki_idles_enabled",
@@ -1325,10 +1322,10 @@ screen preferences():
                                 false_value=False)
                         ]
 
-                    vbox:
-                        style_prefix "check"
-                        label _("Notifications")
-                        textbutton _("Conversations") action [
+                vbox:
+                    style_prefix "check"
+                    label _("Notifications")
+                    textbutton _("Conversations") action [
                             ToggleField(
                                 object=persistent,
                                 field="_jn_notify_conversations",
@@ -1336,7 +1333,7 @@ screen preferences():
                                 false_value=False)
                         ]
 
-                        textbutton _("Activity") action [
+                    textbutton _("Activity") action [
                             ToggleField(
                                 object=persistent,
                                 field="_jn_notify_activity",
@@ -1344,11 +1341,11 @@ screen preferences():
                                 false_value=False)
                         ]
 
-                    vbox:
-                        if persistent._jn_blackjack_unlocked:
-                            style_prefix "check"
-                            label _("Blackjack")
-                            textbutton _("Hand total") action [
+                vbox:
+                    if persistent._jn_blackjack_unlocked:
+                        style_prefix "check"
+                        label _("Blackjack")
+                        textbutton _("Hand total") action [
                                 ToggleField(
                                     object=persistent,
                                     field="_jn_blackjack_show_hand_value",
@@ -1356,18 +1353,18 @@ screen preferences():
                                     false_value=False)
                             ]
 
-                    ## Additional vboxes of type "radio_pref" or "check_pref" can be
-                    ## added here, to add additional creator-defined preferences.
 
-                hbox:
-                    style_prefix "slider"
-                    box_wrap True
 
-                    vbox:
 
-                        label _("Random chatter: {0}".format(jn_preferences.random_topic_frequency.getRandomTopicFrequencyDescription()))
+            hbox:
+                style_prefix "slider"
+                box_wrap True
 
-                        bar value FieldValue(
+                vbox:
+
+                    label _("Random chatter: {0}".format(jn_preferences.random_topic_frequency.getRandomTopicFrequencyDescription()))
+
+                    bar value FieldValue(
                             object=persistent,
                             field="jn_natsuki_random_topic_frequency",
                             range=4,
@@ -1375,52 +1372,64 @@ screen preferences():
                             step=1
                         )
 
-                        label _("Text Speed")
+                    label _("Text Speed")
 
-                        bar value FieldValue(_preferences, "text_cps", range=180, max_is_zero=False, style="slider", offset=20)
+                    bar value FieldValue(_preferences, "text_cps", range=180, max_is_zero=False, style="slider", offset=20)
 
-                        label _("Auto-Forward Time")
+                    label _("Auto-Forward Time")
 
-                        bar value Preference("auto-forward time")
+                    bar value Preference("auto-forward time")
 
-                        label _("Sunrise: {0}AM".format(jn_locations.getHourFromSunriseSunsetValue(persistent._jn_sunrise_setting)))
-                        bar value FieldValue(persistent, "_jn_sunrise_setting", range=6, max_is_zero=False, style="slider")
+                    label _("Sunrise: {0}AM".format(jn_locations.getHourFromSunriseSunsetValue(persistent._jn_sunrise_setting)))
+                    bar value FieldValue(persistent, "_jn_sunrise_setting", range=6, max_is_zero=False, style="slider")
 
-                        label _("Sunset: {0}PM".format(jn_locations.getHourFromSunriseSunsetValue(persistent._jn_sunset_setting)))
-                        bar value FieldValue(persistent, "_jn_sunset_setting", range=6, max_is_zero=False, style="slider")
+                    label _("Sunset: {0}PM".format(jn_locations.getHourFromSunriseSunsetValue(persistent._jn_sunset_setting)))
+                    bar value FieldValue(persistent, "_jn_sunset_setting", range=6, max_is_zero=False, style="slider")
 
-                    vbox:
-                        if config.has_music:
-                            label _("Music Volume: {0}%".format(int(preferences.get_volume("music") * 100)))
+                vbox:
+                    if config.has_music:
+                        label _("Music Volume: {0}%".format(int(preferences.get_volume("music") * 100)))
 
-                            hbox:
-                                bar value Preference("music volume")
+                        hbox:
+                            bar value Preference("music volume")
 
-                        if config.has_sound:
+                    if config.has_sound:
 
-                            label _("Sound Volume: {0}%".format(int(preferences.get_volume("sfx") * 100)))
+                        label _("Sound Volume: {0}%".format(int(preferences.get_volume("sfx") * 100)))
 
-                            hbox:
-                                bar value Preference("sound volume")
+                        hbox:
+                            bar value Preference("sound volume")
 
-                                if config.sample_sound:
-                                    textbutton _("Test") action Play("sound", config.sample_sound)
+                            if config.sample_sound:
+                                textbutton _("Test") action Play("sound", config.sample_sound)
 
-                        if config.has_voice:
-                            label _("Voice Volume")
+                    if config.has_voice:
+                        label _("Voice Volume")
 
-                            hbox:
-                                bar value Preference("voice volume")
+                        hbox:
+                            bar value Preference("voice volume")
 
-                                if config.sample_voice:
-                                    textbutton _("Test") action Play("voice", config.sample_voice)
+                            if config.sample_voice:
+                                textbutton _("Test") action Play("voice", config.sample_voice)
 
-                        if config.has_music or config.has_sound or config.has_voice:
-                            null height gui.pref_spacing
+                    if config.has_music or config.has_sound or config.has_voice:
+                        null height gui.pref_spacing
 
-                            textbutton _("Mute All"):
-                                action Preference("all mute", "toggle")
-                                style "mute_all_button"
+                        textbutton _("Mute All"):
+                            action Preference("all mute", "toggle")
+                            style "mute_all_button"
+
+#begin language_picker
+                ## Additional vboxes of type "radio_pref" or "check_pref" can be
+                ## added here, to add additional creator-defined preferences.
+
+                vbox:
+                    style_prefix "radio"
+                    label _("Language")
+
+                    # Real languages should go alphabetical order by English name.
+                    textbutton "English" text_font "DejaVuSans.ttf" action [Language(None), SetField(persistent, "language", "english"), Show("dialog", message="It is recommended to restart to apply the changes.", ok_action=Hide("dialog"))]
+                    textbutton "Español" text_font "mod_assets/fonts/FuzzyBubbles-Regular.ttf" action [Language("spanish"), SetField(persistent, "language", "spanish"), Show("dialog", message="Se recomienda reiniciar el juego\npara aplicar los cambios.", ok_action=Hide("dialog"))]
 
     text "v[config.version]":
         xalign 1.0 yalign 1.0
@@ -1510,21 +1519,21 @@ style slider_vbox:
     xsize 450
 
 
-## History screen ##############################################################
-##
-## This is a screen that displays the dialogue history to the player. While
-## there isn't anything special about this screen, it does have to access the
-## dialogue history stored in _history_list.
-##
-## https://www.renpy.org/doc/html/history.html
+
+
+
+
+
+
+
 
 screen history():
     $ config.mouse = None
 
-    tag menu
 
-    ## Avoid predicting this screen, as it can be very large.
-    predict False
+
+
+    predict False tag menu
 
     use game_menu(_("History"), scroll=("vpgrid" if gui.history_height else "viewport")):
 
@@ -1533,18 +1542,18 @@ screen history():
         for h in _history_list:
 
             window:
-                
-                ## This lays things out properly if history_height is None.
-                has fixed:
-                    yfit True
+
+
+                has fixed
+                yfit True
 
                 if h.who:
 
                     label h.who:
                         style "history_name"
 
-                        ## Take the color of the who text from the Character, if
-                        ## set.
+
+
                         if "color" in h.who_args:
                             text_color h.who_args["color"]
 
@@ -1614,16 +1623,23 @@ style history_label_text:
     line_spacing 8
     line_leading 8
 
-## Confirm screen ##############################################################
-##
-## The confirm screen is called when Ren'Py wants to ask the player a yes or no
-## question.
-##
-## http://www.renpy.org/doc/html/screen_special.html#confirm
+
+
+
+
+init python:
+    def FinishEnterName(launchGame=True):
+        if not player: return
+        persistent.playername = player
+        renpy.save_persistent()
+        renpy.hide_screen("name_input")
+        if launchGame:
+            renpy.jump_out_of_context("start")
+
 
 screen name_input(message, ok_action):
 
-    ## Ensure other screens do not get input while this screen is displayed.
+
     modal True
 
     zorder 200
@@ -1635,26 +1651,26 @@ screen name_input(message, ok_action):
 
     frame:
 
-        vbox:
-            xalign .5
-            yalign .5
-            spacing 30
+        has vbox
+        xalign .5
+        yalign .5
+        spacing 30
 
-            label _(message):
-                style "confirm_prompt"
-                xalign 0.5
+        label _(message):
+            style "confirm_prompt"
+            xalign 0.5
 
-            input default "" value VariableInputValue("player") length 12 allow "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+        input default "" value VariableInputValue("player") length 12 allow "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
-            hbox:
-                xalign 0.5
-                spacing 100
+        hbox:
+            xalign 0.5
+            spacing 100
 
-                textbutton _("OK") action ok_action
+            textbutton _("OK") action ok_action
 
 screen dialog(message, ok_action):
 
-    ## Ensure other screens do not get input while this screen is displayed.
+
     modal True
 
     zorder 200
@@ -1665,24 +1681,24 @@ screen dialog(message, ok_action):
 
     frame:
 
-        vbox:
-            xalign .5
-            yalign .5
-            spacing 30
+        has vbox
+        xalign .5
+        yalign .5
+        spacing 30
 
-            label _(message):
-                style "confirm_prompt"
-                xalign 0.5
+        label _(message):
+            style "confirm_prompt"
+            xalign 0.5
 
-            hbox:
-                xalign 0.5
-                spacing 100
+        hbox:
+            xalign 0.5
+            spacing 100
 
-                textbutton _("OK") action ok_action
+            textbutton _("OK") action ok_action
 
-screen endgame(message): # No spoilers, promise!
+screen endgame(message):
 
-    ## Ensure other screens do not get input while this screen is displayed.
+
     modal True
 
     zorder 200
@@ -1693,18 +1709,18 @@ screen endgame(message): # No spoilers, promise!
 
     frame:
 
-        vbox:
-            xalign .5
-            yalign .5
-            spacing 30
+        has vbox
+        xalign .5
+        yalign .5
+        spacing 30
 
-            label _(message):
-                style "confirm_prompt"
-                xalign 0.5
+        label _(message):
+            style "confirm_prompt"
+            xalign 0.5
 
 screen credits(message, ok_action):
 
-    ## Ensure other screens do not get input while this screen is displayed.
+
     modal True
 
     zorder 200
@@ -1715,20 +1731,20 @@ screen credits(message, ok_action):
 
     frame:
 
-        vbox:
-            xalign .5
-            yalign .5
-            spacing 30
+        has vbox
+        xalign .5
+        yalign .5
+        spacing 30
 
-            label _(message):
-                style "confirm_prompt"
-                xalign 0.5
+        label _(message):
+            style "confirm_prompt"
+            xalign 0.5
 
-            hbox:
-                xalign 0.5
-                spacing 100
+        hbox:
+            xalign 0.5
+            spacing 100
 
-                textbutton _("Done") action ok_action
+            textbutton _("Done") action ok_action
 
 init python:
     def check_ingame_state_add_apology():
@@ -1737,7 +1753,7 @@ init python:
 
 screen confirm_editable(message, yes_text, no_text, yes_action, no_action):
 
-    ## Ensure other screens do not get input while this screen is displayed.
+
     modal True
 
     zorder 200
@@ -1748,25 +1764,25 @@ screen confirm_editable(message, yes_text, no_text, yes_action, no_action):
 
     frame:
 
-        vbox:
-            xalign .5
-            yalign .5
-            spacing 30
+        has vbox
+        xalign .5
+        yalign .5
+        spacing 30
 
-            label _(message):
-                style "confirm_prompt"
-                xalign 0.5
+        label _(message):
+            style "confirm_prompt"
+            xalign 0.5
 
-            hbox:
-                xalign 0.5
-                spacing 100
+        hbox:
+            xalign 0.5
+            spacing 100
 
-                textbutton _(yes_text) action yes_action
-                textbutton _(no_text) action no_action
+            textbutton _(yes_text) action yes_action
+            textbutton _(no_text) action no_action
 
 screen confirm_editable_closable(message, yes_text, no_text, yes_action, no_action):
 
-    ## Ensure other screens do not get input while this screen is displayed.
+
     modal True
 
     zorder 200
@@ -1777,27 +1793,27 @@ screen confirm_editable_closable(message, yes_text, no_text, yes_action, no_acti
 
     frame:
 
-        vbox:
-            xalign .5
-            yalign .5
-            spacing 30
+        has vbox
+        xalign .5
+        yalign .5
+        spacing 30
 
-            if in_sayori_kill and message == layout.QUIT:
-                add "confirm_glitch" xalign 0.5
+        if in_sayori_kill and message == layout.QUIT:
+            add "confirm_glitch" xalign 0.5
 
-            else:
-                label _(message):
-                    style "confirm_prompt"
-                    xalign 0.5
-                textbutton _("Close") action Hide("confirm_editable_closable"):
-                    xalign 0.5
-
-            hbox:
+        else:
+            label _(message):
+                style "confirm_prompt"
                 xalign 0.5
-                spacing 100
+            textbutton _("Close") action Hide("confirm_editable_closable"):
+                xalign 0.5
 
-                textbutton _(yes_text) action yes_action
-                textbutton _(no_text) action no_action
+        hbox:
+            xalign 0.5
+            spacing 100
+
+            textbutton _(yes_text) action yes_action
+            textbutton _(no_text) action no_action
 
 style confirm_frame is gui_frame
 style confirm_prompt is gui_prompt
@@ -1827,7 +1843,7 @@ style confirm_button:
 style confirm_button_text is choice_button_text:
     properties gui.button_text_properties("confirm_button")
 
-## This transform is used to blink the arrows one after another.
+
 transform delayed_blink(delay, cycle):
     alpha .5
 
@@ -1853,17 +1869,17 @@ style skip_text:
     size gui.notify_text_size
 
 style skip_triangle:
-    # We have to use a font that has the BLACK RIGHT-POINTING SMALL TRIANGLE
-    # glyph in it.
+
+
     font "DejaVuSans.ttf"
 
 
-## Notify screen ###############################################################
-##
-## The notify screen is used to show the player a message. (For example, when
-## the game is quicksaved or a screenshot has been taken.)
-##
-## https://www.renpy.org/doc/html/screen_special.html#notify-screen
+
+
+
+
+
+
 
 screen notify(message):
 
@@ -1898,7 +1914,7 @@ style notify_text:
     line_overlap_split 8
     line_spacing 8
     line_leading 8
-    
+
 screen problem(message):
     zorder 100
     text "[message]" size 30 xalign 0.5 ypos 40 text_align 0.5 xysize (None, None) color "#FF0000" outlines [(2, "#000000d2", 0, 0)]

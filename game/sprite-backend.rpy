@@ -16,10 +16,10 @@ init -50 python:
         finger_touching = 5
         pointy_finger = 6
         hand_on_chin = 7
-
+        
         def __str__(self):
             return self.name
-
+        
         def __int__(self):
             return self.value
 
@@ -27,7 +27,7 @@ init -50 python:
         full = 1
         light = 2
         ill = 3
-
+        
         def __str__(self):
             return self.name
 
@@ -74,7 +74,7 @@ init -50 python:
         cat_smug = 40
         flustered = 41
         grit_teeth = 42
-
+        
         def __str__(self):
             return self.name
 
@@ -110,7 +110,7 @@ init -50 python:
         down_right = 29
         peek_left = 30
         peek_right = 31
-
+        
         def __str__(self):
             return self.name
 
@@ -121,7 +121,7 @@ init -50 python:
         furrowed = 4
         think = 5
         concerned = 6
-
+        
         def __str__(self):
             return self.name
 
@@ -139,7 +139,7 @@ init -50 python:
         spritz = 11
         wink_pooled_left = 12
         wink_pooled_right = 13
-
+        
         def __str__(self):
             return self.name
 
@@ -164,25 +164,25 @@ init -50 python:
         sweat_spritz = 18
         sweat_small = 19
         smug = 20
-
+        
         def __str__(self):
             return self.name
 
     class JNSweat(Enum):
         bead_left = 1
         bead_right = 2
-
+        
         def __str__(self):
             return self.name
 
-    # These are poses with arms rendered under the desk
+
     _JN_BEFORE_DESK_POSES = [
         JNPose.sitting,
         JNPose.arms_crossed_body,
         JNPose.finger_touching
     ]
 
-    # These are poses with arms rendered on top of the desk
+
     _JN_AFTER_DESK_POSES = [
         JNPose.arms_crossed_desk,
         JNPose.fingers_on_desk,
@@ -203,140 +203,140 @@ init -50 python:
         """
         Generates sprites for Natsuki based on outfit, expression, pose, etc.
         """
-
-        # Base
+        
+        
         lc_args = [
-            (1280, 740), # Anchor
-            (0, 0), _JN_NATSUKI_BASE_SPRITE_PATH + "desk/chair/chair_normal.png", # Chair
-            (0, 0), "{0}/hair/[Natsuki._outfit.hairstyle.reference_name]/sitting/back.png".format(_JN_NATSUKI_BASE_SPRITE_PATH), # Hair back
+            (1280, 740), 
+            (0, 0), _JN_NATSUKI_BASE_SPRITE_PATH + "desk/chair/chair_normal.png", 
+            (0, 0), "{0}hair/[Natsuki._outfit.hairstyle.reference_name]/sitting/back.png".format(_JN_NATSUKI_BASE_SPRITE_PATH), 
         ]
-
-        # Back item
-        back = "{0}/back/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.back else "{0}/back/[Natsuki._outfit.back.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+        
+        
+        back = "{0}back/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.back else "{0}back/[Natsuki._outfit.back.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         lc_args.extend([
             (0, 0), back
         ])
-
-        # Base, clothes
+        
+        
         lc_args.extend([
-            (0, 0), "{0}/base/{1}/body.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose), # Body
-            (0, 0), "{0}/clothes/[Natsuki._outfit.clothes.reference_name]/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose), # Outfit, body
+            (0, 0), "{0}base/{1}/body.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose), 
+            (0, 0), "{0}clothes/[Natsuki._outfit.clothes.reference_name]/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose), 
         ])
-
-        # Necklace
-        necklace = "{0}/necklace/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.necklace else "{0}/necklace/[Natsuki._outfit.necklace.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+        
+        
+        necklace = "{0}necklace/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.necklace else "{0}necklace/[Natsuki._outfit.necklace.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         lc_args.extend([
             (0, 0), necklace
         ])
-
-        # Head
+        
+        
         lc_args.extend([
-            (0, 0), "{0}/base/{1}/head.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
+            (0, 0), "{0}base/{1}/head.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
         ])
-
-        # Blush
+        
+        
         if blush:
             lc_args.extend([
-                (0, 0), "{0}/face/blush/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, blush)
+                (0, 0), "{0}face/blush/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, blush)
             ])
-
-        # Mouth, nose, hair (front)
+        
+        
         lc_args.extend([
-            (0, 0), "{0}/face/mouth/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, mouth),
-            (0, 0), "{0}/face/nose/sitting/nose.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+            (0, 0), "{0}face/mouth/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, mouth),
+            (0, 0), "{0}face/nose/sitting/nose.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         ])
-
-        # Sweat
+        
+        
         if sweat:
             lc_args.extend([
-                (0, 0), "{0}/face/sweat/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, sweat)
+                (0, 0), "{0}face/sweat/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, sweat)
             ])
-
-        # Hair (front)
+        
+        
         lc_args.extend([
-            (0, 0), "{0}/hair/[Natsuki._outfit.hairstyle.reference_name]/sitting/bangs.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+            (0, 0), "{0}hair/[Natsuki._outfit.hairstyle.reference_name]/sitting/bangs.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         ])
-
-        # Accessory
-        accessory = "{0}/accessory/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.accessory else "{0}/accessory/[Natsuki._outfit.accessory.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+        
+        
+        accessory = "{0}accessory/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.accessory else "{0}accessory/[Natsuki._outfit.accessory.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         lc_args.extend([
             (0, 0), accessory
         ])
-
-        # Eyes
+        
+        
         lc_args.extend([
-            (0, 0), "{0}/face/eyes/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, eyes), 
+            (0, 0), "{0}face/eyes/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, eyes), 
         ])
-
-        # Tears
+        
+        
         if tears:
             lc_args.extend([
-                (0, 0), "{0}/face/tears/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, tears)
+                (0, 0), "{0}face/tears/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, tears)
             ])
-
-        # Headgear
-        headgear = "{0}/headgear/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.headgear else "{0}/headgear/[Natsuki._outfit.headgear.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+        
+        
+        headgear = "{0}headgear/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.headgear else "{0}headgear/[Natsuki._outfit.headgear.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         lc_args.extend([
             (0, 0), headgear
         ])
-
-        # Facewear
-        facewear = "{0}/facewear/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.facewear else "{0}/facewear/[Natsuki._outfit.facewear.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+        
+        
+        facewear = "{0}facewear/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.facewear else "{0}facewear/[Natsuki._outfit.facewear.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         lc_args.extend([
             (0, 0), facewear
         ])
-
-        # Eyewear
-        eyewear = "{0}/eyewear/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.eyewear else "{0}/eyewear/[Natsuki._outfit.eyewear.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
+        
+        
+        eyewear = "{0}eyewear/jn_none/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH) if not Natsuki._outfit.eyewear else "{0}eyewear/[Natsuki._outfit.eyewear.reference_name]/sitting.png".format(_JN_NATSUKI_BASE_SPRITE_PATH)
         lc_args.extend([
             (0, 0), eyewear
         ])
-
-        # Brows
+        
+        
         lc_args.extend([
-            (0, 0), "{0}/face/eyebrows/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, eyebrows)
+            (0, 0), "{0}face/eyebrows/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, eyebrows)
         ])
-
+        
         if pose in _JN_BEFORE_DESK_POSES:
-            # Arms, sleeves
+            
             lc_args.extend([
-                (0, 0), "{0}/arms/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
-                (0, 0), "{0}/sleeves/[Natsuki._outfit.clothes.reference_name]/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose)
+                (0, 0), "{0}arms/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
+                (0, 0), "{0}sleeves/[Natsuki._outfit.clothes.reference_name]/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose)
             ])
-
-        # Desk
+        
+        
         lc_args.extend([
             (0, 0), _JN_NATSUKI_BASE_SPRITE_PATH + "/desk/table/{0}.png".format(_JN_TABLE_SPRITE)           
         ])
-
+        
         if pose in _JN_AFTER_DESK_POSES:
-            # Arms, sleeves
+            
             lc_args.extend([
-                (0, 0), "{0}/desk/table_shadow/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
-                (0, 0), "{0}/arms/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
-                (0, 0), "{0}/sleeves/[Natsuki._outfit.clothes.reference_name]/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose)
+                (0, 0), "{0}desk/table_shadow/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
+                (0, 0), "{0}arms/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose),
+                (0, 0), "{0}sleeves/[Natsuki._outfit.clothes.reference_name]/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, pose)
             ])
-
-        # Left desk item
+        
+        
         lc_args.extend([
             (0, 0), DynamicDisplayable(Natsuki.getDeskItemDisplayable, desk_slot=jn_desk_items.JNDeskSlots.left)
         ])
-        # Centre desk item
+        
         lc_args.extend([
             (0, 0), DynamicDisplayable(Natsuki.getDeskItemDisplayable, desk_slot=jn_desk_items.JNDeskSlots.centre)
         ])
-        # Right desk item
+        
         lc_args.extend([
             (0, 0), DynamicDisplayable(Natsuki.getDeskItemDisplayable, desk_slot=jn_desk_items.JNDeskSlots.right)
         ])
-
-        # Emotes
+        
+        
         if emote:
             lc_args.extend([
                 (0, 0), "{0}/emote/sitting/{1}.png".format(_JN_NATSUKI_BASE_SPRITE_PATH, emote)
             ])
-
-        # Generate and return the sprite
+        
+        
         return renpy.display.layout.LiveComposite(
             *lc_args
         )
@@ -396,7 +396,7 @@ init 1 python:
         "wl": JNEyes.wink_left,
         "wr": JNEyes.wink_right
     }
-    
+
     MOUTH_MAP = {
         "aj": JNMouth.ajar,
         "an": JNMouth.angry,
@@ -437,7 +437,7 @@ init 1 python:
         "up": JNMouth.upset,
         "wr": JNMouth.worried
     }
-    
+
     BLUSH_MAP = {
         "f": JNBlush.full,
         "l": JNBlush.light,
@@ -496,57 +496,57 @@ init 1 python:
             ValueError if the expression is invalid due to length (too short)
             KeyError if the expression is invalid due to invalid parts
         """
-        #Check if the length is valid first
+        
         if len(exp_code) < 6:
             raise ValueError("Invalid expression code: {0}".format(exp_code))
-
-        #Left to right, first is the pose
+        
+        
         pose = exp_code[0]
         exp_code = exp_code[1:]
-
-        #Next, eyebrows
+        
+        
         eyebrows = exp_code[0]
         exp_code = exp_code[1:]
-
-        #Next, eyes
+        
+        
         eyes = exp_code[:2]
         exp_code = exp_code[2:]
-
-        #Next, mouth
+        
+        
         mouth = exp_code[:2]
         exp_code = exp_code[2:]
-
+        
         blush = None
         tears = None
         emote = None
         sweat = None
-
-        #If we still have an expcode, we know we have optional portions to process
+        
+        
         while exp_code:
             if exp_code[0] in BLUSH_MAP:
                 exp_part = exp_code[0]
                 exp_code = exp_code[1:]
                 blush = exp_part
-
+            
             else:
                 if exp_code[:3] in TEARS_MAP:
                     tears = exp_code[:3]
                     exp_code = exp_code[3:]
-
+                
                 elif exp_code[:3] in EMOTE_MAP:
                     emote = exp_code[:3]
                     exp_code = exp_code[3:]
-
+                
                 elif exp_code[:3] in SWEAT_MAP:
                     sweat = exp_code[:3]
                     exp_code = exp_code[3:] 
-
-                #To avoid an infinite loop, we'll raise another ValueError to note this format is invalid
+                
+                
                 else:
                     raise ValueError(
                         "Invalid optional expression part: '{0}'. (All optional parts must follow mandatory ones)".format(exp_code)
                     )
-
+        
         return {
             "pose": POSE_MAP[pose],
             "eyebrows": EYEBROW_MAP[eyebrows],
@@ -562,18 +562,18 @@ init 1 python:
         """
         Internal function to generate the image from the given expression code
         """
-        #Parse the expression code and generate the displayable
+        
         disp = jnGenerateNatsukiSprite(**_parse_exp_code(exp_code))
 
-        #Get existing attrs to append this one to the known attrs
-        _existing_attr_list = renpy.display.image.image_attributes["natsuki"]
+        # nmms el dict
+        attr_dict = renpy.display.image.image_attributes.get("natsuki")
+        if not isinstance(attr_dict, dict):
+            attr_dict = {}
+            renpy.display.image.image_attributes["natsuki"] = attr_dict
 
-        #Now add the displayable
+        attr_dict[(exp_code,)] = disp
+
         renpy.display.image.images[("natsuki", exp_code)] = disp
-
-        #And finally update the attributes
-        if exp_code not in _existing_attr_list:
-            _existing_attr_list.append(exp_code)
 
     def _find_target_override(self):
         """
@@ -586,15 +586,15 @@ init 1 python:
             - self - Reference to the calling narration statement, so we can access its args (name and spritecode)
         """
         name = self.name
-
+        
         if isinstance(name, renpy.display.core.Displayable):
             self.target = name
             return True
-
-        # Name is a tuple of (character_name, spritecode); we use these to determine displayable
+        
+        
         if not isinstance(name, tuple):
             name = tuple(name.split())
-
+        
         def error(msg):
             """
             Sets the image target to a displayable (text) for a missing image.
@@ -610,76 +610,76 @@ init 1 python:
                 yanchor=0,
                 ypos=0
             )
-
+            
             if renpy.config.debug:
                 raise Exception(msg)
-
+        
         args = [ ]
-
+        
         while name:
-            # Here, we are iterating through the characters of the spritecode and trying to find a 
-            # pre-existing image for it to save generating every time, stopping if we find one.
-            #
-            # This also lets us check to make sure the narration isn't trying to use a hardcoded image
+            
+            
+            
+            
             target = renpy.display.image.images.get(name, None)
-
+            
             if target is not None:
                 break
-
+            
             args.insert(0, name[-1])
             name = name[:-1]
-
+        
         if not name:
-            # We didn't find an image corresponding to the spritecode, or a hardcoded image, so we generate a new one
+            
             if (
                 isinstance(self.name, tuple)
                 and len(self.name) == 2
                 and self.name[0] == "natsuki"
             ):
-                #Reset name
+                
                 name = self.name
-
-                #Generate
+                
+                
                 _generate_image(name[1])
                 
-                #Try to get the img again
+                
                 target = renpy.display.image.images[name]
-
+            
             else:
-                # Image couldn't be generated
+                
                 error("Image '%s' not found." % ' '.join(self.name))
                 return False
-
+        
         try:
             a = self._args.copy(name=name, args=args)
             self.target = target._duplicate(a)
-
+        
         except Exception as e:
             if renpy.config.debug:
                 raise
-
+            
             error(str(e))
-
-        #Copy the old transform over.
+        
+        
         new_transform = self.target._target()
-
+        
         if isinstance(new_transform, renpy.display.transform.Transform):
             if self.old_transform is not None:
                 new_transform.take_state(self.old_transform)
-
+            
             self.old_transform = new_transform
-
+        
         else:
             self.old_transform = None
-
+        
         return True
 
-    # Finally, feed back to Ren'Py the image we actually want to display for the narration
+
     renpy.display.image.ImageReference.find_target = _find_target_override
 
     if Natsuki.isLove(higher=True):
         _JN_TABLE_SPRITE = "table_love"
-        
+
     elif Natsuki.isEnamored(higher=True):
         _JN_TABLE_SPRITE = "table_enamored"
 
@@ -698,24 +698,24 @@ init 1 python:
     elif Natsuki.isRuined(higher=True):
         _JN_TABLE_SPRITE = "table_ruined"
 
-# Sprite code format:
-# <pose><eyebrows><eyes><mouth><blush><tears><emote><sweat>
-#
-# Pose, eyebrows, eyes and mouth are compulsary. Any others are optional.
-#
-# Some notes regarding lengths of each part:
-#   pose: 1 character
-#   eyebrows: 1 character
-#   eyes: 2 characters
-#   mouth: 2 characters
-#   blush: 1 character
-#   tears: 3 characters, t-prefix
-#   emote: 3 characters, e-prefix
-#   sweat: 3 characters, s-prefix
-#
-# For spritecode construction, use the previewer @ https://just-natsuki-team.github.io/Expression-Previewer/
 
-# Idle images for Natsuki playing her Twitch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 image natsuki gaming:
     block:
         choice:
@@ -737,7 +737,7 @@ image natsuki gaming:
         choice:
             "natsuki 1fdwcaesssbr"
             pause 3
-            
+
         choice:
             "natsuki 1fdwsssbl"
             pause 3
@@ -746,9 +746,9 @@ image natsuki gaming:
 
     repeat
 
-# Idle images for Natsuki falling - then remaining - asleep
+
 image natsuki sleeping:
-    # Falling asleep (4.1s)
+
     "natsuki 3nnmpu"
     pause 1
     "natsuki 3nsqpu"
@@ -760,7 +760,7 @@ image natsuki sleeping:
     "natsuki 3ncssl"
     pause 2
 
-    # Sleeping loop
+
     block:
         "natsuki 3ncsflesl"
         pause 2
@@ -771,7 +771,7 @@ image natsuki sleeping:
 
         repeat
 
-# Idle images for Natsuki reading something
+
 image natsuki reading:
     block:
         choice:
@@ -852,7 +852,7 @@ image natsuki reading:
 
     repeat
 
-# Idle images for Natsuki daydreaming/in thought
+
 image natsuki thinking:
     block:
         choice:
@@ -888,7 +888,7 @@ image natsuki thinking:
             pause 4
             "natsuki 4tcsbo"
             pause 0.1
-    
+
         choice:
             "natsuki 7tsrpu"
             pause 4
@@ -907,7 +907,7 @@ image natsuki thinking:
 
     repeat
 
-# Idle images for Natsuki vibing/listening to music
+
 image natsuki vibing:
     block:
         choice:
@@ -1017,7 +1017,7 @@ image natsuki whistling:
             pause 4
     repeat
 
-# Idle images for Natsuki working_on_papers
+
 image natsuki working_on_papers:
     block:
         choice:
@@ -1053,7 +1053,7 @@ image natsuki working_on_papers:
             pause 4
             "natsuki 4tcsbo"
             pause 0.1
-    
+
         choice:
             "natsuki 2tsrpu"
             pause 4
@@ -1368,12 +1368,13 @@ image natsuki_option_wait_annoyed:
             pause 2
             "natsuki 2fcssl"
             pause 0.1
-
+    
     repeat
+
 
 image natsuki idle = Natsuki.getIdleImageTagsForAffinity()
 
-# Idle images for ENAMORED+
+
 image natsuki idle enamored:
     block:
         choice:
@@ -1506,7 +1507,7 @@ image natsuki idle enamored:
 
         repeat
 
-# Idle images for AFFECTIONATE+
+
 image natsuki idle affectionate:
     block:
         choice:
@@ -1607,7 +1608,7 @@ image natsuki idle affectionate:
 
         repeat
 
-# Idle images for HAPPY+
+
 image natsuki idle happy:
     block:
         choice:
@@ -1738,7 +1739,7 @@ image natsuki idle happy:
 
         repeat
 
-# Idle images for NORMAL+
+
 image natsuki idle normal:
     block:
         choice:
@@ -1837,7 +1838,7 @@ image natsuki idle normal:
 
         repeat
 
-# Idle images for DISTRESSED+
+
 image natsuki idle distressed:
     block:
         choice:
@@ -1884,7 +1885,7 @@ image natsuki idle distressed:
 
         repeat
 
-# Idle images for RUINED+
+
 image natsuki idle ruined:
     block:
         choice:
@@ -1905,7 +1906,7 @@ image natsuki idle ruined:
         pause 4
         repeat
 
-# Idle images for the introduction sequence, after Natsuki and the player are introduced
+
 image natsuki idle introduction:
     block:
         choice:
@@ -1984,22 +1985,22 @@ init python:
         """
         if Natsuki.isEnamored(higher=True):
             renpy.show("natsuki talk_menu_enamored", at_list=[jn_left])
-
+        
         elif Natsuki.isAffectionate(higher=True):
             renpy.show("natsuki talk_menu_affectionate", at_list=[jn_left])
-
+        
         elif Natsuki.isHappy(higher=True):
             renpy.show("natsuki talk_menu_happy", at_list=[jn_left])
-
+        
         elif Natsuki.isNormal(higher=True):
             renpy.show("natsuki talk_menu_normal", at_list=[jn_left])
-
+        
         elif Natsuki.isDistressed(higher=True):
             renpy.show("natsuki talk_menu_distressed", at_list=[jn_left])
-
+        
         else:
             renpy.show("natsuki talk_menu_ruined", at_list=[jn_left])
-
+    
     def jnGetNatsukiRandomStaticIdleSprite():
         """
         Returns a random idle sprite code based on the current affinity level.
@@ -2021,7 +2022,7 @@ init python:
                 "3uchsmfedz",
                 "3nchsmfeme"
             ])
-
+        
         elif Natsuki.isAffectionate(higher=True):
             return random.choice([
                 "3unmcsl",
@@ -2033,7 +2034,7 @@ init python:
                 "1nllbol",
                 "7nllpul"
             ])
-
+        
         elif Natsuki.isHappy(higher=True):
             return random.choice([
                 "3unmbo",
@@ -2045,7 +2046,7 @@ init python:
                 "1nnmca",
                 "2ullfs"
             ])
-
+        
         elif Natsuki.isNormal(higher=True):
             return random.choice([
                 "2unmca",
@@ -2058,7 +2059,7 @@ init python:
                 "2nnmca",
                 "1nllpu"
             ])
-
+        
         elif Natsuki.isDistressed(higher=True):
             return random.choice([
                 "2fllsl",
@@ -2070,7 +2071,7 @@ init python:
                 "2flrsf",
                 "2fsqca"
             ])
-
+        
         else:
             return random.choice([
                 "1fcsuntsa",
@@ -2082,7 +2083,7 @@ init python:
                 "4fsrantse"
             ])
 
-# Menu images for ENAMORED+
+
 image natsuki talk_menu_enamored:
     block:
         choice:
@@ -2136,7 +2137,7 @@ image natsuki talk_menu_enamored:
             pause 4
             repeat
 
-# Menu images for AFFECTIONATE+
+
 image natsuki talk_menu_affectionate:
     block:
         choice:
@@ -2152,7 +2153,7 @@ image natsuki talk_menu_affectionate:
             "natsuki 1ucsbg"
             pause 0.1
             repeat
-        
+
         choice:
             "natsuki 4uchbg"
 
@@ -2179,7 +2180,7 @@ image natsuki talk_menu_affectionate:
             pause 0.1
             repeat
 
-# Menu images for HAPPY+
+
 image natsuki talk_menu_happy:
     block:
         choice:
@@ -2217,7 +2218,7 @@ image natsuki talk_menu_happy:
             pause 0.1
             repeat
 
-# Menu images for NORMAL+
+
 image natsuki talk_menu_normal:
     block:
         choice:
@@ -2255,7 +2256,7 @@ image natsuki talk_menu_normal:
             pause 0.1
             repeat
 
-# Menu images for DISTRESSED+
+
 image natsuki talk_menu_distressed:
     block:
         choice:
@@ -2281,7 +2282,7 @@ image natsuki talk_menu_distressed:
         choice:
             "natsuki 2fcsaj"
 
-# Menu images for RUINED+
+
 image natsuki talk_menu_ruined:
     block:
         choice:

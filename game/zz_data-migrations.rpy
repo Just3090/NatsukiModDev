@@ -12,19 +12,19 @@ python early in jn_data_migrations:
     import store.jn_globals as jn_globals
     import store.jn_utils as jn_utils
 
-    # dict mapping a from_version -> to_version, including the function used to migrate between those versions
-    # form:
-    # "x.y.z": {
-    #    MigrationRuntimes.INIT: (callable, "x.y.z"),
-    #    MigrationRuntimes.RUNTIME: (callable, "x.y.z")
-    #},
+
+
+
+
+
+
     UPDATE_FUNCS = dict()
 
-    # list containing the late (during runtime) migrations we need to run. These will simply be run in order.
+
     LATE_UPDATES = []
 
-    #Parses x.x.x.x (suffix) to a regex match with two groups:
-    # ver and suffix
+
+
     VER_STR_PARSER = re.compile(r"^(?P<ver>\d+\.\d+\.\d+)(?P<suffix>.*)$")
 
     migrated_in_session = False
@@ -74,7 +74,7 @@ python early in jn_data_migrations:
         for from_version in from_versions:
             if from_version not in UPDATE_FUNCS:
                 UPDATE_FUNCS[from_version] = dict()
-
+            
             UPDATE_FUNCS[from_version][runtime] = (_callable, to_version)
 
     def verStrToVerList(ver_str):
@@ -84,7 +84,7 @@ python early in jn_data_migrations:
         match = VER_STR_PARSER.match(ver_str)
         if not match:
             raise ValueError("Invalid version string.")
-
+        
         ver_list = match.group("ver").split(".")
         return [int(x) for x in ver_list]
 
@@ -94,27 +94,27 @@ python early in jn_data_migrations:
         """
         match1 = VER_STR_PARSER.match(ver_str1)
         match2 = VER_STR_PARSER.match(ver_str2)
-
+        
         if not match1 or not match2:
             raise ValueError("Invalid version string.")
-
+        
         ver1 = verStrToVerList(match1.group("ver"))
         ver2 = verStrToVerList(match2.group("ver"))
-
-        #Check the lengths of the versions, we'll pad the shorter one with zeros
+        
+        
         if len(ver1) > len(ver2):
             ver2 += [0] * (len(ver1) - len(ver2))
         elif len(ver1) < len(ver2):
             ver1 += [0] * (len(ver2) - len(ver1))
-
-        #Now directly compare from left to right
+        
+        
         for i in range(len(ver1)):
             if ver1[i] > ver2[i]:
                 return 1
             elif ver1[i] < ver2[i]:
                 return -1
-
-        #If we got here, the versions are equal
+        
+        
         return 0
 
     def checkCurrentVersionIsLatest(notify_if_current=False):
@@ -138,10 +138,10 @@ python early in jn_data_migrations:
             
             if not current_version_latest:
                 renpy.notify("An update for Just Natsuki is now available! Go to: https://github.com/Just-Natsuki-Team/NatsukiModDev/releases")
-
+            
             elif notify_if_current:
                 renpy.notify("Just Natsuki is already up to date!")
-
+        
         except Exception as exception:
             jn_utils.log("Failed to check for updates: {0}".format(exception))
             return False
@@ -158,24 +158,24 @@ python early in jn_data_migrations:
         Runs init time migration functions. Must be run after init 0
         """
         jn_utils.log("runInitMigrations START")
-        #We do nothing here if the version isn't in the dict
+        
         if store.persistent._jn_version not in UPDATE_FUNCS:
             return
-
-        #Set from_version to the version we're migrating from
+        
+        
         from_version = store.persistent._jn_version
-
-        #If the current version (config.version) is greater than the version we've got stored (or migrating from)
-        #We should loop until we've caught up
+        
+        
+        
         while compareVersions(from_version, renpy.config.version) < 0:
-            #First, check if there's a late migration we need to run
+            
             if MigrationRuntimes.RUNTIME in UPDATE_FUNCS[store.persistent._jn_version]:
                 LATE_UPDATES.append(UPDATE_FUNCS[store.persistent._jn_version][MigrationRuntimes.RUNTIME])
-
-            #We're below the latest version, so we need to migrate to the next one in the chain
+            
+            
             _callable, from_version = UPDATE_FUNCS[from_version][MigrationRuntimes.INIT]
-
-            #Migrate
+            
+            
             _callable()
 
     def runRuntimeMigrations():
@@ -186,12 +186,12 @@ python early in jn_data_migrations:
         for _callable in LATE_UPDATES:
             _callable()
 
-#Init time migrations are run at init 10
+
 init 10 python:
     jn_utils.log("Current persisted version pre-mig check: {0}".format(store.persistent._jn_version))
     jn_data_migrations.runInitMigrations()
 
-#All migration scripts go here
+
 init python in jn_data_migrations:
     import os
     import shutil
@@ -206,7 +206,7 @@ init python in jn_data_migrations:
     @migration(["0.0.0", "0.0.1", "0.0.2"], "1.0.0", runtime=MigrationRuntimes.INIT)
     def to_1_0_0():
         jn_utils.log("Migration to 1.0.0 START")
-        # Nickname persistent migration
+        
         if (
             store.persistent.jn_player_nicknames_allowed is not None
             and not store.persistent.jn_player_nicknames_allowed
@@ -214,8 +214,8 @@ init python in jn_data_migrations:
             store.persistent._jn_nicknames_natsuki_allowed = False
             del store.persistent.jn_player_nicknames_allowed
             jn_utils.log("Migrated: persistent.jn_player_nicknames_allowed")
-
-        # Natsuki nickname variable was renamed; migrate
+        
+        
         if (
             store.persistent.jn_player_nicknames_current_nickname is not None
             and store.persistent.jn_player_nicknames_current_nickname != "Natsuki"
@@ -225,7 +225,7 @@ init python in jn_data_migrations:
             store.n_name = store.persistent._jn_nicknames_natsuki_current_nickname
             del store.persistent.jn_player_nicknames_current_nickname
             jn_utils.log("Migrated: persistent.jn_player_nicknames_current_nickname")
-
+        
         if (
             store.persistent.jn_player_nicknames_bad_given_total is not None
             and store.persistent.jn_player_nicknames_bad_given_total > 0
@@ -233,25 +233,25 @@ init python in jn_data_migrations:
             store.persistent._jn_nicknames_natsuki_bad_given_total = store.persistent.jn_player_nicknames_bad_given_total
             del store.persistent.jn_player_nicknames_bad_given_total
             jn_utils.log("Migrated: persistent.jn_player_nicknames_bad_given_total")
-
-        # Allow players who haven't told Natsuki they love her yet to confess
+        
+        
         if store.Natsuki.isLove(higher=True) and store.persistent.jn_player_love_you_count == 0:
             store.persistent.affinity = jn_affinity.AFF_THRESHOLD_LOVE -1
-
-        # Topic conditional migrations
+        
+        
         store.persistent._apology_database = dict()
-
+        
         store.persistent._topic_database["talk_i_love_you"]["conditional"] = None
         store.get_topic("talk_i_love_you").conditional = None
-
+        
         store.persistent._topic_database["talk_mod_contributions"]["conditional"] = "not jn_activity.ACTIVITY_SYSTEM_ENABLED or jn_activity.ACTIVITY_MANAGER.hasPlayerDoneActivity(jn_activity.JNActivities.coding)"
         store.get_topic("talk_mod_contributions").conditional = "not jn_activity.ACTIVITY_SYSTEM_ENABLED or jn_activity.ACTIVITY_MANAGER.hasPlayerDoneActivity(jn_activity.JNActivities.coding)"
-
+        
         jn_utils.log("Migrated: store.persistent._apology_database")
         jn_utils.log("""Migrated: store.persistent._topic_database["talk_i_love_you"]["conditional"]""")
         jn_utils.log("""Migrated: store.persistent._topic_database["talk_mod_contributions"]["conditional"]""")
-
-        # Misc migrations
+        
+        
         if (
             store.persistent.jn_activity_used_programs is not None
             and len(store.persistent.jn_activity_used_programs) > len(store.persistent._jn_activity_used_programs)
@@ -259,12 +259,12 @@ init python in jn_data_migrations:
             store.persistent._jn_activity_used_programs = store.persistent.jn_activity_used_programs
             del store.persistent.jn_activity_used_programs
             jn_utils.log("Migrated: persistent.jn_activity_used_programs")
-
+        
         if store.persistent.jn_notify_conversations is not None:
             store.persistent._jn_notify_conversations = store.persistent.jn_notify_conversations
             del store.persistent.jn_notify_conversations
             jn_utils.log("Migrated: persistent.jn_player_nicknames_bad_given_total")
-
+        
         store.persistent._jn_version = "1.0.0"
         jn_utils.saveGame()
         jn_utils.log("Migration to 1.0.0 DONE")
@@ -273,12 +273,12 @@ init python in jn_data_migrations:
     @migration(["1.0.0"], "1.0.1", runtime=MigrationRuntimes.INIT)
     def to_1_0_1():
         jn_utils.log("Migration to 1.0.1 START")
-
-        # Unlock some outfit items registered originally as locked, now unlocked by default
+        
+        
         jn_outfits.getOutfit("jn_nyatsuki_outfit").unlock()
         jn_outfits.getWearable("jn_clothes_qeeb_sweater").unlock()
         jn_outfits.getWearable("jn_clothes_qt_sweater").unlock()
-
+        
         store.persistent._jn_version = "1.0.1"
         jn_utils.saveGame()
         jn_utils.log("Migration to 1.0.1 DONE")
@@ -295,10 +295,10 @@ init python in jn_data_migrations:
     def to_1_0_3():
         jn_utils.log("Migration to 1.0.3 START")
         store.persistent._jn_version = "1.0.3"
-
+        
         if jn_outfits.getOutfit("jn_skater_outfit").unlocked:
             jn_outfits.getWearable("jn_facewear_plasters").unlock()
-
+        
         jn_utils.saveGame()
         jn_utils.log("Migration to 1.0.3 DONE")
         return
@@ -307,7 +307,7 @@ init python in jn_data_migrations:
     def to_1_1_0():
         jn_utils.log("Migration to 1.1.0 START")
         store.persistent._jn_version = "1.1.0"
-
+        
         store.persistent._event_database["event_not_ready_yet"]["conditional"] = (
             "((jn_is_time_block_early_morning() or jn_is_time_block_mid_morning()) and jn_is_weekday())"
             " or (jn_is_time_block_late_morning and not jn_is_weekday())"
@@ -317,20 +317,20 @@ init python in jn_data_migrations:
             " or (jn_is_time_block_late_morning and not jn_is_weekday())"
         )
         jn_utils.log("""Migrated: store.persistent._event_database["event_not_ready_yet"]["conditional"]""")
-
+        
         if "holiday_player_birthday" in store.persistent._seen_ever:
             jn_poems.getPoem("jn_birthday_cakes_candles").unlock()
             jn_utils.log("Migrated: jn_birthday_cakes_candles unlock state")
-
+        
         if "holiday_christmas_day" in store.persistent._seen_ever:
             if store.Natsuki.isEnamored(higher=True):
                 jn_poems.getPoem("jn_christmas_evergreen").unlock()
                 jn_utils.log("Migrated: jn_christmas_evergreen unlock state")
-
+            
             elif store.Natsuki.isHappy(higher=True):
                 jn_poems.getPoem("jn_christmas_gingerbread_house").unlock()
                 jn_utils.log("Migrated: jn_christmas_gingerbread_house unlock state")
-
+        
         jn_utils.saveGame()
         jn_utils.log("Migration to 1.1.0 DONE")
         return
@@ -346,10 +346,10 @@ init python in jn_data_migrations:
     def to_1_2_0():
         jn_utils.log("Migration to 1.2.0 START")
         store.persistent._jn_version = "1.2.0"
-
+        
         if store.persistent._jn_player_birthday_day_month is not None:
             store.persistent._jn_natsuki_birthday_known = True
-
+        
         jn_utils.saveGame()
         jn_utils.log("Migration to 1.2.0 DONE")
         return
@@ -379,45 +379,45 @@ init python in jn_data_migrations:
     def to_1_2_4():
         jn_utils.log("Migration to 1.2.4 START")
         store.persistent._jn_version = "1.2.4"
-
+        
         if "holiday_christmas_day" in store.persistent._seen_ever:
             jn_outfits.getOutfit("jn_christmas_outfit").unlock()
             jn_utils.log("Unlock state corrected for outfit: jn_christmas_outfit")
-
+        
         if "talk_are_you_into_cosplay" in store.persistent._seen_ever and store.Natsuki.isAffectionate(higher=True):
             jn_outfits.getOutfit("jn_trainer_cosplay").unlock()
             jn_outfits.getOutfit("jn_sango_cosplay").unlock()
             jn_utils.log("Unlock state corrected for outfits: jn_trainer_cosplay, jn_sango_cosplay")
-
+        
         if "talk_skateboarding" in store.persistent._seen_ever and store.Natsuki.isAffectionate(higher=True):
             jn_outfits.getOutfit("jn_skater_outfit").unlock()
             jn_utils.log("Unlock state corrected for outfit: jn_skater_outfit")
-
+        
         if "event_warm_package" in store.persistent._seen_ever:
             jn_outfits.getOutfit("jn_cosy_cardigan_outfit").unlock()
             jn_utils.log("Unlock state corrected for outfit: jn_cosy_cardigan_outfit")
-
+        
         if "talk_fitting_clothing" in store.persistent._seen_ever:
             jn_outfits.getOutfit("jn_pastel_goth_getup").unlock()
             jn_utils.log("Unlock state corrected for outfit: jn_pastel_goth_getup")
-
+        
         if "holiday_valentines_day" in store.persistent._seen_ever:
             jn_outfits.getOutfit("jn_ruffle_neck_sweater_outfit").unlock()
             jn_utils.log("Unlock state corrected for outfit: jn_ruffle_neck_sweater_outfit")
-
+            
             if store.Natsuki.isLove(higher=True):
                 jn_outfits.getOutfit("jn_heart_sweater_outfit").unlock()
                 jn_utils.log("Unlock state corrected for outfit: jn_heart_sweater_outfit")
-
+        
         if "talk_chocolate_preference" in store.persistent._seen_ever and store.Natsuki.isAffectionate(higher=True):
             jn_outfits.getOutfit("jn_chocolate_plaid_collection").unlock()
             jn_utils.log("Unlock state corrected for outfit: jn_chocolate_plaid_collection")
-
+        
         if "holiday_easter" in store.persistent._seen_ever:
             jn_outfits.getOutfit("jn_chick_outfit").unlock()
             jn_outfits.getOutfit("jn_cherry_blossom_outfit").unlock()
             jn_utils.log("Unlock state corrected for outfits: jn_chick_outfit, jn_cherry_blossom_outfit")
-
+        
         jn_utils.saveGame()
         jn_utils.log("Migration to 1.2.4 DONE")
         return
@@ -427,25 +427,25 @@ init python in jn_data_migrations:
         jn_utils.log("Migration to 1.3.0 START")
         store.persistent._jn_version = "1.3.0"
         
-        # Migrate topic persistent data
+        
         if store.persistent.jn_player_pet is not None:
             store.persistent._jn_player_pet = store.persistent.jn_player_pet
             del store.persistent.jn_player_pet
             jn_utils.log("Migrated: persistent.jn_player_pet")
-
+        
         if store.persistent.jn_player_admission_type_on_quit is not None:
             store.persistent._jn_player_admission_type_on_quit = store.persistent.jn_player_admission_type_on_quit
             del store.persistent.jn_player_admission_type_on_quit
             jn_utils.log("Migrated: persistent.jn_player_admission_type_on_quit")
-
+        
         if jn_outfits.getOutfit("jn_chocolate_plaid_collection").unlocked:
             jn_outfits.getWearable("jn_necklace_tight_golden_necklace").unlock()
             jn_utils.log("Unlock state corrected for wearable: jn_necklace_tight_golden_necklace")
-
+        
         if store.get_topic("event_caught_reading_manga").shown_count > 0:
             jn_desk_items.getDeskItem("jn_parfait_manga_held").unlock()
             jn_utils.log("Unlock state corrected for desk item: jn_parfait_manga_held")
-
+        
         if store.persistent.jn_sunrise_hour is not None:
             del store.persistent.jn_sunrise_hour
             jn_utils.log("Removed: persistent.jn_sunrise_hour")
@@ -453,7 +453,7 @@ init python in jn_data_migrations:
         if store.persistent.jn_sunset_hour is not None:
             del store.persistent.jn_sunset_hour
             jn_utils.log("Removed: persistent.jn_sunset_hour")
-
+        
         jn_utils.saveGame()
         jn_utils.log("Migration to 1.3.0 DONE")
         return
@@ -461,27 +461,27 @@ init python in jn_data_migrations:
     @migration(["1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4"], "1.3.5", runtime=MigrationRuntimes.INIT)
     def to_1_3_5():
         jn_utils.log("Migration to 1.3.5 START")
-
+        
         if renpy.linux or renpy.macintosh:
-            # See: https://github.com/Just-Natsuki-Team/NatsukiModDev/pull/844
+            
             if jn_utils.deleteDirectory(os.path.join(renpy.config.basedir, "game/mod_assets/natsuki/clothes/jn_clothes_QT_sweater")):
                 jn_utils.log("Removed unused assets: clothes/jn_clothes_QT_sweater")
-
+            
             if jn_utils.deleteDirectory(os.path.join(renpy.config.basedir, "game/mod_assets/natsuki/sleeves/jn_clothes_QT_sweater")):
                 jn_utils.log("Removed unused assets: sleeves/jn_clothes_QT_sweater")
-
-        # Threading functions were rolled into definitions; these are no longer required
+        
+        
         if jn_utils.deleteFileFromDirectory(os.path.join(renpy.config.basedir, "game/threading.rpy")):
             jn_utils.log("Removed unused source file: game/threading.rpy")
         
         if jn_utils.deleteFileFromDirectory(os.path.join(renpy.config.basedir, "game/threading.rpyc")):
             jn_utils.log("Removed unused compiled file: game/threading.rpyc")
-
+        
         if store.persistent.jn_total_visit_count > 0 and store.Natsuki.isNormal(higher=True):
-            # Allow players who have experienced the old music to see the transition event
+            
             store.persistent._jn_player_allow_legacy_music_switch_event = True
-
-        # Configure shown_count for holidays
+        
+        
         for holiday in jn_events.getAllHolidays():
             holiday.shown_count = 1 if holiday.label in store.persistent._seen_ever else 0
             jn_utils.log("Set shown count for {0} to {1}".format(holiday.label, holiday.shown_count))
@@ -491,8 +491,8 @@ init python in jn_data_migrations:
             store.persistent._jn_snpsht_aff = store.persistent.affinity
             store.persistent.affinity = 0
             store.persistent._jn_pic = True
-            jn_utils.log("434346".decode("hex"))
-
+            jn_utils.log(bytes.fromhex("434346").decode())
+        
         jn_utils.saveGame()
         store.persistent._jn_version = "1.3.5"
         jn_utils.log("Migration to 1.3.5 DONE")

@@ -1,20 +1,20 @@
-# Natsuki nickname data
+
 default persistent._jn_nicknames_natsuki_allowed = True
 default persistent._jn_nicknames_natsuki_current_nickname = "Natsuki"
 default persistent._jn_nicknames_natsuki_bad_given_total = 0
 
-# Player nickname data
+
 default persistent._jn_nicknames_player_allowed = True
 default persistent._jn_nicknames_player_current_nickname = persistent.playername
 default persistent._jn_nicknames_player_bad_given_total = 0
 
-init 0 python in jn_nicknames:
+init python in jn_nicknames:
     from Enum import Enum
     import re
     import store
     import store.jn_globals as jn_globals
     import store.jn_utils as jn_utils
-    
+
     class NicknameTypes(Enum):
         """
         Identifiers for different nickname types.
@@ -28,7 +28,7 @@ init 0 python in jn_nicknames:
         funny = 7
         nou = 8
 
-    # Natsuki loves these nicknames; awarding them awards affinity/trust
+
     NATSUKI_LOVED_NICKNAME_REGEX = re.compile('|'.join({
         "^amazing$",
         "^angel$",
@@ -84,7 +84,7 @@ init 0 python in jn_nicknames:
         "^thebest$"
     }), re.IGNORECASE)
 
-    # Natsuki dislikes these nicknames; no penalty given but name will not be permitted
+
     NATSUKI_DISLIKED_NICKNAME_REGEX = re.compile('|'.join({
         "^(dad|daddy)$",
         "^father$",
@@ -100,7 +100,7 @@ init 0 python in jn_nicknames:
         "(playboy|playgirl)",
     }), re.IGNORECASE)
 
-    # Natsuki finds these nicknames funny
+
     NATSUKI_FUNNY_NICKNAME_REGEX = re.compile('|'.join({
         "^catsuki$",
         "^gorgeous$",
@@ -114,7 +114,7 @@ init 0 python in jn_nicknames:
         "^snack$",
     }), re.IGNORECASE)
 
-    # Nou
+
     NATSUKI_NOU_NICKNAME_REGEX = re.compile('|'.join({
         "^adorkable$",
         "^baka$",
@@ -124,7 +124,7 @@ init 0 python in jn_nicknames:
         "^(w[eaoui]b|w[eaoui][eaoui]b|w[eaoui]b[wq][eaoui]b)$",
     }), re.IGNORECASE)
 
-    # Natsuki dislikes these player names; no penalty given but name will not be permitted 
+
     PLAYER_DISLIKED_NICKNAME_REGEX = re.compile('|'.join({
         "^(dad|daddy)$",
         "^father$",
@@ -137,7 +137,7 @@ init 0 python in jn_nicknames:
         "^junk$",
     }), re.IGNORECASE)
 
-    # Natsuki finds these nicknames funny
+
     PLAYER_FUNNY_NICKNAME_REGEX = re.compile('|'.join({
         "^gorgeous$",
         "^(hot|hotstuff|hottie)$",
@@ -164,34 +164,34 @@ init 0 python in jn_nicknames:
         OUT:
             NicknameTypes type of the given nickname
         """
-
+        
         if not isinstance(nickname, basestring):
             return NicknameTypes.invalid
         
         else:
             nickname = nickname.lower().replace(" ", "")
-
+            
             if nickname == "":
                 return NicknameTypes.invalid
             
             elif re.search(NATSUKI_LOVED_NICKNAME_REGEX, nickname):
                 return NicknameTypes.loved
-
+            
             elif re.search(NATSUKI_FUNNY_NICKNAME_REGEX, nickname):
                 return NicknameTypes.funny
-
+            
             elif re.search(NATSUKI_DISLIKED_NICKNAME_REGEX, nickname) or jn_utils.getStringContainsLabel(nickname):
                 return NicknameTypes.disliked
-
+            
             elif jn_utils.getStringContainsInsult(nickname):
                 return NicknameTypes.hated
-
+            
             elif jn_utils.getStringContainsProfanity(nickname):
                 return NicknameTypes.profanity
-
+            
             elif re.search(NATSUKI_NOU_NICKNAME_REGEX, nickname):
                 return NicknameTypes.nou
-
+            
             else:
                 return NicknameTypes.neutral
 
@@ -205,27 +205,27 @@ init 0 python in jn_nicknames:
         OUT:
             NicknameTypes type of the given nickname
         """
-
+        
         if not isinstance(nickname, basestring):
             return NicknameTypes.invalid
         
         else:
             nickname = nickname.lower().replace(" ", "")
-
+            
             if nickname == "":
                 return NicknameTypes.invalid
-
+            
             if re.search(PLAYER_FUNNY_NICKNAME_REGEX, nickname):
                 return NicknameTypes.funny
-
+            
             elif re.search(PLAYER_DISLIKED_NICKNAME_REGEX, nickname) or jn_utils.getStringContainsLabel(nickname):
                 return NicknameTypes.disliked
-
+            
             elif jn_utils.getStringContainsInsult(nickname):
                 return NicknameTypes.hated
-
+            
             elif jn_utils.getStringContainsProfanity(nickname):
                 return NicknameTypes.profanity
-
+            
             else:
                 return NicknameTypes.neutral

@@ -36,14 +36,14 @@ label random_music_change:
         return
 
     $ track_quip = random.choice([
-        "Alright!{w=0.2} Time for a different tune!",
-        "Okaaay!{w=0.2} Time for another song!",
-        "Yeah,{w=0.2} I think I'm about done with this song.",
-        "'Kay,{w=0.2} that's enough of that.",
-        "New song time!",
-        "That's about enough of that number!",
-        "I wanna listen to something else...",
-        "Time to change things up!"
+        _("Alright!{w=0.2} Time for a different tune!"),
+        _("Okaaay!{w=0.2} Time for another song!"),
+        _("Yeah,{w=0.2} I think I'm about done with this song."),
+        _("'Kay,{w=0.2} that's enough of that."),
+        _("New song time!"),
+        _("That's about enough of that number!"),
+        _("I wanna listen to something else..."),
+        _("Time to change things up!")
     ])
     n 3nchbg "[track_quip]{w=2}{nw}"
     show natsuki 4nchsmeme
@@ -55,12 +55,12 @@ label random_music_change:
     $ jnPause(2)
 
     $ track_followup = random.choice([
-        "Now,{w=0.2} let's see...",
-        "Now,{w=0.2} what have we got...",
-        "Let's see here...",
-        "What else have we got...",
-        "Aha!{w=0.5} Let's try this one!",
-        "Let me see..."
+        _("Now,{w=0.2} let's see..."),
+        _("Now,{w=0.2} what have we got..."),
+        _("Let's see here..."),
+        _("What else have we got..."),
+        _("Aha!{w=0.5} Let's try this one!"),
+        _("Let me see...")
     ])
     n 2fcssm "[track_followup]{w=2}{nw}"
     show natsuki 4fcssm
@@ -73,14 +73,14 @@ label random_music_change:
     $ jnPause(2)
     $ renpy.play(filename=jn_custom_music.getMusicFileRelativePath(file_name=music_title, is_custom=True), channel="music", fadein=2)
     $ jn_custom_music._now_playing = music_title
-    $ renpy.notify("Now playing: {0}".format(jn_custom_music._now_playing.split(".")[0]))
+    $ renpy.notify(_("Now playing: {0}").format(jn_custom_music._now_playing.split(".")[0]))
     $ track_complete = random.choice([
-        "Done~!",
-        "All done!",
-        "All good!",
-        "There we go!",
-        "And...{w=1} we're good!",
-        "Okie-dokie!{w=0.75} Ehehe."
+        _("Done~!"),
+        _("All done!"),
+        _("All good!"),
+        _("There we go!"),
+        _("And...{w=1} we're good!"),
+        _("Okie-dokie!{w=0.75} Ehehe.")
     ])
 
     n 2uchbgeme "[track_complete]{w=2}{nw}"
@@ -91,14 +91,14 @@ label random_music_change:
 
     return
 
-# Enable random music
+
 init 5 python:
     registerTopic(
         Topic(
             persistent._topic_database,
             label="random_music_enable",
             unlocked=True,
-            prompt="Can you play random custom music for me?",
+            prompt=_("Can you play random custom music for me?"),
             conditional="persistent.jn_custom_music_unlocked and not persistent.jn_random_music_enabled",
             category=["Music"],
             player_says=True,
@@ -120,7 +120,7 @@ label random_music_enable:
             path=jn_custom_music.CUSTOM_MUSIC_DIRECTORY,
             extension_list=jn_utils.getSupportedMusicFileExtensions()
         )) >= 2:
-        # Proceed if we have at least two tracks
+
         n 1uchgn "Okaaay!{w=0.2} I think I've got enough to work with here!{w=0.5}{nw}"
         extend 4nchsm " Ehehe."
         n 2nsqsm "Don't worry,{w=0.1} [player].{w=0.5}{nw}"
@@ -129,15 +129,15 @@ label random_music_enable:
         $ persistent.jn_random_music_enabled = True
 
     elif preferences.get_volume("music") == 0:
-        # Cancel if the player has music volume set to zero
+
         n 1nsqem "Uh...{w=0.5} huh."
         n 2tsqca "And how {i}exactly{/i} do you plan to hear it with music turned off?"
         n 2uchbg "Geez...{w=0.3} you're such a dork sometimes,{w=0.1} [player].{w=0.5}{nw}"
         extend 4nchsm " Ehehe."
         n 3fwlsm "Turn it back up,{w=0.1} and then we'll talk.{w=0.2} 'Kay?"
-
     else:
-        # Cancel if the player doesn't have a selection of custom music
+
+
         n 1tllaj "Uhmm...{w=0.3} [player]?{w=0.5}{nw}"
         extend 4tnmca " You haven't exactly given me a lot to work with here."
         n 2unmaj "Can you give me at least a couple of tracks?{w=0.5}{nw}"
@@ -149,14 +149,14 @@ label random_music_enable:
 
     return
 
-# Disable random music
+
 init 5 python:
     registerTopic(
         Topic(
             persistent._topic_database,
             label="random_music_disable",
             unlocked=True,
-            prompt="Can you stop playing random custom music?",
+            prompt=_("Can you stop playing random custom music?"),
             conditional="persistent.jn_custom_music_unlocked and persistent.jn_random_music_enabled",
             category=["Music"],
             player_says=True,

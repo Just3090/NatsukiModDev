@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 # Copyright (C) 2001-2007 Python Software Foundation
 # Author: Barry Warsaw
 # Contact: email-sig@python.org

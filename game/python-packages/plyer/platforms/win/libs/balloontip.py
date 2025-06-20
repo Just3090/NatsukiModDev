@@ -1,4 +1,4 @@
-# -- coding: utf-8 --
+
 '''
 Module of Windows API for creating taskbar balloon tip
 notification in the taskbar's tray notification area.

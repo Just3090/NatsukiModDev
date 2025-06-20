@@ -1,24 +1,24 @@
 default persistent.playername = ""
 default player = persistent.playername
 
-# Generic data
+
 default persistent.jn_total_visit_count = 0
 default persistent.jn_first_visited_date = datetime.datetime.now()
 default persistent.jn_last_visited_date = datetime.datetime.now()
 default persistent._jn_player_tt_state = 0
 default persistent._jn_player_tt_instances = 0
 
-#Our main topic pool
+
 default persistent._event_list = list()
 
-#Early imports
+
 init -990 python:
     import datetime
     import easter
     _easter = easter.easter(datetime.datetime.today().year)
 
-    # zorder constants; use these in place of hard-coded values!
-    # Remember that higher zorder values are displayed closer to the player!
+
+
     JN_GLITCH_ZORDER = 99
     JN_BLACK_ZORDER = 10
     JN_SPECIAL_EFFECTS_ZORDER = 6
@@ -54,11 +54,11 @@ init -3 python:
         afternoon = 4
         evening = 5
         night = 6
-
+        
         def __str__(self):
             return self.name
 
-    #Constants for types. Add more here if we need more organizational areas
+
     TOPIC_TYPE_FAREWELL = "FAREWELL"
     TOPIC_TYPE_GREETING = "GREETING"
     TOPIC_TYPE_NORMAL = "NORMAL"
@@ -68,7 +68,7 @@ init -3 python:
     TOPIC_TYPE_EVENT = "EVENT"
 
     TOPIC_LOCKED_PROP_BASE_MAP = {
-        #Things which shouldn't change
+        
         "conditional": True,
         "unlocked": True,
         "nat_says": True,
@@ -77,8 +77,8 @@ init -3 python:
         "last_seen": True,
         "unlocked_on": True,
 
-        #Things which can change
-        "label": False, #NOTE: even if this isn't saved, we need to iter it
+        
+        "label": False, 
         "affinity_range": False,
         "trust_range": False,
         "category": False,
@@ -102,7 +102,7 @@ init -3 python:
             - unlocked_on: datetime.datetime representing when the user unlocked this topic
             - additional_properties: extra properties which don't directly affect the topic
         """
-
+        
         def __init__(
             self,
             persistent_db,
@@ -141,22 +141,22 @@ init -3 python:
                 additional_properties - dictionary representing additional properties which don't directly affect the topic itself. If None, an empty dict is assigned
                     (Default: None)
             """
-            #First, verify that we're actually using a dict here. Cannot have other types
+            
             if not isinstance(persistent_db, dict):
                 raise Exception("Persistent database provided is not of type dict")
-
-            #Store the internal reference to its data db
-            self.__persistent_db = persistent_db
-
-            #Verify the label is legal
+            
+            
+            self._m1_definitions__persistent_db = persistent_db
+            
+            
             if not renpy.has_label(label):
                 raise Exception("Label {0} does not exist.".format(label))
-
-            #Validate the affinity range prior to it
+            
+            
             if not jn_affinity._isAffRangeValid(affinity_range):
                 raise Exception("Affinity range: {0} is invalid.".format(affinity_range))
-
-            #First, we'll add all of the items here which which shouldn't change from the persisted data
+            
+            
             self.label = label
             self.conditional = conditional
             self.unlocked = unlocked
@@ -164,33 +164,33 @@ init -3 python:
             self.player_says = player_says
             self.affinity_range = affinity_range
             self.trust_range = trust_range
-
-            #Some extra properties for internal use
+            
+            
             self.shown_count = 0
             self.last_seen = None
             self.unlocked_on = None
-
-            #Now, if it's in the db, we should load its data
+            
+            
             if label in persistent_db:
-                self.__load()
-
-            #Next, we'll handle properties which can change
+                self._m1_definitions__load()
+            
+            
             if category is None:
                 category = list()
-
+            
             self.category = category
             self.prompt = prompt
             self.location = location
-
+            
             if additional_properties is None:
                 additional_properties = list()
-
+            
             self.additional_properties = additional_properties
-
-            #And finally, add this all back to the persistent dict
+            
+            
             persistent_db[label] = dict()
-            self.__save()
-
+            self._m1_definitions__save()
+        
         def __eq__(self, other):
             """
             Equals override for the Topic class
@@ -208,13 +208,13 @@ init -3 python:
             if isinstance(other, Topic):
                 return self.label == other.label
             return False
-
+        
         def __repr__(self):
             """
             repr override
             """
             return "<Topic object (label '{0}' at {1})>".format(self.label, hex(id(self)))
-
+        
         def as_dict(self):
             """
             Exports a dict representation of the data to be persisted
@@ -227,7 +227,7 @@ init -3 python:
                 for key, value in self.__dict__.items()
                 if key != "_m1_definitions__persistent_db"
             }
-
+        
         def check_conditional(self):
             """
             Evaluates the topic's conditional
@@ -235,13 +235,13 @@ init -3 python:
             if self.conditional is not None:
                 try:
                     return eval(self.conditional, globals=store.__dict__)
-
+                
                 except Exception as e:
                     store.jn_utils.log("Error evaluating conditional on topic '{0}'. {1}".format(self.label, e.message), jn_utils.SEVERITY_ERR)
                     return False
-
+            
             return True
-
+        
         def curr_affinity_in_affinity_range(self, affinity_state=None):
             """
             Checks if the current affinity is within this topic's affinity_range
@@ -254,20 +254,20 @@ init -3 python:
             """
             if not affinity_state:
                 affinity_state = jn_affinity._getAffinityState()
-
+            
             return jn_affinity._isAffStateWithinRange(affinity_state, self.affinity_range)
-
-        def __load(self):
+        
+        def _m1_definitions__load(self):
             """
             Internal load funtion
 
             NOTE: Will raise a KeyError of the lock map doesn't have the persist key in it
             """
-            for persist_key, value in self.__persistent_db[self.label].iteritems():
+            for persist_key, value in self._m1_definitions__persistent_db[self.label].iteritems():
                 if TOPIC_LOCKED_PROP_BASE_MAP[persist_key]:
                     self.__dict__[persist_key] = value
-
-        def __save(self):
+        
+        def _m1_definitions__save(self):
             """
             Saves this topic object to persistent
 
@@ -275,16 +275,16 @@ init -3 python:
             """
             for persist_key, value in self.as_dict().items():
                 if TOPIC_LOCKED_PROP_BASE_MAP[persist_key]:
-                    self.__persistent_db[self.label][persist_key] = value
-
+                    self._m1_definitions__persistent_db[self.label][persist_key] = value
+        
         @staticmethod
         def _save_topic_data():
             """
             Saves all topics
             """
             for topic in store.topic_handler.ALL_TOPIC_MAP.values():
-                topic.__save()
-
+                topic._m1_definitions__save()
+        
         def has_additional_property_with_value(self, property_key, property_value):
             """
             Returns whether this topic has a given additional_attribute key with
@@ -300,9 +300,9 @@ init -3 python:
             """
             if property_key not in self.additional_properties:
                 return False
-
+            
             return self.additional_properties[property_key] is property_value
-
+        
         def derandom(self):
             """
                 makes topic unable to be randomly brought up by Nat
@@ -310,21 +310,21 @@ init -3 python:
             """
             self.nat_says = False
             self.player_says = True
-
+        
         def lock(self):
             """
             Locks this topic, so it cannot be selected or brought up in random dialogue.
             """
             self.unlocked = False
-            self.__save()
-
+            self._m1_definitions__save()
+        
         def unlock(self):
             """
             Unlocks this topic.
             """
             self.unlocked = True
-            self.__save()
-
+            self._m1_definitions__save()
+        
         def _filter_topic(
             self,
             unlocked=None,
@@ -362,52 +362,52 @@ init -3 python:
             """
             if unlocked is not None and unlocked != self.unlocked:
                 return False
-
+            
             if nat_says is not None and nat_says != self.nat_says:
                 return False
-
+            
             if player_says is not None and player_says != self.player_says:
                 return False
-
+            
             if is_seen is not None and renpy.seen_label(self.label) != is_seen:
                 return False
-
+            
             if location is not None and location != self.location:
                 return False
-
+            
             if affinity and not self.curr_affinity_in_affinity_range(affinity):
                 return False
-
+            
             if trust and not self.evaluate_trust_range(trust):
                 return False
-
+            
             if not self.check_conditional():
                 return False
-
+            
             if shown_count is not None and self.shown_count == shown_count:
                 return False
-
+            
             if includes_categories and len(set(includes_categories).intersection(set(self.category))) != len(includes_categories):
                 return False
-
+            
             if excludes_categories and self.category and len(set(excludes_categories).intersection(set(self.category))) > 0:
                 return False
-
+            
             if additional_properties:
                 for additional_prop in additional_properties:
-                    #Key and value checks
+                    
                     if isinstance(additional_prop, tuple):
                         if not self.has_additional_property_with_value(*additional_prop):
                             return False
-
-                    #Just key checks
+                    
+                    
                     else:
                         if additional_prop not in self.additional_properties:
                             return False
-
-            #All checks pass
+            
+            
             return True
-
+        
         @staticmethod
         def filter_topics(
             topic_list,
@@ -454,7 +454,7 @@ init -3 python:
                 )
             ]
 
-    #Now we'll start with generic functions which we'll use at higher inits
+
     def registerTopic(Topic, topic_group=TOPIC_TYPE_NORMAL):
         """
         Registers a topic to the maps to allow it to be picked from the topic delegate.
@@ -467,14 +467,14 @@ init -3 python:
         NOTE: Should be used at init 5
         """
         local_map = store.topic_handler.TOPIC_CODE_MAP.get(topic_group)
-
+        
         if local_map is None:
             raise Exception("Topic type '{0}' is not a registered map.")
-
+        
         elif not isinstance(local_map, dict):
             raise Exception("Topic map for type '{0}' is not a dict.")
-
-        #Now that type-checks are done, let's add this to the map
+        
+        
         local_map[Topic.label] = Topic
 
     def push(topic_label):
@@ -572,7 +572,7 @@ init -3 python:
         menu_items = []
         for topic in menu_topics:
             menu_items.append((topic.prompt, topic.label))
-
+        
         for topic in additional_topics:
             menu_items.append(topic)
         return menu_items.sort()
@@ -587,26 +587,26 @@ init -3 python:
         OUT:
             Dictionary<string, List<string>> representing a dict of category: [ ...prompts ]
         """
-        # Python doesn't support ordered dictionaries... we have to do things the hard way here.
-
-        # Get the topic categories that the given topics share, and order them
+        
+        
+        
         topic_categories = []
         for topic in menu_topics:
             for category in topic.category:
                 if category not in topic_categories:
                     topic_categories.append(category)
         topic_categories.sort()
-
-        # Set up an ordered dictionaty, this will retain the order of what we return for the menu items
+        
+        
         ordered_menu_items = OrderedDict()
         for topic_category in topic_categories:
             ordered_menu_items[topic_category] = []
-
-        # Feed the topics into the ordered dictionary - remember that each topic can have multiple categories!
+        
+        
         for topic in menu_topics:
             for category in topic.category:
                 ordered_menu_items[category].append(topic)
-
+        
         return ordered_menu_items
 
     def jnNoDismissDialogue(event, interact=True, **kwargs):
@@ -614,12 +614,12 @@ init -3 python:
         Callback for whenever Natsuki talks.
         """
         if event == "show" or event == "begin":
-            # Prevent skip before dialogue
+            
             global allow_dismiss
             allow_dismiss = False
-
+        
         elif event == "slow_done":
-            # Allow skip after dialogue
+            
             global allow_dismiss
             allow_dismiss = True
 
@@ -633,17 +633,17 @@ init -3 python:
         """
         global allow_dismiss
         global _dismiss_pause
-
+        
         allow_dismiss = True
         _dismiss_pause = True
-
+        
         pre_click_afm = preferences.afm_enable
         preferences.afm_enable = False
-
+        
         renpy.pause()
         _dismiss_pause = False
         preferences.afm_enable = pre_click_afm
-
+        
         if not silent:
             if jn_is_day():
                 renpy.play("mod_assets/buttons/sounds/button_click_day.ogg")
@@ -660,7 +660,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_NEW_YEARS_DAY.day and input_date.month == store.JN_NEW_YEARS_DAY.month
 
     def jnIsValentinesDay(input_date=None):
@@ -672,7 +672,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_VALENTINES_DAY.day and input_date.month == store.JN_VALENTINES_DAY.month
 
     def jnIsEaster(input_date=None):
@@ -684,7 +684,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_EASTER.day and input_date.month == store.JN_EASTER.month
 
     def jnIsHalloween(input_date=None):
@@ -696,7 +696,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_HALLOWEEN.day and input_date.month == store.JN_HALLOWEEN.month
 
     def jnIsChristmasEve(input_date=None):
@@ -708,7 +708,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_CHRISTMAS_EVE.day and input_date.month == store.JN_CHRISTMAS_EVE.month
 
     def jnIsChristmasDay(input_date=None):
@@ -720,7 +720,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_CHRISTMAS_DAY.day and input_date.month == store.JN_CHRISTMAS_DAY.month
 
     def jnIsNewYearsEve(input_date=None):
@@ -732,7 +732,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_NEW_YEARS_EVE.day and input_date.month == store.JN_NEW_YEARS_EVE.month
 
     def jnIsNatsukiBirthday(input_date=None):
@@ -744,7 +744,7 @@ init -3 python:
         """
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         return input_date.day == store.JN_NATSUKI_BIRTHDAY.day and input_date.month == store.JN_NATSUKI_BIRTHDAY.month
 
     def jnIsPlayerBirthday(input_date=None):
@@ -756,19 +756,19 @@ init -3 python:
         """
         if not store.persistent._jn_player_birthday_day_month:
             return False
-
+        
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         if (
             ((input_date.year % 4 == 0 and input_date.year % 100 != 0) or (input_date.year % 400 == 0))
             or store.persistent._jn_player_birthday_day_month != (29, 2)
         ):
-            # Leap year or birthday isn't on a leap day, so do direct comparison
+            
             return (input_date.day, input_date.month) == store.persistent._jn_player_birthday_day_month
-
+        
         else:
-            # Not a leap year, account for birthdays on 29th February
+            
             return (input_date.day, input_date.month) == (28, 2)
 
     def jnIsAnniversary(input_date=None):
@@ -780,19 +780,19 @@ init -3 python:
         """
         if not store.persistent._jn_player_anniversary_day_month:
             return False
-
+        
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         if (
             ((input_date.year % 4 == 0 and input_date.year % 100 != 0) or (input_date.year % 400 == 0))
             or store.persistent._jn_player_anniversary_day_month != (29, 2)
         ):
-            # Leap year or anniversary isn't on a leap day, so do direct comparison
+            
             return (input_date.day, input_date.month) == store.persistent._jn_player_anniversary_day_month
-
+        
         else:
-            # Not a leap year, account for anniversaries on 29th February
+            
             return (input_date.day, input_date.month) == (28, 2)
 
     def jnIsDate(input_date):
@@ -816,7 +816,7 @@ init -3 python:
         try:
             new_date = datetime.datetime(input_year, input_month, input_day)
             return True
-
+        
         except:
             return False
 
@@ -870,19 +870,19 @@ init -3 python:
         current_hour = jn_get_current_hour()
         if current_hour in range(3, 5):
             return JNTimeBlocks.early_morning
-
+        
         elif current_hour in range(5, 9):
             return JNTimeBlocks.mid_morning
-
+        
         elif current_hour in range(9, 12):
             return JNTimeBlocks.late_morning
-
+        
         elif current_hour in range(12, 18):
             return JNTimeBlocks.afternoon
-
+        
         elif current_hour in range(18, 22):
             return JNTimeBlocks.evening
-
+        
         else:
             return JNTimeBlocks.night
 
@@ -948,6 +948,12 @@ init -3 python:
         """
         return datetime.time(jn_locations.getHourFromSunriseSunsetValue(store.persistent._jn_sunrise_setting)) <= datetime.datetime.now().time() < datetime.time(jn_locations.getHourFromSunriseSunsetValue(store.persistent._jn_sunset_setting, is_sunset=True))
 
+    def is_day():
+        """
+        Returns True if the current time is judged to be day, taking into account user preferences on sunrise/sunset.
+        """
+        return datetime.time(jn_locations.getHourFromSunriseSunsetValue(store.persistent._jn_sunrise_setting)) <= datetime.datetime.now().time() < datetime.time(jn_locations.getHourFromSunriseSunsetValue(store.persistent._jn_sunset_setting, is_sunset=True))
+
     def jn_open_google_maps(latitude, longitude):
         """
         Opens Google Maps in a new tab/window in the default browser centred on the given latitude and longitude.
@@ -980,7 +986,7 @@ init -3 python:
         """
         if isinstance(tags, basestring):
             tags = set(tags.split())
-
+        
         return renpy.display.image.images[tags] if tags in renpy.display.image.images else Null()
 
     def jnGenerateRandomForScreenWidth(trans, st, at):
@@ -1001,7 +1007,7 @@ init -3 python:
         renpy.show(name="black", zorder=JN_BLACK_ZORDER)
         renpy.with_statement(Dissolve(fade_time))
         jnPause(fade_time + delay)
-
+        
         return
 
     def jnFadeFromBlack(fade_time=0, delay=0):
@@ -1015,66 +1021,65 @@ init -3 python:
         renpy.hide("black")
         renpy.with_statement(Dissolve(fade_time))
         jnPause(fade_time + delay)
-
+        
         return
 
-# Variables with cross-script utility specific to Just Natsuki
 init -990 python in jn_globals:
     import re
     import store
 
-    # Tracking; use these for data we might refer to/modify mid-session, or anything time sensitive
+
     current_session_start_time = store.datetime.datetime.now()
 
-    # Flags; use these to set/refer to binary states
 
-    # Tracks whether the player opted to stay for longer when Natsuki asked them to when quitting; True if so, otherwise False
+
+
     player_already_stayed_on_farewell = False
 
-    # Tracks if the player is permitted to force quit; use this to block force quits during sequences
+
     force_quit_enabled = True
 
-    # List of weather to push
+
     weather_stack = []
 
-    # Constants; use these for anything we only want defined once and used in a read-only context: anything defined here should be used in more than one application!
 
-    # Links
 
-    # GitHub
+
+
+
     LINK_JN_GITHUB = "https://github.com/Just-Natsuki-Team/NatsukiModDev"
     LINK_JN_LATEST = "{0}/releases/latest".format(LINK_JN_GITHUB)
 
-    # OpenWeatherMap; used for setting up weather in-game
+
     LINK_OPEN_WEATHER_MAP_HOME = "https://openweathermap.org"
     LINK_OPEN_WEATHER_MAP_SIGN_UP = "https://home.openweathermap.org/users/sign_up"
     LINK_OPEN_WEATHER_MAP_API_KEYS = "https://home.openweathermap.org/api_keys"
 
-    # LatLong.net; used for helping the player find their coordinates when setting up location manually
+
     LINK_LAT_LONG_HOME = "https://www.latlong.net"
 
-    # Alphabetical (excluding numbers) values allowed for text input
+
     DEFAULT_ALPHABETICAL_ALLOW_VALUES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-' "
 
-    # Numerical values allowed for text input
+
     DEFAULT_NUMERICAL_ALLOW_VALUES = "1234567890"
 
-    #The current label we're in
+
     current_label = None
 
-    #The last label we were in
+
     last_label = None
 
-    # Channel registration
 
-    # Channel for looping weather sfx
+
+
     renpy.music.register_channel("weather_loop", "sfx", True)
 
 init 10 python in jn_globals:
-    # The current affection state. We default this to 5 (NORMAL)
+
     current_affinity_state = store.jn_affinity.NORMAL
 
-#Stuff that's really early, which should be usable basically anywhere
+
 init -999 python in jn_utils:
     import datetime
     import easter
@@ -1088,13 +1093,13 @@ init -999 python in jn_utils:
     import pprint
     import pygame
 
-    #Make log folder if not exist
+
     _logdir = os.path.join(renpy.config.basedir, "log")
     if not os.path.exists(_logdir):
         os.makedirs(_logdir)
 
-    #We always want to log and keep history
-    __main_log = renpy.renpy.log.open("log/log", append=True, flush=True)
+
+    _m1_definitions__main_log = renpy.renpy.log.open("log/log", append=True, flush=True)
 
     SEVERITY_INFO = 0
     SEVERITY_WARN = 1
@@ -1106,7 +1111,7 @@ init -999 python in jn_utils:
         SEVERITY_ERR: "[{0}] [ERROR]: {1}"
     }
 
-    __KEY_HASH = "4d753616e2082a70b8ec46439c26e191010384c46e81d488579c3cca35eb3d6c"
+    _m1_definitions__KEY_HASH = "4d753616e2082a70b8ec46439c26e191010384c46e81d488579c3cca35eb3d6c"
 
     def log(message, logseverity=SEVERITY_INFO):
         """
@@ -1116,8 +1121,8 @@ init -999 python in jn_utils:
             - message - message to write to the log file
             - logseverity - Severity level of the log message (Default: INFO)
         """
-        global __main_log
-        __main_log.write(
+        global _m1_definitions__main_log
+        _m1_definitions__main_log.write(
             LOGSEVERITY_MAP.get(
                 logseverity,
                 LOGSEVERITY_MAP[SEVERITY_INFO]
@@ -1164,7 +1169,7 @@ init -999 python in jn_utils:
         if not os.path.exists(path) or getFileExists(path):
             os.makedirs(path)
             return True
-
+        
         return False
 
     def deleteFileFromDirectory(path):
@@ -1181,11 +1186,11 @@ init -999 python in jn_utils:
             try:
                 os.remove(path)
                 return True
-
+            
             except Exception as exception:
                 log("Failed to delete file on path {0}; {1}".format(path, exception.message))
                 return False
-
+        
         return False
 
     def deleteDirectory(path):
@@ -1202,11 +1207,11 @@ init -999 python in jn_utils:
             try:
                 shutil.rmtree(path)
                 return True
-
+            
             except Exception as exception:
                 log("Failed to delete directory at path {0}; {1}".format(path, exception.message))
                 return False
-
+        
         return False
 
     def escapeRenpySubstitutionString(string):
@@ -1234,11 +1239,11 @@ init -999 python in jn_utils:
             - Tuple representing (file_name, file_path)
         """
         return_file_items = []
-
+        
         for file in os.listdir(path):
             if (not extension_list or any(file_extension == file.rpartition(".")[-1] for file_extension in extension_list)):
                 return_file_items.append((escapeRenpySubstitutionString(file), os.path.join(path, file)))
-
+        
         return return_file_items
 
     def fireAndForgetFunction(function, args=()):
@@ -1250,18 +1255,18 @@ init -999 python in jn_utils:
             - function - the function to call in the new thread
             - args - parameters to be passed to the function; must be of type list or tuple
         """
-
+        
         if not callable(function):
             jn_utils.log("Failed to launch thread; function is not callable.")
             return
-
+        
         if not isinstance(args, tuple) and not isinstance(args, list):
             jn_utils.log("Failed to launch thread; args must be of types list or tuple.")
             return
-
+        
         if isinstance(args, list):
             args = tuple(args)
-
+        
         thread = threading.Thread(name=uuid.uuid4(), target=function, args=args)
         thread.daemon = True
         thread.start()
@@ -1286,41 +1291,41 @@ init -999 python in jn_utils:
             """
             if not callable(function):
                 raise Exception("Failed to initialise threaded function instance; function is not callable.")
-
+            
             if not isinstance(args, tuple) and not isinstance(args, list):
                 raise Exception("Failed to initialise threaded function instance; args must be of types list or tuple.")
-
+            
             if isinstance(args, list):
                 args = tuple(args)
-
-            self.__function = function
-            self.__args = args
-            self.__running = False
-            self.__thread = None
- 
+            
+            self._m1_definitions__function = function
+            self._m1_definitions__args = args
+            self._m1_definitions__running = False
+            self._m1_definitions__thread = None
+        
         def getIsRunning(self):
-            return self.__running
-
+            return self._m1_definitions__running
+        
         def start(self):
-            if not self.__running:
-                self.__running = True
-
-                # We pass a reference to the thread so any continuous loop can reference the running state 
-                run_args = (self,) + self.__args
-
-                if len(self.__args) > 0:
-                    self.__thread = threading.Thread(name=uuid.uuid4(), target=self.__function, args=run_args)
-
-                else:
-                    self.__thread = threading.Thread(name=uuid.uuid4(), target=self.__function, args=run_args)
-                    self.test = self.__thread
-
-                self.__thread.daemon = True
-                self.__thread.start()
+            if not self._m1_definitions__running:
+                self._m1_definitions__running = True
                 
+                
+                run_args = (self,) + self._m1_definitions__args
+                
+                if len(self._m1_definitions__args) > 0:
+                    self._m1_definitions__thread = threading.Thread(name=uuid.uuid4(), target=self._m1_definitions__function, args=run_args)
+                
+                else:
+                    self._m1_definitions__thread = threading.Thread(name=uuid.uuid4(), target=self._m1_definitions__function, args=run_args)
+                    self.test = self._m1_definitions__thread
+                
+                self._m1_definitions__thread.daemon = True
+                self._m1_definitions__thread.start()
+        
         def stop(self):
-            if self.__running:
-                self.__running = False
+            if self._m1_definitions__running:
+                self._m1_definitions__running = False
 
 init -100 python in jn_utils:
     import codecs
@@ -1348,7 +1353,7 @@ init -100 python in jn_utils:
         """
         if store.persistent.jn_first_visited_date is not None:
             return datetime.datetime.now() - store.persistent.jn_first_visited_date
-
+        
         else:
             return datetime.datetime.now() - datetime.datetime.today()
 
@@ -1405,28 +1410,28 @@ init -100 python in jn_utils:
             Brief descriptor relating to the number of minutes spent in the session
         """
         minutes_in_session = get_current_session_length().total_seconds() / 60
-
+        
         if minutes_in_session <= 1:
             return "like a minute"
-
+        
         elif minutes_in_session <= 3:
             return "a couple of minutes"
-
+        
         elif minutes_in_session > 3 and minutes_in_session <= 5:
             return "like five minutes"
-
+        
         elif minutes_in_session > 5 and minutes_in_session <= 10:
             return "around ten minutes"
-
+        
         elif minutes_in_session > 10 and minutes_in_session <= 15:
             return "around fifteen minutes"
-
+        
         elif minutes_in_session > 15 and minutes_in_session <= 20:
             return "around twenty minutes"
-
+        
         elif minutes_in_session <= 30:
             return "about half an hour"
-
+        
         else:
             return "a while"
 
@@ -1439,7 +1444,7 @@ init -100 python in jn_utils:
         """
         if store.persistent.jn_last_visited_date is not None:
             return (datetime.datetime.now() - store.persistent.jn_last_visited_date).total_seconds() / 60
-
+        
         else:
             return (datetime.datetime.now() - datetime.datetime.today()).total_seconds() / 60
 
@@ -1449,10 +1454,10 @@ init -100 python in jn_utils:
         """
         if 11 <= (value % 100) <= 13:
             return "th"
-
+        
         else:
             return ["th", "st", "nd", "rd", "th"][min(value % 10, 4)]
-    
+
     def diceRoll(faces):
         """
         Returns True or False based on whether a roll with the given faces returns one.
@@ -1493,7 +1498,7 @@ init -100 python in jn_utils:
         player_final = list(store.player)[len(store.player) - 1]
         for i in range(repeat_times):
             player_final += list(store.player)[len(store.player) - 1]
-
+        
         return player_final
 
     def getStringContainsLabel(string):
@@ -1804,20 +1809,20 @@ init -100 python in jn_utils:
         Natsuki may use these at higher levels of affinity to tease her player with.
         """
         return random.choice([
-            "dummy",
-            "you big dummy",
-            "silly",
-            "stupid",
-            "you dork",
-            "you big dork",
-            "you goof",
-            "you goofball",
-            "you numpty",
-            "you donut",
-            "you dope",
-            "you big dork",
-            "you big goof",
-            "you big dope"
+            _("dummy"),
+            _("you big dummy"),
+            _("silly"),
+            _("stupid"),
+            _("you dork"),
+            _("you big dork"),
+            _("you goof"),
+            _("you goofball"),
+            _("you numpty"),
+            _("you donut"),
+            _("you dope"),
+            _("you big dork"),
+            _("you big goof"),
+            _("you big dope")
         ])
 
     def getRandomTeaseName():
@@ -1826,11 +1831,11 @@ init -100 python in jn_utils:
         Natsuki may use these at higher levels of affinity to tease her player with.
         """
         return random.choice([
-            "dummy",
-            "dork",
-            "goof",
-            "donut",
-            "dope"
+            _("dummy"),
+            _("dork"),
+            _("goof"),
+            _("donut"),
+            _("dope")
         ])
 
     def getRandomEndearment():
@@ -1839,13 +1844,13 @@ init -100 python in jn_utils:
         Natsuki may use these at the highest levels of affinity to refer to her player - she isn't that lovey-dovey, so use sparingly!
         """
         return random.choice([
-            "babe",
-            "darling",
-            "dummy",
-            "hun",
-            "my love",
-            "sweetheart",
-            "sweetie"
+            _("babe"),
+            _("darling"),
+            _("dummy"),
+            _("hun"),
+            _("my love"),
+            _("sweetheart"),
+            _("sweetie")
         ])
 
     def getRandomDescriptor():
@@ -1854,12 +1859,12 @@ init -100 python in jn_utils:
         Natsuki may use these at the highest levels of affinity to describe her player when she is being sentimental.
         """
         return random.choice([
-            "amazing",
-            "awesome",
-            "really awesome",
-            "really great",
-            "so sweet",
-            "the best"
+            _("amazing"),
+            _("awesome"),
+            _("really awesome"),
+            _("really great"),
+            _("so sweet"),
+            _("the best")
         ])
 
     def getRandomInsult():
@@ -1868,12 +1873,12 @@ init -100 python in jn_utils:
         Natsuki may use these at the lowest levels of affinity to insult her player with.
         """
         return random.choice([
-            "jerk",
-            "idiot",
-            "moron",
-            "stupid",
-            "loser",
-            "you ass"
+            _("jerk"),
+            _("idiot"),
+            _("moron"),
+            _("stupid"),
+            _("loser"),
+            _("you ass")
         ])
 
     def getRandomHappyEmoticon():
@@ -1971,61 +1976,61 @@ init -100 python in jn_utils:
             "C.C"
         ])
 
-    # Key setup
+
     key_path = os.path.join(renpy.config.basedir, "game/dev/key.txt").replace("\\", "/")
     if not os.path.exists(key_path):
-        __KEY_VALID = False
+        _m1_definitions__KEY_VALID = False
 
     else:
         with open(name=key_path, mode="r") as key_file:
-            __KEY_VALID = hashlib.sha256(key_file.read().encode("utf-8")).hexdigest() == __KEY_HASH
+            _m1_definitions__KEY_VALID = hashlib.sha256(key_file.read().encode("utf-8")).hexdigest() == _m1_definitions__KEY_HASH
 
     def get_key_valid():
         """
         Returns the validation state of the key.
         """
-        return __KEY_VALID
+        return _m1_definitions__KEY_VALID
 
     def saveGame():
         """
         Saves all game data.
         """
-
-        # Save outfit data
+        
+        
         store.jn_outfits.JNOutfit.saveAll()
-
-        # Save holiday data
+        
+        
         store.jn_events.JNHoliday.saveAll()
-
-        # Save poem data
+        
+        
         store.jn_poems.JNPoem.saveAll()
-
-        # Save joke data
+        
+        
         store.jn_jokes.JNJoke.saveAll()
-
-        # Save desk item data
+        
+        
         store.jn_desk_items.JNDeskItem.saveAll()
-
-        #Save topic data
+        
+        
         store.Topic._save_topic_data()
-
-        #Save background data
+        
+        
         store.main_background.save()
-
+        
         if store.persistent._affinity_daily_bypasses > 5:
             store.persistent._affinity_daily_bypasses = 5
-
+        
         if store.persistent.affinity >= (store.persistent._jn_gs_aff + 250):
             store.persistent._jn_pic_aff = store.persistent.affinity
             store.persistent._jn_snpsht_aff = store.persistent.affinity
             store.persistent.affinity = store.persistent._jn_gs_aff
-            jn_utils.log("434346".decode("hex"))
+            jn_utils.log(bytes.fromhex("434346").decode())
             store.persistent._jn_pic = True
-
+        
         else:
             store.persistent._jn_gs_aff = store.persistent.affinity
 
-# Generic transforms/animations
+
 transform JN_TRANSFORM_FADE_IN(time=0.5):
     subpixel True
     alpha 0
@@ -2049,26 +2054,26 @@ transform JN_PULSE(time=1, wait=1.5):
     parallel:
         easeout_bounce 0.3 xalign 0.5 + 0.02 * time
         easeout_bounce 0.3 xalign 0.5 - 0.02 * time
-    
+
     ease 0.15 alpha 0
 
-# Vanilla resources from base DDLC
-define audio.t1 = "<loop 22.073>bgm/1.ogg"  #Main theme (title)
-define audio.t2 = "<loop 4.499>bgm/2.ogg"   #Sayori theme
+
+define audio.t1 = "<loop 22.073>bgm/1.ogg"
+define audio.t2 = "<loop 4.499>bgm/2.ogg"
 define audio.t2g = "bgm/2g.ogg"
 define audio.t2g2 = "<from 4.499 loop 4.499>bgm/2.ogg"
 define audio.t2g3 = "<loop 4.492>bgm/2g2.ogg"
-define audio.t3 = "<loop 4.618>bgm/3.ogg"   #Main theme (in-game)
+define audio.t3 = "<loop 4.618>bgm/3.ogg"
 define audio.t3g = "<to 15.255>bgm/3g.ogg"
 define audio.t3g2 = "<from 15.255 loop 4.618>bgm/3.ogg"
 define audio.t3g3 = "<loop 4.618>bgm/3g2.ogg"
 define audio.t3m = "<loop 4.618>bgm/3.ogg"
-define audio.t4 = "<loop 19.451>bgm/4.ogg"  #Poem minigame
+define audio.t4 = "<loop 19.451>bgm/4.ogg"
 define audio.t4g = "<loop 1.000>bgm/4g.ogg"
 
-# JN resources
 
-# Singleton sound effects
+
+
 define audio.anime_generic_theme = "mod_assets/sfx/anime_generic_theme.ogg"
 define audio.anime_punch = "mod_assets/sfx/anime_punch.ogg"
 define audio.anime_slash = "mod_assets/sfx/anime_slash.ogg"
@@ -2131,7 +2136,7 @@ define audio.twitch_you_lose = "mod_assets/sfx/twitch_you_lose.ogg"
 define audio.water_splash = "mod_assets/sfx/water_splash.ogg"
 define audio.zipper = "mod_assets/sfx/zipper.ogg"
 
-# Glitch/spooky sound effects
+
 define audio.glitch_a = "mod_assets/sfx/glitch_a.ogg"
 define audio.glitch_b = "mod_assets/sfx/glitch_b.ogg"
 define audio.glitch_c = "mod_assets/sfx/glitch_c.ogg"
@@ -2142,15 +2147,15 @@ define audio.ooo_creep = "mod_assets/sfx/ooo_creep.ogg"
 define audio.static = "mod_assets/sfx/glitch_static.ogg"
 define audio.thump = "mod_assets/sfx/thump.ogg"
 
-# Looped sound effects
+
 define audio.rain_muffled = "mod_assets/sfx/rain_muffled.ogg"
 
-# Music, vanilla DDLC
+
 define audio.space_classroom_bgm = "mod_assets/bgm/space_classroom.ogg"
 define audio.holiday_bgm = "mod_assets/bgm/vacation.ogg"
 define audio.dread = "mod_assets/bgm/dread.ogg"
 
-# Music, JN exclusive
+
 define audio.just_natsuki_bgm = "mod_assets/bgm/just_natsuki.ogg"
 define audio.happy_birthday_bgm = "mod_assets/bgm/happy_birthday.ogg"
 define audio.ikustan_tsuj = "mod_assets/bgm/ikustan_tsuj.ogg"
@@ -2158,10 +2163,10 @@ define audio.juuuuu_nnnnn = "mod_assets/bgm/juuuuu_nnnnn.ogg"
 define audio.just = "mod_assets/bgm/just.ogg"
 define audio.night_natsuki = "mod_assets/bgm/night_natsuki.ogg"
 
-# Voicing - we disable TTS
+
 define config.tts_voice = None
 
-##Character Definitions
+
 define mc = DynamicCharacter('player', image='mc', what_prefix='"', what_suffix='"', ctc="ctc", ctc_position="fixed")
 define s = DynamicCharacter('s_name', image='sayori', what_prefix='"', what_suffix='"', ctc="ctc", ctc_position="fixed")
 define m = DynamicCharacter('m_name', image='monika', what_prefix='"', what_suffix='"', ctc="ctc", ctc_position="fixed")
@@ -2169,10 +2174,10 @@ define n = DynamicCharacter('n_name', image='natsuki', what_prefix='"', what_suf
 define y = DynamicCharacter('y_name', image='yuri', what_prefix='"', what_suffix='"', ctc="ctc", ctc_position="fixed")
 
 init python:
-    #If they quit during a pause, we have to set _dismiss_pause to false again (I hate this hack)
+
     _dismiss_pause = config.developer
 
-    #Each of the girls' names before the MC learns their name throughout ch0.
+
     s_name = "Sayori"
     m_name = "Monika"
     y_name = "Yuri"
@@ -2212,13 +2217,13 @@ init -999 python:
                 Natsuki.addApology(jn_apologies.ApologyTypes.sudden_leave)
                 Natsuki.setQuitApology(jn_apologies.ApologyTypes.sudden_leave)
                 return
-
+        
         if jn_globals.current_label in (
             "try_force_quit"
         ):
-            # Prevent the dialogue being called again if a force quit is already in progress
+            
             return
-
+        
         elif jn_globals.force_quit_enabled:
             renpy.call("try_force_quit")
 
@@ -2230,16 +2235,16 @@ init -999 python:
         To call all handlers, simply call the instance of the event class
         """
         def __init__(self):
-            self.__eventhandlers = []
-
+            self._m1_definitions__eventhandlers = []
+        
         def __iadd__(self, handler):
-            self.__eventhandlers.append(handler)
+            self._m1_definitions__eventhandlers.append(handler)
             return self
-
+        
         def __isub__(self, handler):
-            self.__eventhandlers.remove(handler)
+            self._m1_definitions__eventhandlers.remove(handler)
             return self
-
+        
         def __call__(self, *args, **keywargs):
-            for eventhandler in self.__eventhandlers:
+            for eventhandler in self._m1_definitions__eventhandlers:
                 eventhandler(*args, **keywargs)

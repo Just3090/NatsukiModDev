@@ -12,7 +12,7 @@ init python in jn_poems:
     import store.jn_events as jn_events
     import store.jn_utils as jn_utils
 
-    __ALL_POEMS = {}
+    _m1_script0x2dpoems__ALL_POEMS = {}
 
     class JNPoem:
         """
@@ -54,25 +54,25 @@ init python in jn_poems:
             self.paper = paper
             self.font_size = font_size if 16 <= font_size <= 24 else 24 
             self.text_align = text_align if text_align in (0.0, 0.5, 1.0) else 0.0
-
+        
         @staticmethod
         def loadAll():
             """
             Loads all persisted data for each poem from the persistent.
             """
-            global __ALL_POEMS
-            for poem in __ALL_POEMS.itervalues():
-                poem.__load()
-
+            global _m1_script0x2dpoems__ALL_POEMS
+            for poem in _m1_script0x2dpoems__ALL_POEMS.itervalues():
+                poem._m1_script0x2dpoems__load()
+        
         @staticmethod
         def saveAll():
             """
             Saves all persistable data for each poem to the persistent.
             """
-            global __ALL_POEMS
-            for poem in __ALL_POEMS.itervalues():
-                poem.__save()
-
+            global _m1_script0x2dpoems__ALL_POEMS
+            for poem in _m1_script0x2dpoems__ALL_POEMS.itervalues():
+                poem._m1_script0x2dpoems__save()
+        
         @staticmethod
         def filterPoems(
             poem_list,
@@ -97,14 +97,14 @@ init python in jn_poems:
             return [
                 _poem
                 for _poem in poem_list
-                if _poem.__filterPoem(
+                if _poem._m1_script0x2dpoems__filterPoem(
                     unlocked,
                     reference_name,
                     holiday_types,
                     affinity
                 )
             ]
-
+        
         def asDict(self):
             """
             Exports a dict representation of this poem; this is for data we want to persist.
@@ -115,7 +115,7 @@ init python in jn_poems:
             return {
                 "unlocked": self.unlocked
             }
-
+        
         def currAffinityInAffinityRange(self, affinity_state=None):
             """
             Checks if the current affinity is within this poem's affinity_range
@@ -128,37 +128,37 @@ init python in jn_poems:
             """
             if not affinity_state:
                 affinity_state = jn_affinity._getAffinityState()
-
+            
             return jn_affinity._isAffStateWithinRange(affinity_state, self.affinity_range)
-
+        
         def lock(self):
             """
             Locks this poem, making it unavailable to the player.
             """
             self.unlocked = False
-            self.__save()
-
+            self._m1_script0x2dpoems__save()
+        
         def unlock(self):
             """
             Unlocks this poem, making it available to the player.
             """
             self.unlocked = True
-            self.__save()
-
-        def __load(self):
+            self._m1_script0x2dpoems__save()
+        
+        def _m1_script0x2dpoems__load(self):
             """
             Loads the persisted data for this poem from the persistent.
             """
             if store.persistent.jn_poem_list[self.reference_name]:
                 self.unlocked = store.persistent.jn_poem_list[self.reference_name]["unlocked"]
-
-        def __save(self):
+        
+        def _m1_script0x2dpoems__save(self):
             """
             Saves the persistable data for this poem to the persistent.
             """
             store.persistent.jn_poem_list[self.reference_name] = self.asDict()
-
-        def __filterPoem(
+        
+        def _m1_script0x2dpoems__filterPoem(
             self,
             unlocked=None,
             reference_name=None,
@@ -179,19 +179,19 @@ init python in jn_poems:
             """
             if unlocked is not None and self.unlocked != unlocked:
                 return False
-
+            
             elif reference_name is not None and not self.reference_name in reference_name:
                 return False
-
+            
             elif holiday_types is not None and not self.holiday_type in holiday_types:
                 return False
-
+            
             elif affinity and not self.currAffinityInAffinityRange(affinity):
                 return False
-
+            
             return True
 
-    def __registerPoem(poem):
+    def _m1_script0x2dpoems__registerPoem(poem):
         """
         Registers a new poem in the list of all poems, allowing in-game access and persistency.
         If the poem has no existing corresponding persistent entry, it is saved.
@@ -199,16 +199,16 @@ init python in jn_poems:
         IN:
             - poem - the JNPoem to register.
         """
-        if poem.reference_name in __ALL_POEMS:
+        if poem.reference_name in _m1_script0x2dpoems__ALL_POEMS:
             jn_utils.log("Cannot register poem name: {0}, as an poem with that name already exists.".format(poem.reference_name))
-
+        
         else:
-            __ALL_POEMS[poem.reference_name] = poem
+            _m1_script0x2dpoems__ALL_POEMS[poem.reference_name] = poem
             if poem.reference_name not in store.persistent.jn_poem_list:
-                poem.__save()
+                poem._m1_script0x2dpoems__save()
             
             else:
-                poem.__load()
+                poem._m1_script0x2dpoems__load()
 
     def getPoem(poem_name):
         """
@@ -219,23 +219,23 @@ init python in jn_poems:
 
         OUT: Corresponding JNPoem if the poem exists, otherwise None 
         """
-        if poem_name in __ALL_POEMS:
-            return __ALL_POEMS[poem_name]
-
+        if poem_name in _m1_script0x2dpoems__ALL_POEMS:
+            return _m1_script0x2dpoems__ALL_POEMS[poem_name]
+        
         return None
 
     def getAllPoems():
         """
         Returns a list of all poems.
         """
-        return __ALL_POEMS.itervalues()
+        return _m1_script0x2dpoems__ALL_POEMS.itervalues()
 
-    __registerPoem(JNPoem(
+    _m1_script0x2dpoems__registerPoem(JNPoem(
         reference_name="jn_birthday_cakes_candles",
-        display_name="Cakes and Candles",
+        display_name=_("Cakes and Candles"),
         holiday_type=jn_events.JNHolidayTypes.player_birthday,
         affinity_range=(jn_affinity.HAPPY, None),
-        poem=(
+        poem=_(
             "Another cake, another candle\n"
             "Another year that you've just handled\n"
             "Some people dread this special day\n"
@@ -257,12 +257,12 @@ init python in jn_poems:
         paper="pink_floral"
     ))
 
-    __registerPoem(JNPoem(
+    _m1_script0x2dpoems__registerPoem(JNPoem(
         reference_name="jn_christmas_evergreen",
-        display_name="Evergreen",
+        display_name=_("Evergreen"),
         holiday_type=jn_events.JNHolidayTypes.christmas_day,
         affinity_range=(jn_affinity.ENAMORED, None),
-        poem=(
+        poem=_(
             "It's\n" 
             "Chilly and\n" 
             "Cold outside\n" 
@@ -288,12 +288,12 @@ init python in jn_poems:
         text_align=0.5
     ))
 
-    __registerPoem(JNPoem(
+    _m1_script0x2dpoems__registerPoem(JNPoem(
         reference_name="jn_christmas_gingerbread_house",
-        display_name="Gingerbread House",
+        display_name=_("Gingerbread House"),
         holiday_type=jn_events.JNHolidayTypes.christmas_day,
         affinity_range=(jn_affinity.HAPPY, None),
-        poem=(
+        poem=_(
             "From a brittle gingerbread household Amy came\n"
             "Disguised by colorful icing and confectionaries\n" 
             "One that hid the shouts and all the arguments\n"
@@ -321,12 +321,12 @@ init python in jn_poems:
         font_size=20
     ))
 
-    __registerPoem(JNPoem(
+    _m1_script0x2dpoems__registerPoem(JNPoem(
         reference_name="jn_easter_sakura_in_bloom",
-        display_name="Sakura in Bloom",
+        display_name=_("Sakura in Bloom"),
         holiday_type=jn_events.JNHolidayTypes.easter,
         affinity_range=(jn_affinity.HAPPY, None),
-        poem=(
+        poem=_(
             "Vibrant trees spring back anew\n"
             "As fluorescent hues illuminate\n"
             "The path for crowds to gather\n"
@@ -352,12 +352,12 @@ init python in jn_poems:
         text_align=0.5
     ))
 
-    __registerPoem(JNPoem(
+    _m1_script0x2dpoems__registerPoem(JNPoem(
         reference_name="jn_natsuki_birthday_flight",
-        display_name="Flight",
+        display_name=_("Flight"),
         holiday_type=jn_events.JNHolidayTypes.natsuki_birthday,
         affinity_range=(jn_affinity.ENAMORED, None),
-        poem=(
+        poem=_(
             "Climbing on top of a mountain doesn't make a hiker tall\n"
             "But accomplishment of reaching that height says it all\n"
             "Climbing up a ladder though is another thing altogether\n"
@@ -385,12 +385,12 @@ init python in jn_poems:
         font_size=16
     ))
 
-    __registerPoem(JNPoem(
+    _m1_script0x2dpoems__registerPoem(JNPoem(
         reference_name="jn_natsuki_hallows_end",
-        display_name="Hallow's End",
+        display_name=_("Hallow's End"),
         holiday_type=jn_events.JNHolidayTypes.halloween,
         affinity_range=(jn_affinity.LOVE, None),
-        poem=(
+        poem=_(
             "When the month ends, the costumes come out\n"
             "Children dress up and run door to door with glee\n"
             "Or be it the haunted houses ready to cause a shout\n"
@@ -435,10 +435,10 @@ screen poem_view(poem, pre_click_afm):
         xalign 0.5
         add "paper [poem.paper]"
 
-    # Scrolling poem view
+
     viewport id "poem_viewport":
         child_size (710, None)
-        xysize(600,600)
+        xysize (600,600)
         mousewheel True
         draggable True
         xanchor 0
@@ -456,7 +456,7 @@ screen poem_view(poem, pre_click_afm):
 
     vbar value YScrollValue(viewport="poem_viewport") style "poem_vbar"
 
-    # Menu
+
     vbox:
         xpos 1056
         ypos 10
@@ -481,7 +481,7 @@ style poem_vbar is vscrollbar:
     ysize 700
 
 style poem_title:
-    font "mod_assets/fonts/natsuki.ttf"
+    font "mod_assets/fonts/AnnieUseYourTelescope-Regular.ttf"
     size 30
     color "#000"
     outlines []
@@ -489,7 +489,7 @@ style poem_title:
     xalign 0.5
 
 style poem_text:
-    font "mod_assets/fonts/natsuki.ttf"
+    font "mod_assets/fonts/AnnieUseYourTelescope-Regular.ttf"
     color "#000"
     outlines []
     xalign 0.5

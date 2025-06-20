@@ -1,4 +1,5 @@
 default persistent._event_database = dict()
+
 default persistent._jn_holiday_list = dict()
 default persistent._jn_holiday_completed_list = []
 default persistent._jn_holiday_deco_list_on_quit = []
@@ -9,7 +10,7 @@ default persistent._jn_player_celebrates_christmas = None
 default persistent._jn_player_love_halloween_seen = None
 default persistent._jn_player_allow_legacy_music_switch_event = False
 
-# Transforms for overlays
+
 transform jn_glasses_pre_slide:
     subpixel True
     ypos 0
@@ -39,7 +40,7 @@ transform jn_confetti_fall:
     ypos 0
     easeout 2.25 alpha 0 ypos 90
 
-# Foreground props are displayed on the desk, in front of Natsuki
+
 image prop poetry_attempt = "mod_assets/props/poetry_attempt.png"
 image prop math_attempt = "mod_assets/props/math_attempt.png"
 image prop strawberry_milkshake = "mod_assets/props/strawberry_milkshake.png"
@@ -93,7 +94,6 @@ image prop wintendo_twitch_playing free:
         pause 0.15
 
     repeat
-
 image prop wintendo_twitch_playing charging:
     "mod_assets/props/twitch/gaming/charging/wintendo_twitch_playing_a.png"
     pause 1
@@ -131,14 +131,12 @@ image prop wintendo_twitch_playing charging:
         pause 0.15
 
     repeat
-
 image prop wintendo_twitch_battery_low:
     "mod_assets/props/twitch/low_battery/wintendo_twitch_battery_low_a.png"
     pause 1
     "mod_assets/props/twitch/low_battery/wintendo_twitch_battery_low_b.png"
     pause 1
     repeat
-
 image prop wintendo_twitch_dead:
     "mod_assets/props/twitch/dead/wintendo_twitch_dead_a.png"
     pause 1
@@ -169,7 +167,7 @@ image confetti falling:
 image confetti desk:
     "mod_assets/props/confetti/confetti_desk.png"
 
-# Background decorations are displayed in the room behind Natsuki
+
 image deco balloons = "mod_assets/deco/balloons.png"
 image deco garlands = "mod_assets/deco/garlands.png"
 image deco tree day = "mod_assets/deco/tree_day.png"
@@ -182,7 +180,7 @@ image deco d24 = "mod_assets/deco/d24.png"
 image deco d25 = "mod_assets/deco/d25.png"
 image deco o31 = "mod_assets/deco/o31.png"
 
-# Overlays are displayed over the top of Natsuki, in front of any decorations but behind any props
+
 image overlay slipping_glasses = "mod_assets/overlays/slipping_glasses.png"
 image overlay mistletoe = "mod_assets/overlays/mistletoe.png"
 image overlay puddles day = "mod_assets/overlays/puddles_day.png"
@@ -204,7 +202,7 @@ init python in jn_events:
     EVENT_MAP = dict()
     EVENT_RETURN_OUTFIT = None
 
-    __ALL_HOLIDAYS = {}
+    _m1_script0x2devents__ALL_HOLIDAYS = {}
 
     def selectEvent():
         """
@@ -218,10 +216,10 @@ init python in jn_events:
             is_seen=False,
             **kwargs
         )
-        # Events are one-time only, so we sanity check here
+        
         if len(event_list) > 0:
             return random.choice(event_list).label
-
+        
         else:
             return None
 
@@ -236,10 +234,10 @@ init python in jn_events:
         player_birthday = 8
         anniversary = 9
         valentines_day = 10
-
+        
         def __str__(self):
             return self.name
-
+        
         def __int__(self):
             return self.value
 
@@ -284,25 +282,25 @@ init python in jn_events:
             self.deco_list = deco_list
             self.prop_list = prop_list
             self.priority = priority
-
+        
         @staticmethod
         def loadAll():
             """
             Loads all persisted data for each holiday from the persistent.
             """
-            global __ALL_HOLIDAYS
-            for holiday in __ALL_HOLIDAYS.itervalues():
-                holiday.__load()
-
+            global _m1_script0x2devents__ALL_HOLIDAYS
+            for holiday in _m1_script0x2devents__ALL_HOLIDAYS.itervalues():
+                holiday._m1_script0x2devents__load()
+        
         @staticmethod
         def saveAll():
             """
             Saves all persistable data for each holiday to the persistent.
             """
-            global __ALL_HOLIDAYS
-            for holiday in __ALL_HOLIDAYS.itervalues():
-                holiday.__save()
-
+            global _m1_script0x2devents__ALL_HOLIDAYS
+            for holiday in _m1_script0x2devents__ALL_HOLIDAYS.itervalues():
+                holiday._m1_script0x2devents__save()
+        
         @staticmethod
         def filterHolidays(
             holiday_list,
@@ -329,7 +327,7 @@ init python in jn_events:
             return [
                 _holiday
                 for _holiday in holiday_list
-                if _holiday.__filterHoliday(
+                if _holiday._m1_script0x2devents__filterHoliday(
                     is_seen,
                     shown_count,
                     holiday_types,
@@ -337,7 +335,7 @@ init python in jn_events:
                     holiday_completion_state
                 )
             ]
-
+        
         def asDict(self):
             """
             Exports a dict representation of this holiday; this is for data we want to persist.
@@ -349,7 +347,7 @@ init python in jn_events:
                 "is_seen": self.is_seen,
                 "shown_count": self.shown_count
             }
-
+        
         def currAffinityInAffinityRange(self, affinity_state=None):
             """
             Checks if the current affinity is within this holidays's affinity_range
@@ -362,24 +360,24 @@ init python in jn_events:
             """
             if not affinity_state:
                 affinity_state = jn_affinity._getAffinityState()
-
+            
             return jn_affinity._isAffStateWithinRange(affinity_state, self.affinity_range)
-
-        def __load(self):
+        
+        def _m1_script0x2devents__load(self):
             """
             Loads the persisted data for this holiday from the persistent.
             """
             if store.persistent._jn_holiday_list[self.label]:
                 self.is_seen = store.persistent._jn_holiday_list[self.label]["is_seen"]
                 self.shown_count = store.persistent._jn_holiday_list[self.label]["shown_count"] if "shown_count" in store.persistent._jn_holiday_list[self.label] else 0
-
-        def __save(self):
+        
+        def _m1_script0x2devents__save(self):
             """
             Saves the persistable data for this holiday to the persistent.
             """
             store.persistent._jn_holiday_list[self.label] = self.asDict()
-
-        def __filterHoliday(
+        
+        def _m1_script0x2devents__filterHoliday(
             self,
             is_seen=None,
             shown_count=None,
@@ -403,27 +401,27 @@ init python in jn_events:
             """
             if is_seen is not None and self.is_seen != is_seen:
                 return False
-
+            
             elif shown_count is not None and self.shown_count < shown_count:
                 return False
-
+            
             elif holiday_types is not None and not self.holiday_type in holiday_types:
                 return False
-
+            
             elif affinity is not None and not self.currAffinityInAffinityRange(affinity):
                 return False
-
+            
             elif (
                 holiday_completion_state is not None
                 and self.isCompleted()
             ):
                 return False
-
+            
             elif self.conditional is not None and not eval(self.conditional, store.__dict__):
                 return False
-
+            
             return True
-
+        
         def run(self, suppress_visuals=False):
             """
             Sets up all visuals for this holiday, before revealing everything to the player.
@@ -434,27 +432,27 @@ init python in jn_events:
             """
             renpy.hide("prop")
             renpy.hide("deco")
-
+            
             if not suppress_visuals:
                 for prop in self.prop_list:
                     renpy.show(name="prop {0}".format(prop), zorder=store.JN_PROP_ZORDER)
-
+            
             if not suppress_visuals:
                 for deco in self.deco_list:
                     renpy.show(name="deco {0}".format(deco), zorder=store.JN_DECO_ZORDER)
-
+            
             kwargs = {
                 "natsuki_sprite_code": self.natsuki_sprite_code
             }
             if self.bgm:
                 kwargs.update({"bgm": self.bgm})
-
+            
             if not suppress_visuals:
                 displayVisuals(**kwargs)
-
+            
             else:
                 jn_globals.force_quit_enabled = True
-
+        
         def complete(self):
             """
             Marks this holiday as complete, preventing it from being seen again until reset.
@@ -465,17 +463,17 @@ init python in jn_events:
             store.persistent._jn_event_completed_count += 1
             self.is_seen = True
             self.shown_count += 1
-            self.__save()
-
+            self._m1_script0x2devents__save()
+            
             if not self.isCompleted():
                 store.persistent._jn_holiday_completed_list.append(int(self.holiday_type))
-
+            
             if self.deco_list:
                 store.persistent._jn_holiday_deco_list_on_quit = self.deco_list
-
+            
             store.Natsuki.resetLastTopicCall()
             store.Natsuki.resetLastIdleCall()
-
+        
         def isCompleted(self):
             """
             Returns whether this holiday has been completed.
@@ -485,20 +483,20 @@ init python in jn_events:
             """
             return int(self.holiday_type) in store.persistent._jn_holiday_completed_list
 
-    def __registerHoliday(holiday):
+    def _m1_script0x2devents__registerHoliday(holiday):
         """
         Registers a new holiday in the list of all holidays, allowing in-game access and persistency.
         """
-        if holiday.label in __ALL_HOLIDAYS:
+        if holiday.label in _m1_script0x2devents__ALL_HOLIDAYS:
             jn_utils.log("Cannot register holiday name: {0}, as a holiday with that name already exists.".format(holiday.reference_name))
-
+        
         else:
-            __ALL_HOLIDAYS[holiday.label] = holiday
+            _m1_script0x2devents__ALL_HOLIDAYS[holiday.label] = holiday
             if holiday.label not in store.persistent._jn_holiday_list:
-                holiday.__save()
-
+                holiday._m1_script0x2devents__save()
+            
             else:
-                holiday.__load()
+                holiday._m1_script0x2devents__load()
 
     def getHoliday(holiday_name):
         """
@@ -509,9 +507,9 @@ init python in jn_events:
 
         OUT: Corresponding JNHoliday if the holiday exists, otherwise None
         """
-        if holiday_name in __ALL_HOLIDAYS:
-            return __ALL_HOLIDAYS[holiday_name]
-
+        if holiday_name in _m1_script0x2devents__ALL_HOLIDAYS:
+            return _m1_script0x2devents__ALL_HOLIDAYS[holiday_name]
+        
         return None
 
     def getHolidaysForDate(input_date=None):
@@ -524,52 +522,52 @@ init python in jn_events:
         OUT:
             - JNHoliday representing the holiday for the supplied date.
         """
-
+        
         if input_date is None:
             input_date = datetime.datetime.today()
-
+        
         elif not isinstance(input_date, datetime.date):
             raise TypeError("input_date for holiday check must be of type date; type given was {0}".format(type(input_date)))
-
+        
         holidays = []
-
+        
         if store.jnIsNewYearsDay(input_date):
             holidays.append(JNHolidayTypes.new_years_day)
-
+        
         if store.jnIsValentinesDay(input_date):
             holidays.append(JNHolidayTypes.valentines_day)
-
+        
         if store.jnIsEaster(input_date):
             holidays.append(JNHolidayTypes.easter)
-
+        
         if store.jnIsHalloween(input_date):
             holidays.append(JNHolidayTypes.halloween)
-
+        
         if store.jnIsChristmasEve(input_date):
             holidays.append(JNHolidayTypes.christmas_eve)
-
+        
         if store.jnIsChristmasDay(input_date):
             holidays.append(JNHolidayTypes.christmas_day)
-
+        
         if store.jnIsNewYearsEve(input_date):
             holidays.append(JNHolidayTypes.new_years_eve)
-
+        
         if store.jnIsNatsukiBirthday(input_date):
             holidays.append(JNHolidayTypes.natsuki_birthday)
-
+        
         if store.jnIsPlayerBirthday(input_date):
             holidays.append(JNHolidayTypes.player_birthday)
-
+        
         if store.jnIsAnniversary(input_date):
             holidays.append(JNHolidayTypes.anniversary)
-
+        
         return holidays
 
     def getAllHolidays():
         """
         Returns a list of all holidays.
         """
-        return __ALL_HOLIDAYS.itervalues()
+        return _m1_script0x2devents__ALL_HOLIDAYS.itervalues()
 
     def selectHolidays():
         """
@@ -583,7 +581,7 @@ init python in jn_events:
             affinity=store.Natsuki._getAffinityState(),
             holiday_completion_state=False
         )
-
+        
         if len(holiday_list) > 0:
             holiday_types_added = []
             return_list = []
@@ -591,9 +589,9 @@ init python in jn_events:
                 if holiday.holiday_type not in holiday_types_added:
                     holiday_types_added.append(holiday.holiday_type)
                     return_list.append(holiday)
-
+            
             return return_list
-
+        
         else:
             return None
 
@@ -604,7 +602,7 @@ init python in jn_events:
         """
         for holiday in getAllHolidays():
             holiday.is_seen = False
-
+        
         JNHoliday.saveAll()
         store.persistent._jn_holiday_completed_list = []
         store.persistent._jn_holiday_deco_list_on_quit = []
@@ -616,19 +614,19 @@ init python in jn_events:
         """
         store.persistent._event_list = list()
         holiday_list.sort(key = lambda holiday: holiday.priority)
-
+        
         if is_day_check:
             store.queue("holiday_prelude")
-
+        
         while len(holiday_list) > 0:
             store.queue(holiday_list.pop(0).label)
-
+            
             if len(holiday_list) > 0:
                 store.queue("holiday_interlude")
-
+            
             else:
                 store.queue("ch30_loop")
-
+        
         renpy.jump("call_next_topic")
 
     def displayVisuals(
@@ -652,10 +650,10 @@ init python in jn_events:
         jn_custom_music._last_music_option = jn_custom_music.JNMusicOptionTypes.location
         renpy.hide("black")
 
-    # Holiday registration
 
-    # Christmas eve
-    __registerHoliday(JNHoliday(
+
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_christmas_eve",
         holiday_type=JNHolidayTypes.christmas_eve,
         affinity_range=(jn_affinity.HAPPY, None),
@@ -664,8 +662,8 @@ init python in jn_events:
         priority=99
     ))
 
-    # Christmas day
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_christmas_day",
         holiday_type=JNHolidayTypes.christmas_day,
         affinity_range=(jn_affinity.HAPPY, None),
@@ -674,8 +672,8 @@ init python in jn_events:
         priority=99
     ))
 
-    # New year's eve
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_new_years_eve",
         holiday_type=JNHolidayTypes.new_years_eve,
         affinity_range=(jn_affinity.HAPPY, None),
@@ -683,8 +681,8 @@ init python in jn_events:
         priority=10
     ))
 
-    # New year's day
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_new_years_day",
         holiday_type=JNHolidayTypes.new_years_day,
         affinity_range=(jn_affinity.HAPPY, None),
@@ -693,8 +691,8 @@ init python in jn_events:
         priority=10
     ))
 
-    # Valentine's day
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_valentines_day",
         holiday_type=JNHolidayTypes.valentines_day,
         affinity_range=(jn_affinity.AFFECTIONATE, None),
@@ -703,8 +701,8 @@ init python in jn_events:
         priority=10
     ))
 
-    # Easter
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_easter",
         holiday_type=JNHolidayTypes.easter,
         affinity_range=(jn_affinity.HAPPY, None),
@@ -712,8 +710,8 @@ init python in jn_events:
         priority=10
     ))
 
-    # Halloween
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_halloween",
         holiday_type=JNHolidayTypes.halloween,
         affinity_range=(jn_affinity.HAPPY, None),
@@ -722,8 +720,8 @@ init python in jn_events:
         priority=10
     ))
 
-    # Player's birthday
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_player_birthday",
         holiday_type=JNHolidayTypes.player_birthday,
         affinity_range=(jn_affinity.AFFECTIONATE, None),
@@ -734,8 +732,8 @@ init python in jn_events:
         priority=50
     ))
 
-    # Natsuki's birthday
-    __registerHoliday(JNHoliday(
+
+    _m1_script0x2devents__registerHoliday(JNHoliday(
         label="holiday_natsuki_birthday",
         holiday_type=JNHolidayTypes.natsuki_birthday,
         conditional="jn_gifts.getGiftFileExists('party_supplies')",
@@ -747,9 +745,9 @@ init python in jn_events:
         priority=50
     ))
 
-# RANDOM INTRO EVENTS
 
-# Natsuki is walked in on reading a new volume of Parfait Girls. She isn't impressed.
+
+
 init 5 python:
     registerTopic(
         Topic(
@@ -824,7 +822,7 @@ label event_caught_reading_manga:
 
     return
 
-# Natsuki is walked in on getting frustrated with her poetry, and gets flustered.
+
 init 5 python:
     registerTopic(
         Topic(
@@ -894,7 +892,7 @@ label event_caught_writing_poetry:
 
     return
 
-# Natsuki is disillusioned with the relationship, and can't suppress her anger and frustration.
+
 init 5 python:
     registerTopic(
         Topic(
@@ -917,8 +915,8 @@ label event_relationship_doubts:
 
     if Natsuki.isDistressed(higher=True):
         n "I {w=2}{i}hate{/i}{w=2} this."
-
     else:
+
         n "I {w=2}{i}HATE{/i}{w=2} this."
 
     n "I hate it.{w=1} I hate it.{w=1} I hate it.{w=1} I hate it.{w=1} I {w=2}{i}hate{/i}{w=2} it."
@@ -946,7 +944,7 @@ label event_relationship_doubts:
 
     return
 
-# Natsuki tries fiddling with the game, it doesn't go well.
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1009,7 +1007,7 @@ label event_code_fiddling:
 
     return
 
-# Natsuki isn't quite ready for the day...
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1030,7 +1028,7 @@ label event_not_ready_yet:
         import random
         jn_globals.force_quit_enabled = False
 
-        # Unlock the starter ahoges
+
         unlocked_ahoges = [
             jn_outfits.getWearable("jn_headgear_ahoge_curly"),
             jn_outfits.getWearable("jn_headgear_ahoge_small"),
@@ -1039,10 +1037,10 @@ label event_not_ready_yet:
         for ahoge in unlocked_ahoges:
             ahoge.unlock()
 
-        # Unlock the super-messy hairstyle
+
         super_messy_hairstyle = jn_outfits.getWearable("jn_hair_super_messy").unlock()
 
-        # Make note of the loaded outfit, then assign Natsuki a hidden one to show off hair/ahoge
+
         outfit_to_restore = Natsuki.getOutfitName()
         ahoge_outfit = jn_outfits.getOutfit("jn_ahoge_unlock")
         ahoge_outfit.headgear = random.choice(unlocked_ahoges)
@@ -1082,14 +1080,14 @@ label event_not_ready_yet:
     hide black with Dissolve(1)
 
     n 2fcsem "Jeez...{w=1.5}{nw}"
-    extend 2nslpo  " I really gotta get an alarm clock or something.{w=1}{nw}"
+    extend 2nslpo " I really gotta get an alarm clock or something.{w=1}{nw}"
     extend 2nsrss " Heh."
     n 4flldv "So...{w=1}{nw}"
     extend 3fcsbgl " what's up,{w=0.2} [player]?"
 
     return
 
-# Natsuki is having a hard time understanding Ren'Py (like all of us).
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1169,8 +1167,8 @@ label event_renpy_for_dummies:
 
     return
 
-# Natsuki tries out a new fashion manga.
-# Prop courtesy of Almay @ https://twitter.com/art_almay
+
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1192,7 +1190,7 @@ label event_reading_a_la_mode:
 
     n "Oh man...{w=1}{nw}"
     extend " this artwork..."
-    n "It's so {i}{cps=\7.5}pretty{/cps}{/i}!"
+    n "It's so {i}{cps=7.5}pretty{/cps}{/i}!"
     n "How the hell do they get so good at this?!"
 
     $ jnPause(3)
@@ -1211,7 +1209,7 @@ label event_reading_a_la_mode:
     menu:
         "Enter...":
             pass
-    
+
     python:
         a_la_mode_manga = jn_desk_items.getDeskItem('jn_a_la_mode_manga_held')
         a_la_mode_manga.unlock()
@@ -1241,7 +1239,7 @@ label event_reading_a_la_mode:
 
     return
 
-# Natsuki treats herself to a strawberry milkshake.
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1311,8 +1309,8 @@ label event_drinking_strawberry_milkshake:
 
     return
 
-# Natsuki is walked in on reading a manga aimed at/themed around self-help. She *totally* didn't need the self-help, -obviously-.
-# Prop courtesy of TheShunBun @ https://twitter.com/TheShunBun
+
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1355,7 +1353,7 @@ label event_step_by_step_manga:
     menu:
         "Enter...":
             pass
-    
+
     python:
         step_by_step_manga = jn_desk_items.getDeskItem('jn_step_by_step_manga_held')
         step_by_step_manga.unlock()
@@ -1407,7 +1405,7 @@ label event_step_by_step_manga:
 
     return
 
-# Natsuki finds her glasses in her drawer! They don't fit as well as she remembers...
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1427,7 +1425,7 @@ label event_eyewear_problems:
 
         jn_globals.force_quit_enabled = False
 
-        # Unlock the starter glasses
+
         unlocked_eyewear = [
             jn_outfits.getWearable("jn_eyewear_round_glasses_black"),
             jn_outfits.getWearable("jn_eyewear_round_glasses_red"),
@@ -1439,7 +1437,7 @@ label event_eyewear_problems:
         for eyewear in unlocked_eyewear:
             eyewear.unlock()
 
-        # Make note of the loaded outfit, then give Natsuki a copy without eyewear so we can show off the new ones!
+
         outfit_to_restore = Natsuki.getOutfitName()
         eyewear_outfit = copy.copy(jn_outfits.getOutfit(outfit_to_restore))
         eyewear_outfit.eyewear = jn_outfits.getWearable("jn_none")
@@ -1519,7 +1517,7 @@ label event_eyewear_problems:
     menu:
         "Enter...":
             pass
-    
+
     $ Natsuki.setDeskItem(jn_desk_items.getDeskItem("jn_glasses_case"))
     show overlay slipping_glasses zorder JN_OVERLAY_ZORDER at jn_glasses_pre_slide
     $ jn_events.displayVisuals("1fcssmesi")
@@ -1544,7 +1542,7 @@ label event_eyewear_problems:
     extend 2fcsbgl " I-{w=0.75}{nw}"
     n 2nsqbol "..."
 
-    show natsuki 1fsqbof at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki 1fsqbof zorder JN_NATSUKI_ZORDER at jn_center
     show overlay slipping_glasses zorder JN_OVERLAY_ZORDER at jn_glasses_readjust
     $ jnPause(1)
 
@@ -1557,7 +1555,7 @@ label event_eyewear_problems:
     n 1fsranlsbl "..."
     n 4fcsanf "Nnnnn...!"
 
-    show natsuki 1fcsunf at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki 1fcsunf zorder JN_NATSUKI_ZORDER at jn_center
     show overlay slipping_glasses zorder JN_OVERLAY_ZORDER at jn_glasses_readjust
     $ jnPause(1.15)
 
@@ -1572,7 +1570,7 @@ label event_eyewear_problems:
             pass
 
     n 1fbkwrlesssbl "Alright!{w=0.75}{nw}"
-    extend 4flrwrlesssbl" Alright!"
+    extend 4flrwrlesssbl " Alright!"
     n 2fcsgslsbr "I know,{w=0.33} okay?!"
     extend 2fsremlsbr " The glasses don't fit properly!"
     n 2fslsrl "They {i}never{/i} have."
@@ -1597,8 +1595,8 @@ label event_eyewear_problems:
                 n 2fcsgsfsbl "W-{w=0.3}well,{w=0.2} of course they do,{w=0.2} [player]!{w=1}{nw}"
                 extend 2flrpolsbl " I {i}did{/i} pick them,{w=0.2} a-{w=0.2}after all."
                 n 4ksrsllsbl "..."
-
             else:
+
                 n 1fcsgslsbl "W-{w=0.2}well,{w=0.5}{nw}"
                 extend 4fllgslsbl " duh!"
                 n 2fcsbglsbr "Of course they suit me,{w=0.2} [player]!"
@@ -1606,8 +1604,8 @@ label event_eyewear_problems:
                 extend 2fllemlsbr " You didn't seriously think I'd pick something that {i}wouldn't{/i} show off my sense of style,{w=0.75}{nw}"
                 extend 2fnmpolsbr " did you?"
                 n 1fcsemlsbl "Yeesh..."
-
         "Yeah, that was a waste of time.":
+
             $ Natsuki.percentageAffinityLoss(2)
             if Natsuki.isAffectionate(higher=True):
                 n 4fskemlesh "H-{w=0.3}hey!{w=1}{nw}"
@@ -1615,14 +1613,14 @@ label event_eyewear_problems:
                 n 2flreml "Yeesh..."
                 n 2fsreml "{i}Someone{/i} woke up on the wrong side of the bed..."
                 n 2fsrsll "..."
-
             else:
+
                 n 4fskwrlesh "H-{w=0.2}hey!{w=0.5}{nw}"
                 extend 1fnmgsl " What was that for?!"
                 n 2fnmwrl "And as if you acting like a jerk {i}isn't{/i}?"
                 n 2fsrsllean "..."
-
         "...":
+
             n 1fllsll "..."
             n 4knmeml "...What?"
             extend 2fsqemlsbr " The silent act {i}definitely{/i} isn't helping,"
@@ -1636,11 +1634,11 @@ label event_eyewear_problems:
 
     show black zorder JN_BLACK_ZORDER with Dissolve(0.5)
     $ jnPause(0.5)
-    # Hide glasses overlay and restore old outfit
+
     $ Natsuki.clearDesk()
     hide overlay
     $ Natsuki.setOutfit(jn_outfits.getOutfit(outfit_to_restore))
-    show natsuki 1fcsbol at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki 1fcsbol zorder JN_NATSUKI_ZORDER at jn_center
     play audio glasses_case_close
     $ jnPause(0.75)
     play audio drawer
@@ -1662,7 +1660,7 @@ label event_eyewear_problems:
 
     return
 
-# Natsuki learns why you should always have a charging cable on hand...
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1718,7 +1716,7 @@ label event_wintendo_twitch_battery_dead:
             pass
 
     show prop wintendo_twitch_playing free zorder JN_PROP_ZORDER
-    show natsuki gaming at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki gaming zorder JN_NATSUKI_ZORDER at jn_center
     $ jn_events.displayVisuals("1fdwfol")
     $ jn_globals.force_quit_enabled = True
     $ jnPause(3)
@@ -1792,7 +1790,7 @@ label event_wintendo_twitch_battery_dead:
 
     return
 
-# Natsuki jumps at the player entering the room, right as she's about to win a game... uh oh.
+
 init 5 python:
     registerTopic(
         Topic(
@@ -1850,7 +1848,7 @@ label event_wintendo_twitch_game_over:
             pass
 
     show prop wintendo_twitch_held charging zorder JN_PROP_ZORDER
-    show natsuki gaming at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki gaming zorder JN_NATSUKI_ZORDER at jn_center
     $ jn_events.displayVisuals("1unmpu")
     $ jn_globals.force_quit_enabled = True
     $ jnPause(0.5)
@@ -1902,7 +1900,7 @@ label event_wintendo_twitch_game_over:
 
     return
 
-# Natsuki shares tips how to stay warm at chilly days
+
 init 5 python:
     registerTopic(
         Topic(
@@ -2007,8 +2005,8 @@ label event_warm_package:
         play audio gift_slide
         $ jnPause(2)
         n "Aha!{w=0.75} There we go.{w=1} Come to mama..."
-
     else:
+
         n "..."
         n "Ugh...{w=0.75} I {i}seriously{/i} cannot believe my luck sometimes."
         n "Out of all the places I could have been stuck inside for {i}literally forever...{/i}"
@@ -2132,7 +2130,7 @@ label event_warm_package:
     extend 4fchgn " like a little toasty shield!"
     n 4flrsl "If you just wear something like leggings,{w=0.5}{nw}"
     extend 1fsqsl " then all that warmth goes straight from your body,{w=0.2} into the cloth..."
-    n 2fllem  "...And then the air just snatches it away,{w=0.2} like a professional freeloader!{w=0.75}{nw}"
+    n 2fllem "...And then the air just snatches it away,{w=0.2} like a professional freeloader!{w=0.75}{nw}"
     extend 2fcswr " What a waste!"
     n 4fslss "Besides,{w=0.2} unless you're a professional cyclist or something,{w=1}{nw}"
     extend 2fsqss " I {i}highly{/i} doubt you need the aerodynamics..."
@@ -2162,8 +2160,8 @@ label event_warm_package:
         extend 2tslss " warm food..."
         n 1fsrdvl "S-{w=0.2}some quality time with a certain someone..."
         n 4fcssslsbr "I-{w=0.2}it all counts!"
-
     else:
+
         extend 2tslss " warm food...{w=0.5}{nw}"
         extend 4unmaj " you'd be surprised how much a little baking can turn up the heat!"
         n 1fslslsbr "...Speaking from experience."
@@ -2185,7 +2183,7 @@ label event_warm_package:
     play audio straw_sip
     $ jnPause(2)
     play audio glass_move
-    show natsuki 1kcsss at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki 1kcsss zorder JN_NATSUKI_ZORDER at jn_center
     $ jnPause(3)
     hide black with Dissolve(2)
 
@@ -2199,7 +2197,7 @@ label event_warm_package:
 
     return
 
-# Natsuki finds a new friend in the clubroom!
+
 init 5 python:
     registerTopic(
         Topic(
@@ -2222,7 +2220,7 @@ label event_sanjo:
     $ jnPause(5)
 
     n "..."
-    n "Oh,{w=0.2} screw this!{w=0.75} I'm done just sitting around.{w=0.75} {i}Again{/i}." 
+    n "Oh,{w=0.2} screw this!{w=0.75} I'm done just sitting around.{w=0.75} {i}Again{/i}."
     n "There's gotta be something I missed in the teacher's desk or...{w=1} something..."
 
     play audio chair_out
@@ -2241,7 +2239,7 @@ label event_sanjo:
 
     n "Alright...{w=1} now what have we got here..."
     $ jnPause(2)
-    
+
     n "Trash..."
     play audio stationary_rustle_a
     extend " more trash..."
@@ -2260,10 +2258,10 @@ label event_sanjo:
     $ jnPause(4)
 
     n "..."
-    n "...Huh?" 
+    n "...Huh?"
     n "Wait.{w=0.75} Is that...?"
     n "..."
-    n "I-{w=0.2}it is!{w=0.75} What are {i}you{/i} still doing here?" 
+    n "I-{w=0.2}it is!{w=0.75} What are {i}you{/i} still doing here?"
     n "...And what kind of inconsiderate jerk just left you {i}there{/i}?"
 
     play audio gift_slide
@@ -2287,7 +2285,7 @@ label event_sanjo:
     menu:
         "Enter...":
             pass
-    
+
     $ sanjo = jn_desk_items.getDeskItem("jn_sanjo")
     $ Natsuki.setDeskItem(sanjo)
     $ jn_events.displayVisuals("2fcssm")
@@ -2316,11 +2314,11 @@ label event_sanjo:
         extend 3ccspolsbr " B-{w=0.2}but still."
         n 3ccsajlsbr "A little notice would have been nice.{w=1}{nw}"
         extend 3nsrbolsbr " That's all I'm saying."
-    
     else:
+
         n 3ccstr "Talk about inconsiderate.{w=0.75}{nw}"
         extend 3csrca " You could at least give me some kinda notice or something next time."
-    
+
     n 4csrbo "..."
     n 4tsqbo "..."
     n 2tnmfl "...What?{w=0.75}{nw}"
@@ -2330,23 +2328,23 @@ label event_sanjo:
     show natsuki option_wait_sulky
     menu:
         n "If you've got something you gotta ask then just say it already,{w=0.2} [player]."
-
         "What's with the plant, [n_name]?":
+
             n 1csqfl "...Seriously,{w=0.2} [player]?{w=0.75}{nw}"
             extend 2fsqem " 'What's with the plant'?"
-            n 4fllem "And just what exactly is {i}that{/i} supposed to mean?{w=0.75}{nw}" 
+            n 4fllem "And just what exactly is {i}that{/i} supposed to mean?{w=0.75}{nw}"
             extend 4fnmaj " Huh?"
             n 3fcsgs "You trying to say he needs an {i}excuse{/i} to be here or something?{w=0.75}{nw}"
             extend 3fcspo " Sheesh."
             n 1csrbo "Talk about rolling out the red carpet."
             n 4ccsaj "Besides."
-            n 2fslfl "{i}'The plant'{/i} has a name,{w=0.5}{nw}" 
+            n 2fslfl "{i}'The plant'{/i} has a name,{w=0.5}{nw}"
             extend 2ccsaj " you know."
             n 2cllbo "..."
             n 2cslbolsbl "..."
             n 5csqcalsbl "...It's Sanjo."
-
         "Looks like you and the plant have something in common...":
+
             n 4fsqfl "...A-{w=0.2}and what exactly {i}is{/i} that,{w=0.5}{nw}"
             extend 4fsqem " [player]?"
             n 2fsqca "..."
@@ -2361,14 +2359,14 @@ label event_sanjo:
             n 4fcsfs "Heh.{w=0.75}{nw}"
             extend 2fcsfl " Yeah."
             n 2fcspoesm "That's about what Sanjo here and I thought."
-
         "...":
+
             n 5csrunsbr "..."
             n 5csqemsbr "W-{w=0.2}what?{w=0.75}{nw}"
             extend 4ccsajsbr " Don't look at me like that,{w=0.2} [player]."
             n 3ccsflsbr "Besides."
             n 3ccsposbr "...You'll annoy Sanjo here."
-    
+
     n 1ccsajlsbr "A-{w=0.2}and no,{w=0.5}{nw}"
     extend 5cdlbosbr " I didn't name him myself."
     n 4tllpu "In fact...{w=0.75}{nw}"
@@ -2392,7 +2390,7 @@ label event_sanjo:
     extend 7fcsss " But let's face it."
     n 7ullaj "If you're gonna take up a little horticulture..."
     n 6fchbg "Where better to start than a cactus,{w=0.2} right?"
-    n 4tlrss "Think about it,{w=0.2} [player] -{w=0.5}{nw}" 
+    n 4tlrss "Think about it,{w=0.2} [player] -{w=0.5}{nw}"
     extend 3fdlsm " this little guy was practically {i}made{/i} for a beginner.{w=0.75}{nw}"
     extend 6fcsbg " He basically already fends for himself!"
     n 7ulraj "Plus I mean...{w=0.75}{nw}"
@@ -2402,15 +2400,15 @@ label event_sanjo:
     extend 2fcsbg " how hard could it {i}possibly{/i} be?"
     n 2fcssmesm "Ehehe."
     n 4fcsaj "So!"
-    n 2flrss "You better keep your eyes and ears{w=0.5}{nw}" 
-    extend 2fsqss " {i}pricked{/i},{w=0.75}{nw}" 
+    n 2flrss "You better keep your eyes and ears{w=0.5}{nw}"
+    extend 2fsqss " {i}pricked{/i},{w=0.75}{nw}"
     extend 4fsqbg " [player]..."
     n 3nchgnl "'Cause I'm gonna get Sanjo here blooming before you know it!"
 
     $ sanjo.unlock()
     return
 
-# Natsuki is walked in on reading a new volume of Parfait Girls. She isn't impressed.
+
 init 5 python:
     registerTopic(
         Topic(
@@ -2427,7 +2425,7 @@ label event_house_of_cards:
     $ jn_globals.force_quit_enabled = False
     play audio card_place
     $ jnPause(5)
-    n "And...{w=1}{nw}" 
+    n "And...{w=1}{nw}"
     play audio card_place
     extend " that's another one!{w=1} Yes!"
     n "Jeez...{w=1} why didn't I think of this before?{w=0.75} This is actually {i}way{/i} more fun than I thought!"
@@ -2505,14 +2503,14 @@ label event_house_of_cards:
     n 1fcsunl "..."
     n 1fcsfll "Are."
     n 1fcseml "You."
-    n 4fcsanl "Freaking{w=1}{nw}" 
+    n 4fcsanl "Freaking{w=1}{nw}"
     extend 4fbkwrl " {i}KIDDING ME{/i}?!{w=0.75}{nw}"
     $ player_final = jn_utils.getPlayerFinal(3)
     extend 4knmwrl " [player_initial]-[player][player_final]!"
     n 4fcsanl "Uuuuuu-!"
     n 4cbkwrless "Y-{w=0.2}you completely threw me off!{w=0.75}{nw}"
     extend 2fcsful " You have no {i}idea{/i} how long it took for me to get that far!{w=0.75}{nw}"
-    extend 4knmeml " I-{w=0.2}I totally {i}had{/i}{w=0.5}{nw}" 
+    extend 4knmeml " I-{w=0.2}I totally {i}had{/i}{w=0.5}{nw}"
     extend 4knmwrl " thaaat!"
     n 1kdweml "...And now I gotta do it all over again!"
     n 1kcsflesi "..."
@@ -2524,9 +2522,9 @@ label event_house_of_cards:
     n 1ccsaj "...Forget it.{w=0.75}{nw}"
     extend 1fcswrlsbl " Forget it!{w=1}{nw}"
     extend 4ftlfllsbl " I don't even care anymore."
-    n 4ccsfllsbl "This was a total waste of time in the first place,{w=0.5}{nw}" 
+    n 4ccsfllsbl "This was a total waste of time in the first place,{w=0.5}{nw}"
     extend 4cslsllsbl " a-{w=0.2}anyway."
-    
+
     show natsuki 1ccscasbl
     show black zorder JN_BLACK_ZORDER with Dissolve(0.5)
     $ jnPause(1)
@@ -2560,8 +2558,8 @@ label event_house_of_cards:
         $ time_of_day = "today" if jn_is_day() else "tonight"
         n 3fcsbglsbr "Y-{w=0.2}you better {i}believe{/i} you're giving me the royal treatment [time_of_day]!"
         n 3fsqsmlsbr "Ehehe."
-
     else:
+
         n 1ccsss "...Heh.{w=0.75}{nw}"
         extend 2ccsaj " Sorry,{w=0.2} [player]."
         n 2flltr "I'm done with the cards already."
@@ -2570,7 +2568,7 @@ label event_house_of_cards:
 
     return
 
-# Natsuki discovers a new card game she wants to try with the player!
+
 init 5 python:
     registerTopic(
         Topic(
@@ -2603,7 +2601,7 @@ label event_blackjack_unlock:
 
     n "..."
     play audio keyboard
-    n "...Card games...{w=1} two players...{w=1.75}{nw}" 
+    n "...Card games...{w=1} two players...{w=1.75}{nw}"
     play audio keyboard
     extend " {i}easy{/i}."
 
@@ -2636,9 +2634,9 @@ label event_blackjack_unlock:
     n "Stupid budget cuts."
     $ jnPause(3)
     n "...Finally.{w=0.75} {i}Now{/i} you decide to load."
-    n "Of course they just {i}had{/i} to install the worst browser they could find too." 
+    n "Of course they just {i}had{/i} to install the worst browser they could find too."
     n "Cut me a break."
-    
+
     $ jnPause(1)
     play audio button_tap_c
     $ jnPause(2)
@@ -2679,7 +2677,7 @@ label event_blackjack_unlock:
     $ jn_events.displayVisuals("1ndwpu")
     $ jn_globals.force_quit_enabled = True
 
-    # Nat's body is obscured by the laptop, so don't need as much spritecode variation
+
     n 1ndwpu "..."
     n 1fdwpu "..."
     n 1fdwbo "..."
@@ -2713,7 +2711,7 @@ label event_blackjack_unlock:
     extend 7nnmss " You're probably wondering what all the fuss is about all of a sudden,{w=0.5}{nw}"
     extend 7nlrss " huh."
     n 7ulraj "So...{w=1}{nw}"
-    
+
     if persistent._jn_snap_player_wins > 0 or persistent._jn_snap_natsuki_wins > 0:
         extend 7nllaj " I know we've played a bunch of Snap before,{w=0.2} obviously.{w=0.75}{nw}"
         extend 3unmfl " And don't get me wrong -{w=0.5}{nw}"
@@ -2721,11 +2719,11 @@ label event_blackjack_unlock:
         n 1nsraj "But...{w=1}{nw}"
         extend 1clrfl " it always felt like it was missing something.{w=0.75}{nw}"
         extend 7tnmbo " You know?"
-
     else:
+
         extend 7tlrbo " I'm pretty sure I mentioned Snap before.{w=0.75}{nw}"
         extend 7tnmfl " That card game where you gotta call out matching cards to win?"
-        n 3nllfl "...Even if we never actually ended up {i}playing{/i} it,{w=0.5}{nw}" 
+        n 3nllfl "...Even if we never actually ended up {i}playing{/i} it,{w=0.5}{nw}"
         extend 3nslsl " for whatever reason."
         n 3nllpu "But like...{w=1}{nw}"
         extend 7nsqcasbr " I guess it's fine if all you actually care about in a game is reaction times."
@@ -2734,7 +2732,7 @@ label event_blackjack_unlock:
     n 1ccsss "So it's not like it takes some kind of mastermind to figure out what's missing here."
     n 3fsqsm "..."
     n 3tsqss "What?{w=0.75}{nw}"
-    extend 3fnmsm " Wasn't it obvious already,{w=0.5}{nw}"  
+    extend 3fnmsm " Wasn't it obvious already,{w=0.5}{nw}"
     extend 3fsqsm " [player]?"
     n 6fcsbg "...Some actual strategy!{w=0.75}{nw}"
     extend 6fchgn " Duh!"
@@ -2754,7 +2752,7 @@ label event_blackjack_unlock:
     n 7ullss "I know,{w=0.2} I know.{w=0.75}{nw}"
     extend 7ccsbgedz " Genius,{w=0.2} right?{w=0.75}{nw}"
     extend 6ccssm " Betcha' wish {i}you'd{/i} thought of it before,{w=0.2} huh?"
-    n 7ulraj "I'd actually heard about it a while ago,{w=0.5}{nw}" 
+    n 7ulraj "I'd actually heard about it a while ago,{w=0.5}{nw}"
     extend 7clrsssbl " but I never thought it was something that could actually be fun to play.{w=0.75}{nw}"
     extend 3cslsssbl " Especially with only two players."
     n 3tnmbo "So when I was looking for something else to do with the card pack,{w=0.2} I guess it just kinda came to mind."
@@ -2778,8 +2776,8 @@ label event_blackjack_unlock:
     show natsuki option_wait_smug
     menu:
         n "I can tell you're just {i}itching{/i} to get started,{w=0.2} right?"
-
         "You bet I am!":
+
             n 1fcssm "Heh.{w=0.75}{nw}"
             extend 7fcsbg " Just as I thought.{w=0.75}{nw}"
             extend 3fchgn " I can read you like a book!"
@@ -2798,8 +2796,8 @@ label event_blackjack_unlock:
             hide black with Dissolve(1)
 
             jump blackjack_explanation
-
         "Not right now,{w=0.2} [n_name].":
+
             n 1ccssl "Heh.{w=0.75}{nw}"
             extend 3clrfl " Say no more,{w=0.2} [player].{w=0.75}{nw}"
             extend 3clrsl " Say no more."
@@ -2812,7 +2810,7 @@ label event_blackjack_unlock:
             extend 3csrfll " I'm not {i}that{/i} entitled."
             n 1ullsl "But hey."
             extend 6nchgn " Not like there's any shortage of time for you to start learning and losing later,{w=0.2} right?"
-            
+
             show natsuki 1ccssmeme
             show black zorder JN_BLACK_ZORDER with Dissolve(0.5)
             $ jnPause(2)
@@ -2830,7 +2828,6 @@ label event_blackjack_unlock:
 
     return
 
-# Natsuki isn't happy at the school's internet connection...
 init 5 python:
     registerTopic(
         Topic(
@@ -2845,7 +2842,7 @@ init 5 python:
 label event_internet_connection:
     $ jn_globals.force_quit_enabled = False
     $ jnPause(3)
-    n "...Finally!{w=0.75} About time it loaded!" 
+    n "...Finally!{w=0.75} About time it loaded!"
     n "Jeez...{w=1} I swear the website takes way longer to load up now..."
     n "Stupid school network policies."
     $ jnPause(2)
@@ -2862,7 +2859,7 @@ label event_internet_connection:
     n "..."
     n "..."
     play audio anime_slash
-    n "Ack!{w=0.75} What the hell was that?!{w=0.75} C-{w=0.2}come on,{w=0.2} Minori!" 
+    n "Ack!{w=0.75} What the hell was that?!{w=0.75} C-{w=0.2}come on,{w=0.2} Minori!"
     n "S-{w=0.2}screw the rules!{w=0.75} Fight back!"
     $ jnPause(3)
 
@@ -2871,7 +2868,7 @@ label event_internet_connection:
     play audio anime_punch
     n "Oh,{w=0.2} for-!"
     n "What are you {i}doing{/i}?{w=0.75} Stop hugging it out with the ground and get up already!"
-    n "As {i}if{/i} some no-name wannabe has both of you floored this easily!" 
+    n "As {i}if{/i} some no-name wannabe has both of you floored this easily!"
     n "Please..."
     $ jnPause(3)
 
@@ -2886,7 +2883,7 @@ label event_internet_connection:
     play audio anime_punch
     $ jnPause(0.25)
     play audio anime_punch
-    n "Yeah!{w=0.5} Yeah!{w=0.5} Now {i}that's{/i} what I'm talking about!{w=0.75}{nw}" 
+    n "Yeah!{w=0.5} Yeah!{w=0.5} Now {i}that's{/i} what I'm talking about!{w=0.75}{nw}"
     play audio anime_punch
     extend " Go!"
     $ jnPause(2)
@@ -2894,7 +2891,7 @@ label event_internet_connection:
     n "...!"
     play audio chair_out_fast
     $ jnPause(0.2)
-    n "M-{w=0.2}Minori!{w=0.5}{nw}" 
+    n "M-{w=0.2}Minori!{w=0.5}{nw}"
     play audio anime_slash
     extend " MOVE!"
     n "Man..."
@@ -2925,7 +2922,7 @@ label event_internet_connection:
             renpy.play(filename=audio.button_tap_c, channel="audio")
             jnPause(0.2)
 
-    n "...Oh,{w=0.5} you have {w=0.3}{b}got{/b}{w=0.3} to be kidding me.{w=0.75}{nw}" 
+    n "...Oh,{w=0.5} you have {w=0.3}{b}got{/b}{w=0.3} to be kidding me.{w=0.75}{nw}"
     play audio button_tap_c
     extend " W-{w=0.2}why now?!"
     play audio button_tap_c
@@ -2941,8 +2938,8 @@ label event_internet_connection:
 
     if jn_outfits.getOutfit("jn_cosy_cardigan_outfit").unlocked:
         n "As if the busted heating wasn't enough of a pain in the ass.{w=0.75} Now the internet connection is checking out too?"
-
     else:
+
         n "Don't tell me the internet connection is {i}already{/i} checking out on me..."
 
     n "Come on,{w=0.2} you pile of junk!{w=0.75} Load!{w=0.75}{nw}"
@@ -2997,8 +2994,8 @@ label event_internet_connection:
     if Natsuki.isEnamored(higher=True):
         n 2csraj "You haven't been messing around with the internet connection or something,{w=0.5}{nw}"
         extend 2csqpo " have you [player]?"
-
     else:
+
         n 2fsqfl "You better not have been messing around with the internet connection or something on purpose,{w=0.5}{nw}"
         extend 2fsrca " [player]."
 
@@ -3030,7 +3027,7 @@ label event_internet_connection:
     n 2cllaj "But...{w=1}{nw}"
     extend 2ccstr " I'll tell you one thing though,{w=0.2} [player]."
     n 4ccsss "You're kidding yourself if you seriously think I'm gonna let {w=0.2}{i}that{/i}{w=0.2} of all things get me down."
-    
+
     if Natsuki.isEnamored(higher=True):
         n 4ccsbg "After all..."
         n 7ccsbgl "A-{w=0.2}at least there's {i}one{/i} connection here I can always rely on,{w=0.2} right?{w=0.75}{nw}"
@@ -3042,11 +3039,11 @@ label event_internet_connection:
         if Natsuki.isLove(higher=True):
             $ chosen_endearment = jn_utils.getRandomEndearment()
             n 2fchbll "Make yourself at home already,{w=0.2} [chosen_endearment]!"
-
         else:
+
             n 2nchgnl "Now get comfy already!"
-    
     else:
+
         n 7ccsbgl "A-{w=0.2}after all..."
         n 7fsqbgl "Looks like there's still {i}one{/i} connection here that isn't gonna flake out on me.{w=0.75}{nw}"
         extend 3fcsbgsbr " As if you even had a choice."
@@ -3055,7 +3052,7 @@ label event_internet_connection:
 
     return
 
-# Natsuki decides it's finally time to change things up a bit!
+
 init 5 python:
     registerTopic(
         Topic(
@@ -3075,8 +3072,8 @@ label event_change_of_atmosphere:
 
     if jn_is_day():
         show overlay puddles day zorder JN_OVERLAY_ZORDER
-
     else:
+
         show overlay puddles night zorder JN_OVERLAY_ZORDER
 
     $ jn_outfits.getWearable("jn_clothes_raincoat").unlock()
@@ -3095,8 +3092,8 @@ label event_change_of_atmosphere:
 
     if jn_utils.getMinutesSinceLastVisit() > 60:
         extend " I {i}knew{/i} trying to get some sleep at my desk wasn't going to work..."
-
     else:
+
         extend " I {i}knew{/i} trying to take a powernap at my desk was a {i}stupid{/i} idea..."
 
     n "Ugh."
@@ -3118,7 +3115,7 @@ label event_change_of_atmosphere:
     play audio drip_a
     $ jnPause(0.25)
     play audio drip_b
-    
+
     n "..."
     n "Is that...{w=1} {i}rainwater{/i}...?{w=0.75} Oh,{w=0.2} you have {w=0.2}{b}got{/b}{w=0.2} to be joking.{w=0.75} Really?!{w=0.75} Why now?!"
     n "Who even built this crappy school?{w=0.75} The {i}carpentry club{/i}?!"
@@ -3130,7 +3127,7 @@ label event_change_of_atmosphere:
     $ jnPause(0.5)
     play audio puddle_step_b
     $ jnPause(0.25)
-    n "Uuuuuuu-!" 
+    n "Uuuuuuu-!"
     n "It's {i}everywhere{/i}!{w=0.75} Even the teacher's desk is dripping now!"
     n "...Gross.{w=1} {i}And{/i} my slippers are all soaked through now,{w=0.2} too..."
     n "Great.{w=1} Just {i}perfect{/i}."
@@ -3142,7 +3139,7 @@ label event_change_of_atmosphere:
     n "..."
     n "Come on..."
     $ time_of_day = "day" if jn_is_day() else "night"
-    n "Where did they leave that stupid bucket?{w=0.75} I {i}know{/i} they had one in here!\n{w=0.75}I had to stand outside with it enough times..." 
+    n "Where did they leave that stupid bucket?{w=0.75} I {i}know{/i} they had one in here!\n{w=0.75}I had to stand outside with it enough times..."
     play audio drip_a
     n "Could this [time_of_day] {i}possibly{/i} get any worse-{nw}"
 
@@ -3206,8 +3203,8 @@ label event_change_of_atmosphere:
         extend 4cllemlsbl " When did you get here,{w=0.2} all of a sudden?!"
         n 3ccsgslsbl "...And did you seriously have to pick {i}now{/i} of all times to show up?{w=0.75}{nw}"
         extend 3csrfllsbl " Jeez..."
-
     else:
+
         n 2fsrsl "..."
         n 2tsqpueqm "...Huh?{w=0.75}{nw}"
         extend 1cllfllsbr " Oh.{w=0.2} [player]."
@@ -3219,7 +3216,7 @@ label event_change_of_atmosphere:
     n 4csqfl "...Yeah.{w=0.75}{nw}"
     extend 2flrem " As you can probably tell.{w=0.75}{nw}"
     extend 2fcsan " I haven't exactly been having {i}fun{/i} here."
-    n 2ftrem "{i}'Brand new classrooms!'{/i},{w=0.5}{nw}" 
+    n 2ftrem "{i}'Brand new classrooms!'{/i},{w=0.5}{nw}"
     extend 4fsran " my butt."
     n 7fcsem "Like...{w=0.3} They were always pretty lousy.{w=0.75}{nw}"
     extend 3fslsl " But I swear it was never {i}this{/i} bad before."
@@ -3230,8 +3227,8 @@ label event_change_of_atmosphere:
         n 3fcsflsbr "I-{w=0.2}I know I said that the heating was totally busted in here already.{w=0.75}{nw}"
         extend 1clrwrsbr " It was never actually {i}leaking{/i} everywhere or anything!{w=0.75}{nw}"
         extend 2csrunsbr " At least not this much."
-
     else:
+
         n 3fcsgssbr "Stuff like the heating or cabinets in here were always pretty busted.{w=0.75}{nw}"
         extend 1clrwrsbl " I-{w=0.2}it was never like we were just sitting around soaking or anything!"
         n 2cslemsbr "...Or at least not as badly as {i}this{/i}."
@@ -3260,7 +3257,7 @@ label event_change_of_atmosphere:
     n 3fcsup "Well,{w=0.2} newsflash:{w=0.5}{nw}"
     extend 3fbkwr " I'm sick of it!{w=0.75}{nw}"
     extend 4flrfu " It's like everything is coming together just to get on my nerves!"
-    n 1fcsfu "I feel like crap,{w=0.5}{nw}" 
+    n 1fcsfu "I feel like crap,{w=0.5}{nw}"
     extend 2fsran " it's {i}always{/i} freezing..."
     n 2fllan "All my stuff is totally soaked..."
     n 1fsqan "And that {i}music{/i}..."
@@ -3272,7 +3269,7 @@ label event_change_of_atmosphere:
     show natsuki 4fcsup
 
     n 1fcsan "Nnnnnnnn-!"
-    n 1fcsupl "Just...." 
+    n 1fcsupl "Just...."
     n 2fsrupl "Seriously..."
     n 1fcsupl "Why can't this dump just{w=0.75}{nw}"
     extend 4fcsanl " KNOCK!{w=0.75}{nw}"
@@ -3283,7 +3280,7 @@ label event_change_of_atmosphere:
     stop music fadeout 1
     hide screen weather_raindrops
     $ jn_atmosphere.SOUND_EFFECTS_RAIN.stop()
-    show overlay puddles at JN_TRANSFORM_FADE_OUT(4) zorder JN_OVERLAY_ZORDER
+    show overlay puddles zorder JN_OVERLAY_ZORDER at JN_TRANSFORM_FADE_OUT(4)
     $ jnPause(0.5)
     $ jn_atmosphere.showSky(jn_atmosphere.WEATHER_SUNNY)
     $ jnPause(1)
@@ -3306,7 +3303,7 @@ label event_change_of_atmosphere:
     hide overlay
 
     n 1ccsemesi "..."
-    n 4ccsem "I said,{w=0.5}{nw}" 
+    n 4ccsem "I said,{w=0.5}{nw}"
     extend 4fsrfl " now if the music could just {i}change{/i} already!"
 
     show natsuki 2fsrsr
@@ -3340,8 +3337,8 @@ label event_change_of_atmosphere:
         extend 3fcssml " E-{w=0.2}ehehe."
         n 4fllssl "Just let me ditch the raincoat real quick..."
         show natsuki 4fcssml
-
     else:
+
         n 3fsqbg "It's about time we finally got things back on track!{w=0.75}{nw}"
         extend 3fcssm " Ehehe."
         n 1unmbo "Oh, right."
@@ -3362,8 +3359,8 @@ label event_change_of_atmosphere:
 
     elif jn_outfits.outfitExists(persistent.jn_natsuki_outfit_on_quit):
         $ Natsuki.setOutfit(jn_outfits.getOutfit(persistent.jn_natsuki_outfit_on_quit))
-
     else:
+
         $ Natsuki.setOutfit(jn_outfits.getOutfit("jn_school_uniform"))
 
     $ jnPause(1.5)
@@ -3384,15 +3381,14 @@ label event_change_of_atmosphere:
         $ chosen_tease = jn_utils.getRandomTeaseName()
         n 3fchbgl "M-{w=0.2}make yourself comfy already,{w=0.5}{nw}"
         extend 3fchgnl " you big [chosen_tease]!"
-
     else:
+
         n 2fchbg "Start talking already,{w=0.2} [player]!"
 
     return
 
-# HOLIDAYS
 
-# Used to lead up to a holiday, but only if already in-game and the day changes
+
 label holiday_prelude:
     n 1tllbo "..."
     n 1ullpu "...You know,{w=0.75}{nw}"
@@ -3412,7 +3408,7 @@ label holiday_prelude:
 
     return
 
-# Used to handle multiple events in a single day by cleaning/setting up inbetween events
+
 label holiday_interlude:
     n 1fllbo "..."
     n 1tllpu "You know..."
@@ -3436,7 +3432,7 @@ label holiday_new_years_day:
     python:
         import copy
 
-        # Give Natsuki a new year headband, using whatever she's currently wearing as a base
+
         jn_outfits.getWearable("jn_headgear_new_year_headband").unlock()
         new_years_hat_outfit = copy.copy(jn_outfits.getOutfit(Natsuki.getOutfitName()))
         new_years_hat_outfit.headgear = jn_outfits.getWearable("jn_headgear_new_year_headband")
@@ -3453,7 +3449,7 @@ label holiday_new_years_day:
     n 1fskemesh "...!"
     n 3fcsanless "Uuuuuuuu-!"
     n 3fcsemless "Are you{w=0.5}{nw}"
-    extend 3fcswrl " {cps=\10}freaking{/cps}{w=0.5}{nw}"
+    extend 3fcswrl " {cps=10}freaking{/cps}{w=0.5}{nw}"
     extend 1fbkwrlean " {i}kidding{/i} me?!"
     n 1kskem "I missed it?!{w=0.5}{nw}"
     extend 1kskwr " {b}AGAIN?!{/b}"
@@ -3471,8 +3467,8 @@ label holiday_new_years_day:
         extend 1tsqsl " I suppose I can't give you too much of a hard time for it,{w=0.2} [player]."
         n 1fcsbg " Your hangover can do that for me.{w=0.5}{nw}"
         extend 1fcsajsbr " Anyway!"
-
     else:
+
         n 1kcsemedr "Man..."
         n 2fsrpu "Now that's gonna bug me from the rest of the day..."
         n 2fslsrl "Way to start the new year,{w=0.2} huh?"
@@ -3507,8 +3503,8 @@ label holiday_new_years_day:
     if Natsuki.isAffectionate(higher=True):
         extend 4fnmpul " promise me something,{w=0.2} [player].{w=0.5}{nw}"
         extend 4knmbol " Please?"
-
     else:
+
         extend 1fnmpu " do one thing for me.{w=0.5}{nw}"
         extend 4knmbol " Please?"
 
@@ -3518,8 +3514,8 @@ label holiday_new_years_day:
     if Natsuki.isEnamored(higher=True):
         extend 1fcsajfesssbl " A-{w=0.2}and I don't mean me.{w=0.5}{nw}"
         extend 1fslssfesssbl " This time."
-
     else:
+
         extend 1fcsajfesssbl " A-{w=0.2}and I don't mean me.{w=0.5}{nw}"
 
     n 1fcsun "Please...{w=1}{nw}"
@@ -3571,23 +3567,23 @@ label holiday_new_years_day:
         $ jnPause(3.5)
 
         if Natsuki.isLove(higher=True):
-            show natsuki 1fsldvlsbl at jn_center zorder JN_NATSUKI_ZORDER
+            show natsuki 1fsldvlsbl zorder JN_NATSUKI_ZORDER at jn_center
             play audio kiss
             $ jnPause(1.5)
             hide black with Dissolve(1.25)
             $ chosen_endearment = jn_utils.getRandomEndearment()
             n 4kwmsmf "...Happy new year,{w=0.2} [chosen_endearment].{w=1.25}{nw}"
             extend 4kllssfess " Ehehe."
-
         else:
-            show natsuki 1nsldvlsbl at jn_center zorder JN_NATSUKI_ZORDER
+
+            show natsuki 1nsldvlsbl zorder JN_NATSUKI_ZORDER at jn_center
             $ jnPause(1.5)
             hide black with Dissolve(1.25)
             $ chosen_tease = jn_utils.getRandomTease()
             n 4klrssf "Heh."
             n 1fchsmfess "...Happy new year,{w=0.2} [chosen_tease]."
-
     else:
+
         n 1knmsll "...Thanks.{w=0.75}{nw}"
         extend 3fcsemlsbl " F-{w=0.2}for this year,{w=0.2} I mean."
         n 1fslbolesssbl "I...{w=0.5}{nw}"
@@ -3605,7 +3601,7 @@ label holiday_new_years_day:
         n 1fcsunl "..."
 
         show black zorder JN_BLACK_ZORDER with Dissolve(0.5)
-        show natsuki 1fsldvlsbl at jn_center zorder JN_NATSUKI_ZORDER
+        show natsuki 1fsldvlsbl zorder JN_NATSUKI_ZORDER at jn_center
         play audio clothing_ruffle
         $ jnPause(3.5)
         hide black with Dissolve(1.25)
@@ -3639,7 +3635,7 @@ label holiday_valentines_day:
     n 1fsqpol "..."
     n 1fsqpul "...Huh?{w=0.75}{nw}"
     extend 1tsqfll " What?"
-    n 1nlrfllsbl "What's that look for,{w=0.5}{nw}" 
+    n 1nlrfllsbl "What's that look for,{w=0.5}{nw}"
     extend 1knmfllsbl " all of a sudden?"
 
     if Natsuki.isLove(higher=True):
@@ -3681,13 +3677,13 @@ label holiday_valentines_day:
         n 1ksqsll "...Look.{w=1}{nw}"
         extend 1klrsll " I've never been good at this kind of stuff.{w=1.25}{nw}"
         extend 1fcsunlsbl " I-{w=0.2}I always struggle with it."
-        n 1fcspulsbl "Especially when it's all just...{w=0.75}{nw}" 
+        n 1fcspulsbl "Especially when it's all just...{w=0.75}{nw}"
         extend 1ksrsllsbl " so new to me.{w=0.75}{nw}"
         extend 1kllsllsbl " Having someone who..."
         n 1kllsrlsbl "..."
         n 1kllfllsbl "...Who really cares about me."
-        n 1knmpulsbl "S-{w=0.2}someone who{w=0.75}{nw}" 
-        extend 1ksrpufsbr " loves{w=0.75}{nw}" 
+        n 1knmpulsbl "S-{w=0.2}someone who{w=0.75}{nw}"
+        extend 1ksrpufsbr " loves{w=0.75}{nw}"
         extend 1ksrbofsbr " me."
         n 1kcsajlsbr "But what I'm trying to say is..."
         n 1ksrbolsbr "..."
@@ -3795,8 +3791,8 @@ label holiday_valentines_day:
 
         show prop f14_heart give
         n 1fsrfsfsbr "H-{w=0.2}happy Valentine's day."
-
     else:
+
         n 1uskflleshsbr "...!{w=0.5}{nw}"
         n 1fcsgslsbr "T-{w=0.2}this?!{w=0.75}{nw}"
         extend 1flrgslsbr " It's..."
@@ -3886,8 +3882,8 @@ label holiday_easter:
     if jn_is_day():
         extend 4fcsgssbl " Do you even {i}know{/i} what day it is today?{w=0.75}{nw}"
         extend 2fcsposbl " Sheesh!"
-        
     else:
+
         extend 4fsqgssbl " Do you even {i}know{/i} what day it is today?"
         n 2fsrslsbl "I guess not,{w=0.75}{nw}"
         extend 2fcspoesisbl " considering the time you got here."
@@ -3904,7 +3900,7 @@ label holiday_easter:
     n 1fcssm "Heh."
     n 4fcsbg "Yeah,{w=0.2} you do.{w=0.75}{nw}"
     extend 1fcssmesm " I basically have a sixth sense for this kind of thing,{w=0.2} after all."
-    n 1fcsss "It means..." 
+    n 1fcsss "It means..."
     n 3fchbs "Cherry blossom season,{w=0.75}{nw}"
     extend 3uchgn " obviously!"
     n 4tnmbo "..."
@@ -3918,7 +3914,7 @@ label holiday_easter:
     n 2fcsbs "What else can you think of that floods the place with color that well,{w=0.2} huh?"
     n 1ulrss "Plus with how the blossoms travel all the way up from south to north..."
     n 3uchgn "It's pretty much a rolling announcement for the summer!{w=0.2} I love it!"
-    
+
     $ cherry_blossom_outfit = jn_outfits.getOutfit("jn_cherry_blossom_outfit")
     if not cherry_blossom_outfit.unlocked:
         $ cherry_blossom_outfit.unlock()
@@ -3965,7 +3961,7 @@ label holiday_easter:
         n 4fcssmlsbr "{i}Someone's{/i} gotta remind you what {i}real{/i} literature looks like from time to time!"
         show natsuki 1fsrsmlsbr
 
-        call show_poem(easter_poem)
+        call show_poem (easter_poem)
         show natsuki 1fsrbolsbr
 
         n 2fllsssbr "Well?{w=0.75}{nw}"
@@ -4007,7 +4003,7 @@ label holiday_easter:
 
     if Natsuki.isEnamored(higher=True):
         n 2ulraj "Easter might be all about fresh starts,{w=0.75}{nw}"
-        extend 2nlrpu " but...{w=1}{nw}" 
+        extend 2nlrpu " but...{w=1}{nw}"
         extend 4tnmbo " honestly?"
         n 4nllssl "...Thanks to you?"
         n 1kllbol "..."
@@ -4032,8 +4028,8 @@ label holiday_easter:
             extend 4fchsslsbl " E-{w=0.2}ehehe..."
             $ chosen_tease = jn_utils.getRandomTease()
             n 3fchbll "H-{w=0.2}happy Easter,{w=0.2} [chosen_tease]!"
-
         else:
+
             n 3ksrssl "I think I've already had the best I could have gotten.{w=0.75}{nw}"
             extend 3nsrsmlsbl " Ehehe."
             $ chosen_tease = jn_utils.getRandomTease()
@@ -4047,8 +4043,8 @@ label holiday_easter:
         extend 1nsrsslsbr " think I can settle for the one you gave me too.{w=1}{nw}"
         extend 1fcssslsbr " Ehehe."
         n 2fcsbglsbl "H-{w=0.2}happy Easter,{w=0.2} [player]!"
-
     else:
+
         n 2ulrbo "They say Easter is all about fresh starts,{w=0.75}{nw}"
         extend 2tlrpu " but...{w=1}{nw}"
         extend 2fnmsm " honestly?"
@@ -4075,17 +4071,17 @@ label holiday_halloween:
     hide black
 
     $ jnPause(3)
-    show tense at JN_PULSE zorder JN_GLITCH_ZORDER
+    show tense zorder JN_GLITCH_ZORDER at JN_PULSE
     play audio thump
     $ jnPause(1.5)
     hide tense
     $ jnPause(1)
-    show tense at JN_PULSE zorder JN_GLITCH_ZORDER
+    show tense zorder JN_GLITCH_ZORDER at JN_PULSE
     play audio thump
     $ jnPause(1.5)
     hide tense
     $ jnPause(1)
-    show tense at JN_PULSE zorder JN_GLITCH_ZORDER
+    show tense zorder JN_GLITCH_ZORDER at JN_PULSE
     play audio thump
     $ jnPause(1.5)
     hide tense
@@ -4113,7 +4109,7 @@ label holiday_halloween:
                 zorder=JN_GLITCH_ZORDER)
             renpy.play(filename=audio.thump, channel="audio")
             jnPause(1)
-
+            
             if (random.randint(1,5) == 1):
                 renpy.play(filename=audio.glitch_d, channel="audio")
                 jnPause(0.25)
@@ -4135,7 +4131,7 @@ label holiday_halloween:
                 zorder=JN_GLITCH_ZORDER)
             renpy.play(filename=audio.thump, channel="audio")
             jnPause(0.75)
-
+            
             if (random.randint(1,4) == 1):
                 renpy.play(filename=audio.glitch_d, channel="audio")
                 jnPause(0.25)
@@ -4170,19 +4166,19 @@ label holiday_halloween:
     $ Natsuki.setDeskItem(jn_desk_items.getDeskItem("jn_renpy_for_dummies_closed"))
     $ Natsuki.setDeskItem(jn_desk_items.getDeskItem("jn_pumpkins"))
     show deco o31 zorder JN_DECO_ZORDER
-    show natsuki 4fchgn at jn_center zorder JN_NATSUKI_ZORDER
+    show natsuki 4fchgn zorder JN_NATSUKI_ZORDER at jn_center
     $ jnPause(0.15)
     play audio switch_flip
     hide black
     $ jnPause(1)
 
-    # Have to proc manually here due to fake reveal for the prank
+
     $ renpy.play(filename="mod_assets/bgm/vacation.ogg", channel="music")
     $ renpy.show_screen("hkb_overlay")
     $ jn_globals.force_quit_enabled = True
 
     $ player_upper = player.upper()
-    n 4fchbg "HAPPY HALLOWEEN,{w=0.75}{nw}" 
+    n 4fchbg "HAPPY HALLOWEEN,{w=0.75}{nw}"
     extend 4fchbs " [player_upper]!"
     n 4fchsm "..."
     n 4fsqsm "..."
@@ -4221,10 +4217,10 @@ label holiday_halloween:
         n 2unmaj "You know,{w=0.2} I'm pretty sure I mentioned it before at some point.{w=0.75}{nw}"
         extend 5csrbosbl " About how I don't really like horror and all."
         n 4ccsfl "But let's be real here,{w=0.2} [player]."
-
     else:
+
         n 1cllbg "Man...{w=1}{nw}"
-        extend 2tlraj " I know I told you I wasn't the biggest fan of horror already,{w=0.75}{nw}" 
+        extend 2tlraj " I know I told you I wasn't the biggest fan of horror already,{w=0.75}{nw}"
         extend 4ccsfl " but let's be real."
 
     n 4tnmaj "When it really comes to bang for your buck?{w=0.75}{nw}"
@@ -4250,14 +4246,14 @@ label holiday_halloween:
             n 2knmfl "What?{w=0.75}{nw}"
             extend 2kllfll " Don't you remember,{w=0.2} [player]?{w=0.75}{nw}"
             extend 1cllbol " It's like how I told you last Christmas."
-
         else:
+
             n 4fcsem "It's just that..."
             n 2kslsl "..."
             n 2kslfl "I-{w=0.2}it just sucks.{w=0.75}{nw}"
             extend 4knmbol " You know?{w=1}{nw}"
             extend 1klrsll " With my family and everything."
-        
+
         n 1ksrsll "..."
         n 4ccspu "We...{w=1}{nw}"
         extend 4ccsfl " never...{w=1}{nw}"
@@ -4329,13 +4325,13 @@ label holiday_halloween:
 
         show natsuki 4kdrcal
         $ jnPause(0.5)
-        call show_poem(halloween_poem)
+        call show_poem (halloween_poem)
         show natsuki 1cnmcal
 
         n 1cnmajl "You..."
         n 4cllajl "You did actually read all of that..."
         n 5csgsll "Right?"
-        n 2ccseml "Because you have no {i}idea{/i} how much of a pain that was at short notice.{w=0.75}{nw}" 
+        n 2ccseml "Because you have no {i}idea{/i} how much of a pain that was at short notice.{w=0.75}{nw}"
         extend 2clleml " Especially with you sneaking around all the time.{w=1}{nw}"
         extend 2ccspol " You dork."
         n 1clrbolsbl "..."
@@ -4343,12 +4339,12 @@ label holiday_halloween:
         n 4ksgpulsbl "Seriously,{w=0.2} [player]?"
         n 1kslsllsbl "..."
 
-        show natsuki 4ccsunlsbl at jn_center zorder JN_NATSUKI_ZORDER
+        show natsuki 4ccsunlsbl zorder JN_NATSUKI_ZORDER at jn_center
         show black zorder JN_BLACK_ZORDER with Dissolve(0.5)
         $ jnPause(2)
         play audio clothing_ruffle
         $ jnPause(3.5)
-        show natsuki 5cslbolsbr at jn_center zorder JN_NATSUKI_ZORDER
+        show natsuki 5cslbolsbr zorder JN_NATSUKI_ZORDER at jn_center
         hide black with Dissolve(1.25)
 
         n 5kslpul "...T-{w=0.2}thank you.{w=0.75}{nw}"
@@ -4385,8 +4381,8 @@ label holiday_halloween:
         $ chosen_tease = jn_utils.getRandomTeaseName()
         n 2uchgnl "Now let's get spooky already,{w=0.2} you [chosen_tease]!"
         $ persistent._jn_player_love_halloween_seen = True
-
     else:
+
         n 3cslss "..."
         n 4cslfl "Or...{w=1}{nw}"
         extend 4cslsl " at least it would be.{w=0.75}{nw}"
@@ -4427,8 +4423,8 @@ label holiday_halloween:
         elif Natsuki.isAffectionate(higher=True):
             n 7cllsslsbr "I'm pretty sure {i}you{/i} aren't like that.{w=0.75}{nw}"
             extend 3ccssslsbr " Even if you are a dork."
-
         else:
+
             n 7csqss "I kinda doubt {i}you're{/i} one of those people."
 
         n 3clrss "And it's not like we have to worry about any of that here either,{w=0.2} at any rate."
@@ -4441,14 +4437,14 @@ label holiday_halloween:
 
         if Natsuki.isLove(higher=True):
             $ chosen_tease = jn_utils.getRandomTeaseName()
-            n 2fwlbgl "Love you too,{w=0.5}{nw}" 
+            n 2fwlbgl "Love you too,{w=0.5}{nw}"
             extend 2fchblleaf " you big [chosen_tease]!"
 
         elif Natsuki.isAffectionate(higher=True):
             $ random_tease = random.choice(["dork", "dope"])
             n 3fchbgl "Now let's get spooky already,{w=0.2} you [random_tease]!"
-
         else:
+
             n 3fnmbg "Now let's spook things up already!"
 
     $ jn_events.getHoliday("holiday_halloween").complete()
@@ -4458,17 +4454,17 @@ label holiday_christmas_eve:
     python:
         import copy
 
-        # Let it snow
+
         jn_atmosphere.showSky(jn_atmosphere.WEATHER_SNOW)
 
-        # The Nat in the Hat
+
         jn_outfits.getWearable("jn_headgear_santa_hat").unlock()
         santa_hat_outfit = copy.copy(jn_outfits.getOutfit(Natsuki.getOutfitName()))
         santa_hat_outfit.headgear = jn_outfits.getWearable("jn_headgear_santa_hat")
         santa_hat_outfit.hairstyle = jn_outfits.getWearable("jn_hair_down")
         jn_outfits.saveTemporaryOutfit(santa_hat_outfit)
 
-        # Let it go
+
         jn_events.getHoliday("holiday_christmas_eve").run()
 
     n 1uchbg "Heeeey!{w=0.75}{nw}"
@@ -4525,8 +4521,8 @@ label holiday_christmas_eve:
 
     menu:
         extend " are {i}you{/i} all good to go yet,{w=0.2} [player]?"
-
         "You bet I am!":
+
             n 1usqct "Oho?"
             n 1fchbg "Well,{w=0.2} no kidding!{w=1}{nw}"
             extend 2fcsbs " Now that's {i}exactly{/i} what I like to hear."
@@ -4534,8 +4530,8 @@ label holiday_christmas_eve:
             extend 1uchgnedz " I just know it!"
 
             $ persistent._jn_player_celebrates_christmas = True
-
         "I haven't decorated yet.":
+
             n 1uskemlesh "H-{w=0.2}huh?!"
             n 1fbkwrl "T-{w=0.2}then what are you doing sitting around here,{w=0.2} you goof?!{w=0.75}{nw}"
             extend 3fcsajlsbl " Jeez..."
@@ -4543,8 +4539,8 @@ label holiday_christmas_eve:
             n 1fchbl "...Not for {i}free{/i},{w=0.2} anyway."
 
             $ persistent._jn_player_celebrates_christmas = True
-
         "I don't really celebrate Christmas.":
+
             n 4kslpu "...Aww.{w=0.75}{nw}"
             extend 4knmbo " Really?"
             n 1kllsl "..."
@@ -4574,8 +4570,8 @@ label holiday_christmas_eve:
 
         if Natsuki.isLove(higher=True):
             n 4kwmfsfsbr "I-{w=0.3}I think I can settle for just you."
-
         else:
+
             n 2nslfsfsbr "I-{w=0.3}I can probably settle for you this year."
 
         n 1kslbol "..."
@@ -4601,8 +4597,8 @@ label holiday_christmas_eve:
         extend 4knmajlsbr " [player]?"
         n 1kcsunfsbr "..."
         show natsuki 2fcssrfsbr
-
     else:
+
         n 1kcscalsbl "...Thanks.{w=0.75}{nw}"
         extend 1fcsemlsbl " F-{w=0.3}for turning up today,{w=0.2} I mean."
         n 3fcsgslesssbr "I-{w=0.2}I knew you would,{w=0.2} of course!"
@@ -4632,8 +4628,8 @@ label holiday_christmas_eve:
             play audio kiss
 
         show natsuki 1kcsfsf at jn_center
-
     else:
+
         play audio clothing_ruffle
         show natsuki 4kcsbol at jn_center
 
@@ -4655,8 +4651,8 @@ label holiday_christmas_eve:
         n 2kslsmlsbl "S-{w=0.2}so..."
         n 4kwmsml "What did you wanna talk about,{w=0.2} [player]?{w=0.75}{nw}"
         extend 1fchsmlsbr " Ehehe."
-
     else:
+
         n 2kslfsl "..."
         n 1ncsajlsbl "N-{w=0.3}now,{w=1}{nw}"
         extend 4tsqsslsbl " where were we?"
@@ -4669,15 +4665,15 @@ label holiday_christmas_eve:
 
 label holiday_christmas_day:
     python:
-        # Let it snow
+
         jn_atmosphere.showSky(jn_atmosphere.WEATHER_SNOW)
 
-        # Dress up Natsu
+
         christmas_outfit = jn_outfits.getOutfit("jn_christmas_outfit")
         christmas_outfit.unlock()
         jn_outfits.saveTemporaryOutfit(christmas_outfit)
 
-        # Let it go
+
         jn_events.getHoliday("holiday_christmas_day").run()
 
     n 1uwdgsesu "Omigosh!{w=0.5}{nw}"
@@ -4695,8 +4691,8 @@ label holiday_christmas_day:
         extend 1knmgs " Get the sleep out of your eyes already,{w=0.2} [player]!"
         n 1fcsss "Up and at 'em!{w=0.5}{nw}"
         extend 4fchbg " C'mon,{w=0.2} [player]!"
-
     else:
+
         n 3fspgs "What even {i}took{/i} you so long?{w=0.75}{nw}"
         extend 3fsqpoesi " Did you forget what day it was or something?{w=0.5}{nw}"
         extend 3fcsgs " It's time to celebrate!"
@@ -4758,7 +4754,7 @@ label holiday_christmas_day:
     n 1fslsll "Besides.{w=0.3} Not like {i}they{/i} particularly cared where I was..."
     n 1kslsll "..."
     n 4ksqbol "But my friends always did."
-    n 4knmpul "...We'd already arranged something,{w=1}{nw}" 
+    n 4knmpul "...We'd already arranged something,{w=1}{nw}"
     extend 4knmbolsbr " you know."
     n 1kllbolsbr "For Christmas.{w=1}{nw}"
     extend 2tnmbolsbr " Didn't I tell you,{w=0.2} [player]?"
@@ -4768,7 +4764,7 @@ label holiday_christmas_day:
     extend 4knmbo " There was so much talk over where we'd all go."
     n 1klrsssbl "Sayori got so excited over hosting...{w=0.75}{nw}"
     extend 2nsrsssbl " but it would have been {i}way{/i} too cramped for all of us."
-    n 1nlraj "Though...{w=1}{nw}" 
+    n 1nlraj "Though...{w=1}{nw}"
     extend 1tnmbo " seriously?"
     n 1kslbo "..."
     n 1kcsaj "I...{w=0.75}{nw}"
@@ -4838,8 +4834,8 @@ label holiday_christmas_day:
 
     elif Natsuki.isAffectionate():
         n 4nslsslsbl "...A-{w=0.2}at least I got my best one."
-
     else:
+
         n 1ncsbol "I think..."
         n 1ncspulesi "..."
         n 1ncscal "I-{w=0.2}I think even just the one here is enough right now."
@@ -4859,7 +4855,7 @@ label holiday_christmas_day:
     if christmas_poem:
         $ christmas_poem.unlock()
 
-        # We have a poem to give the player
+
         n 1nllsllsbl "..."
         n 4knmcalsbl "...I did get you something,{w=0.2} you know."
         n 1fsrunlsbl "..."
@@ -4874,8 +4870,8 @@ label holiday_christmas_day:
             n 1knmbofsbr "..."
             n 2fcscalsbr "...J-{w=0.2}just look at it already,{w=0.2} [chosen_tease]."
             show natsuki 1kcscalsbr at jn_center
-
         else:
+
             n 1nslunlsbr "..."
             n 2fcsunlsbl "Nnnnnnn-!"
             n 2fcsemlsbl "...J-{w=0.2}just...{w=1}{nw}"
@@ -4883,7 +4879,7 @@ label holiday_christmas_day:
             extend 2fcssllsbl " {i}B-before{/i} I change my mind."
             show natsuki 1ksrsllsbl at jn_center
 
-        call show_poem(christmas_poem)
+        call show_poem (christmas_poem)
 
         if Natsuki.isEnamored(higher=True):
             n 4ksqcalsbr "...Finished,{w=0.2} [player]?"
@@ -4902,8 +4898,8 @@ label holiday_christmas_day:
             extend 4kwmsll " m-{w=0.2}means a lot to me,{w=0.2} [player]."
             n 1kslbol "I-{w=0.2}it really does."
             n 4kwmfsl "...Thank you."
-
         else:
+
             n 2nsqsllsbl "..."
             n 2tsqcalsbl "All done,{w=0.2} [player]?{w=1}{nw}"
             extend 2nslssl " Man..."
@@ -4925,15 +4921,15 @@ label holiday_christmas_day:
             n 1kcscalsbl "..."
             n 1ksqcalsbl "I-{w=0.2}It means a lot to me,{w=0.2} [player]."
             n 2ksrcafsbl "...T-thanks."
-
     else:
+
         n 2kllbol "..."
 
         if Natsuki.isEnamored(higher=True):
             n 4kwmfsl "...And [player]?"
             show natsuki 1fcscalsbl at jn_center
-
         else:
+
             n 1kllpul "...And...{w=1}"
             extend 4knmsll " [player]?"
             n 1ksrsllsbl "..."
@@ -4948,8 +4944,8 @@ label holiday_christmas_day:
         $ jnPause(2.5)
         play audio kiss
         show natsuki 1kcsfsf at jn_center
-
     else:
+
         play audio clothing_ruffle
         show natsuki 1kcsbol at jn_center
 
@@ -4962,8 +4958,8 @@ label holiday_christmas_day:
     if Natsuki.isLove(higher=True):
         $ chosen_endearment = jn_utils.getRandomEndearment()
         n 4kchfsfeaf "...Merry Christmas,{w=0.2} [chosen_endearment]."
-
     else:
+
         n 1fchsmfsbl "M-{w=0.3}merry Christmas."
 
     $ jn_events.getHoliday("holiday_christmas_day").complete()
@@ -5024,8 +5020,8 @@ label holiday_new_years_eve:
         n 3fcspolsbl "...It isn't like I'd say {i}no{/i} to your company,{w=0.2} you know.{w=1}{nw}"
         extend 3fllpofesssbl " S-{w=0.3}so long as you don't make it all gross,{w=0.2} anyway."
         n 1fsldvfesdsbr "Ehehe."
-
     else:
+
         n 1fnmssl "Just a word of warning though,{w=0.2} [player]..."
         n 1fsqbgl "I {i}fully{/i} expect to see you here for it.{w=1}{nw}"
         extend 1fcslgl " No excuses!"
@@ -5042,7 +5038,7 @@ label holiday_natsuki_birthday:
     python:
         import copy
 
-        # Give Natsuki a party hat, using whatever she's currently wearing as a base
+
         party_hat = jn_outfits.getWearable("jn_headgear_classic_party_hat")
 
         if not party_hat.unlocked:
@@ -5053,20 +5049,20 @@ label holiday_natsuki_birthday:
         birthday_outfit.hairstyle = jn_outfits.getWearable("jn_hair_ponytail")
         jn_outfits.saveTemporaryOutfit(birthday_outfit)
 
-        # Delete the party supplies needed to proc this holiday
+
         jn_utils.deleteFileFromDirectory(os.path.join(renpy.config.basedir, "characters/party_supplies.nats").replace("\\", "/"))
 
         player_initial = jn_utils.getPlayerInitial()
         player_final = jn_utils.getPlayerFinal(3)
         already_celebrated_player_birthday = jn_events.getHoliday("holiday_player_birthday").is_seen
         jn_atmosphere.showSky(weather=jn_atmosphere.WEATHER_CHERRY_BLOSSOM, with_transition=False)
-        
+
         jn_events.getHoliday("holiday_natsuki_birthday").run()
 
     $ jnPause(0.25)
     play audio smack
     show natsuki 1cchanlsbr
-    show confetti falling at jn_confetti_fall zorder JN_PROP_ZORDER
+    show confetti falling zorder JN_PROP_ZORDER at jn_confetti_fall
     $ jnPause(2.25)
     hide confetti
     show confetti desk zorder JN_PROP_ZORDER
@@ -5093,8 +5089,8 @@ label holiday_natsuki_birthday:
         n 1fcsgsl "Then just to top it off,{w=0.5}{nw}"
         extend 4flrgslsbr " it's {i}easily{/i} the most embarrassing type of attention too!"
         extend 4ksrfllsbr " Man..."
-
     else:
+
         n 1uskgsleshsbr "...!{w=0.75}{nw}"
         n 4kllfllsbr "H-{w=0.2}huh?{w=0.75}{nw}"
         extend 4klrpulsbl " What the..."
@@ -5123,8 +5119,8 @@ label holiday_natsuki_birthday:
             n 2ccsfll "I swear,{w=0.2} [player].{w=0.75}{nw}"
             extend 2csrfll " You are {i}such{/i} a jerk sometimes."
             extend 2csqpol " You know that?"
-
         else:
+
             n 1uskeml "...!{w=0.5}{nw}"
             n 4fcsanl "Uuuuuuu-!"
             n 2fcseml "[player],{w=0.2} I swear..."
@@ -5144,8 +5140,8 @@ label holiday_natsuki_birthday:
         extend 2nslpol " Wise-ass."
         n 2ccsfll "But come{w=0.5}{nw}"
         extend 2ccsgsl " on!{w=0.75}{nw}"
-    
     else:
+
         n 2ccsfllsbl "...And come on now.{w=0.75}{nw}"
 
     extend 2cdwfllsbr " Seriously?{w=0.75}{nw}"
@@ -5159,8 +5155,8 @@ label holiday_natsuki_birthday:
         n 2csrcal "..."
         n 4csrajl "I'm...{w=0.75}{nw}"
         extend 4csrbolsbl " just gonna pretend I've never seen it before."
-    
     else:
+
         n 4unmemlsbr "I-{w=0.2}it's not that I don't like it or anything!{w=0.75}{nw}"
         extend 2fcsemlsbr " It's perfectly fine!{w=1}{nw}"
         extend 2clrsll " But..."
@@ -5169,7 +5165,7 @@ label holiday_natsuki_birthday:
     n 1cdwbol "..."
     n 2cslfll "...You're gonna make me do the whole wish thing.{w=0.75}{nw}"
     extend 2ksqsll " Aren't you?"
-    
+
     $ jnPause(2)
     show prop cake lit zorder JN_PROP_ZORDER
     play audio necklace_clip
@@ -5182,7 +5178,7 @@ label holiday_natsuki_birthday:
 
     show natsuki 2csqcal
     $ jnPause(3)
-    
+
     n 2clrsll "..."
     n 2ccspulesi "..."
     n 2cslpol "...Fine.{w=1}{nw}"
@@ -5198,8 +5194,8 @@ label holiday_natsuki_birthday:
     elif Natsuki.isAffectionate(higher=True):
         extend 1ccsajl " B-{w=0.2}but only because you put in the effort.{w=0.75}{nw}"
         extend 4csqcal " Got it?"
-    
     else:
+
         extend 1ccsajl " But {i}only{/i} because I'd look like a total jerk otherwise.{w=0.75}{nw}"
         extend 4fsqcal " Capiche?"
 
@@ -5233,7 +5229,7 @@ label holiday_natsuki_birthday:
         n 4clrun "..."
         n 1clrpul "Nobody's...{w=1}{nw}"
         extend 1csrpul " ever...{w=1}{nw}"
-        extend 1ccsunl " actually...{w=1}{nw}" 
+        extend 1ccsunl " actually...{w=1}{nw}"
         extend 2cslunl " tried this hard before."
         n 2kslsllsbr "...For me."
         n 4kslbolsbr "And I'd just be lying if I said I wasn't still trying to get used to it."
@@ -5276,7 +5272,7 @@ label holiday_natsuki_birthday:
 
         if birthday_poem:
             $ birthday_poem.unlock()
-        
+
             n 1kslsll "..."
             n 4knmbol "...I ended up writing something,{w=0.2} you know."
             n 4klrbolsbr "..."
@@ -5291,7 +5287,7 @@ label holiday_natsuki_birthday:
             extend 2ccscalsbl " Before I change my mind."
 
             show natsuki 2cllsrlsbl
-            call show_poem(birthday_poem)
+            call show_poem (birthday_poem)
             $ jnPause(3)
 
             n 2cllbol "..."
@@ -5311,8 +5307,8 @@ label holiday_natsuki_birthday:
         n 4knmbol "...And [player]?"
         n 4klrbolsbl "..."
         show natsuki 1ccsbol
-
     else:
+
         if Natsuki.isAffectionate(higher=True):
             n 1nslss "...Heh.{w=0.75}{nw}"
             extend 2tsqbol " Happy now,{w=0.2} [player]?{w=0.75}{nw}"
@@ -5320,8 +5316,8 @@ label holiday_natsuki_birthday:
             n 2clrsl "..."
             n 2nlraj "But..."
             n 4ksrslsbl "..."
-            
         else:
+
             n 2csqfll "...Happy now?{w=0.75}{nw}"
             extend 2cllfllsbr " Jeez..."
             n 2ccsposbr "If I {i}wanted{/i} to be embarrassed I would have just asked,{w=0.2} you know."
@@ -5389,18 +5385,18 @@ label holiday_natsuki_birthday:
     elif Natsuki.isAffectionate(higher=True):
         show natsuki 1csrbof
         $ jnPause(3)
-
     else:
+
         show natsuki 1csrunfsbr
         $ jnPause(3)
 
     $ jnPause(1.25)
     hide black with Dissolve(1.25)
     $ jnPause(3)
-    
+
     $ gold_star_hairpin = jn_outfits.getWearable("jn_accessory_gold_star_hairpin")
     $ pink_star_hairpin = jn_outfits.getWearable("jn_accessory_pink_star_hairpin")
-    
+
     if (
         persistent.jn_custom_outfits_unlocked 
         and (not gold_star_hairpin.unlocked or not pink_star_hairpin.unlocked)
@@ -5426,8 +5422,8 @@ label holiday_natsuki_birthday:
             n 2kcspulesi "..."
             n 4kslbol "...Fine.{w=1}{nw}"
             extend 4nslsslsbr " I guess it's the least I could do,{w=0.2} huh?"
-        
         else:
+
             $ jnPause(1.5)
             n 4unmfll "...!{w=0.5}{nw}"
             n 2fslunlsbr "..."
@@ -5435,7 +5431,7 @@ label holiday_natsuki_birthday:
             n 2nsrsllsbl "..."
             n 2ccsemlsbl "F-{w=0.2}fine."
             extend 4ksrbolsbr " I suppose it's the least I should do."
-        
+
         show natsuki 4cdwbolsbr
         $ jn_gifts.GIFT_BLUE.open()
         $ jnPause(3)
@@ -5446,8 +5442,8 @@ label holiday_natsuki_birthday:
 
         if Natsuki.isEnamored(higher=True):
             show natsuki 4ksrfsltsb
-
         else:
+
             show natsuki 4csrboltsb
 
         $ jnPause(3)
@@ -5457,26 +5453,26 @@ label holiday_natsuki_birthday:
 
         if Natsuki.isEnamored(higher=True):
             show natsuki 2ksrsml
-
         else:
+
             show natsuki 2nsrbol
 
         $ jnPause(3)
-        
+
         if Natsuki.isEnamored(higher=True):
             n 2nsrssl "...Heh."
-            n 4nsrfsl "It...{w=1}{nw}" 
+            n 4nsrfsl "It...{w=1}{nw}"
             extend 1ksrfsl " really {i}does{/i} feel like my birthday now."
             $ chosen_endearment = jn_utils.getRandomEndearment() if Natsuki.isLove() else jn_utils.getRandomTease()
             n 1ksqbol "...Thanks,{w=0.2} [player].{w=0.75}{nw}"
             extend 1kllssl " It's..."
             n 2kslfslsbr "..."
             n 2kslssfsbr "...I-{w=0.2}I love it.{w=1}{nw}"
-            extend 4kslfslsbr " T-{w=0.2}thank you.{w=1}{nw}" 
+            extend 4kslfslsbr " T-{w=0.2}thank you.{w=1}{nw}"
             extend 4cslsslsbr " You big dope."
             show natsuki 4cslsml
-
         else:
+
             n 2nsrbol "..."
             n 2nsrajlsbl "...I-{w=0.2}I guess that's one way to make it feel like a birthday.{w=0.75}{nw}"
             extend 2nsrsslsbl " Heh."
@@ -5507,8 +5503,8 @@ label holiday_natsuki_birthday:
         n 2nsrajl "So..."
         n 2ccssslsbr "W-{w=0.2}what's happening,{w=0.2} [player]?{w=0.75}{nw}"
         extend 2cslsslsbr " Ehehe..."
-
     else:
+
         n 2nsrbol "..."
         n 2nsrajl "S-{w=0.2}so..."
         n 2ccssssbl "What else is new,{w=0.2} [player]?"
@@ -5526,7 +5522,7 @@ label holiday_player_birthday:
 
         today_day_month = (datetime.date.today().day, datetime.date.today().month)
 
-        # Give Natsuki a party hat, using whatever she's currently wearing as a base
+
         jn_outfits.getWearable("jn_headgear_classic_party_hat").unlock()
         birthday_hat_outfit = copy.copy(jn_outfits.getOutfit(Natsuki.getOutfitName()))
         birthday_hat_outfit.headgear = jn_outfits.getWearable("jn_headgear_classic_party_hat")
@@ -5542,7 +5538,7 @@ label holiday_player_birthday:
         persistent._jn_player_birthday_is_leap_day
         and today_day_month == (28, 2)
     ):
-        # Actual birthday check already handled, so just need to check leap flag and day
+
         n 4nsldvlsbr "...Or close enough anyway this year,{w=0.2} right?"
 
     n 1fcsbg "Betcha' didn't think I had something planned all along,{w=0.2} did you?{w=0.5}{nw}"
@@ -5621,8 +5617,8 @@ label holiday_player_birthday:
             n 1fcspul "Just...{w=1}{nw}"
             $ chosen_tease = jn_utils.getRandomTease()
             extend 2klrpol " read it already,{w=0.2} [chosen_tease]."
-
         else:
+
             n 1fllunl "..."
             n 3fnmcal "I-{w=0.2}I hope you didn't think I'd just leave you with nothing."
             n 3nsrpol "I'm not {i}that{/i} much of a jerk."
@@ -5631,7 +5627,7 @@ label holiday_player_birthday:
             n 1fcsemf "J-{w=0.2}just hurry up and read it.{w=1}{nw}"
             extend 2fslbof " I'm not gonna read it to you."
 
-        call show_poem(birthday_poem)
+        call show_poem (birthday_poem)
 
         if Natsuki.isEnamored(higher=True):
             n 1knmbol "Hey...{w=1}{nw}"
@@ -5642,8 +5638,8 @@ label holiday_player_birthday:
             n 1klrssf "...Yeah."
             n 4flldvl "I'll..."
             extend 4fslssl " just put that poem back in my desk for now."
-
         else:
+
             n 1nsqpul "All done?{w=1}{nw}"
             extend 2fcseml " {i}Finally{/i}.{w=1}{nw}"
             extend 2fslcal " Jeez..."
@@ -5669,8 +5665,8 @@ label holiday_player_birthday:
 
     elif Natsuki.isEnamored(higher=True):
         n 4kwmssf "H-{w=0.2}happy birthday."
-
     else:
+
         n 1fcsbgf "You're welcome!"
 
     if birthday_poem:
@@ -5681,7 +5677,7 @@ label holiday_player_birthday:
     return
 
 label holiday_anniversary:
-    #TODO: writing
+
     $ jn_events.getHoliday("holiday_anniversary").run()
     $ jn_events.getHoliday("holiday_anniversary").complete()
 

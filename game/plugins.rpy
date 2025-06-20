@@ -3,14 +3,14 @@ init -1 python in jn_plugins:
     import store
     import store.jn_globals as jn_globals
 
-    # Plugins for minute/hour/day checks
+
     minute_check_calls = []
     quarter_hour_check_calls = []
     half_hour_check_calls = []
     hour_check_calls = []
     day_check_calls = []
 
-    # Plugins for the extras menu options
+
     extras_options = []
 
     class JNRegisteredActionType(Enum):
@@ -41,31 +41,31 @@ init -1 python in jn_plugins:
             - priority - integer order in which the statement should be executed
         """
         if action_type == JNRegisteredActionType.minute:
-            # Add action to minute roster
+            
             global minute_check_calls
             minute_check_calls.append(JNRegisteredAction(statement, priority))
             minute_check_calls.sort(key = lambda action: action.priority)
-
+        
         elif action_type == JNRegisteredActionType.quarter_hour:
-            # Add action to quarter-hour roster
+            
             global quarter_hour_check_calls
             quarter_hour_check_calls.append(JNRegisteredAction(statement, priority))
             quarter_hour_check_calls.sort(key = lambda action: action.priority)
-
+        
         elif action_type == JNRegisteredActionType.half_hour:
-            # Add action to half-hour roster
+            
             global half_hour_check_calls
             half_hour_check_calls.append(JNRegisteredAction(statement, priority))
             half_hour_check_calls.sort(key = lambda action: action.priority)
-
+        
         elif action_type == JNRegisteredActionType.hour:
-            # Add action to hourly roster
+            
             global hour_check_calls
             hour_check_calls.append(JNRegisteredAction(statement, priority))
             hour_check_calls.sort(key = lambda action: action.priority)
-
+        
         elif action_type == JNRegisteredActionType.day:
-            # Add action to daily roster
+            
             global day_check_calls
             day_check_calls.append(JNRegisteredAction(statement, priority))
             day_check_calls.sort(key = lambda action: action.priority)

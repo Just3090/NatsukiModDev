@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """Supporting definitions for the Python regression tests.
 
 Backported for python-future from Python 3.3 test/support.py.
